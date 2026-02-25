@@ -6,6 +6,7 @@
     ../../modules/common/default.nix
     ../../modules/common/wsl.nix
     ../../modules/common/users.nix
+    ../../modules/common/secrets.nix
   ];
 
   # Hostname
