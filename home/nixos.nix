@@ -65,21 +65,17 @@
     enable = true;
     shellAliases = {
       # Core Aliases
-      c = "cat";
       cat = "bat --style plain --paging never";
       fd = "fd --follow";
       gi = "git-ignore";
-      l = "eza --color=always -h --group-directories-first -p";
-      ld = "fd --type directory --max-depth 1";
-      lda = "fd --type directory";
-      lf = "fd --type file --max-depth 1";
-      lfa = "fd --type file";
       ll = "eza -lha --group-directories-first --icons=never";
       ls = "eza";
-      rg = "rg"; # or rga if we use ripgrep-all
+      rg = "rga";
       tree = "eza --tree";
       reload = "clear; exec fish";
       vissh = "nvim ~/.ssh/config";
+      j = "z";
+      run = ",";
     };
     functions = {
       rmssh = {
@@ -135,7 +131,7 @@
     forwardAgent = true;
     serverAliveCountMax = 30;
     serverAliveInterval = 60;
-    
+
     matchBlocks = {
       "*" = {
         user = "cael";
