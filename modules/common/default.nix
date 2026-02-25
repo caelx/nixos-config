@@ -22,7 +22,7 @@
 
     # Essential CLI tools
     git
-    nvim
+    neovim
     curl
     wget
     htop
