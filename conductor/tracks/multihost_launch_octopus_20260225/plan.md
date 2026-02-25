@@ -8,5 +8,5 @@
 ## Phase 2: Launch Octopus Configuration
 - [x] Task: Create `hosts/launch-octopus/hardware-configuration.nix` (d4f15f7) (using workstation as template or user-provided data)
 - [x] Task: Create `hosts/launch-octopus/default.nix` (d4f15f7)
-- [ ] Task: Expose `launch-octopus` in `flake.nix`
+- [x] Task: Expose `launch-octopus` (36a9ef8) in `flake.nix`
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Launch Octopus Configuration' (Protocol in workflow.md)
