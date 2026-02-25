@@ -46,19 +46,6 @@
     EDITOR = "nvim";
   };
 
-  # Activation script for one-time home directory ownership fix
-  home.activation.homeChown = lib.hm.dag.entryAfter ["writeBoundary"] ''
-    SENTINEL="${config.home.homeDirectory}/.local/state/nix/home_chown.done"
-    if [ ! -f "$SENTINEL" ]; then
-      echo "Running one-time home directory chown..."
-      # This runs as the user. If root-owned files are an issue, sudo might be needed
-      # but we try standard chown first as requested.
-      chown -R ${config.home.username}:${config.home.username} ${config.home.homeDirectory}
-      mkdir -p $(dirname "$SENTINEL")
-      touch "$SENTINEL"
-    fi
-  '';
-
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
