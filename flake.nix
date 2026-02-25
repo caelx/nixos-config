@@ -25,7 +25,7 @@
     nixosConfigurations = {
       # Primary host
       launch-octopus = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs; };
+        specialArgs = { inherit inputs self; };
         modules = [
           nixos-wsl.nixosModules.default
           ./hosts/launch-octopus/default.nix
@@ -34,7 +34,7 @@
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.users.nixos = import ./home/nixos.nix;
+            home-manager.users.nixos = ./home/nixos.nix;
           }
         ];
       };
