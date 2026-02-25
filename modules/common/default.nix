@@ -47,6 +47,10 @@
 
     # Provide dig as a wrapper around drill system-wide
     (pkgs.writeShellScriptBin "dig" ''exec ${pkgs.ldns}/bin/drill "$@"'')
+
+    # Provide vi and vim as wrappers around neovim system-wide
+    (pkgs.writeShellScriptBin "vi" ''exec ${pkgs.neovim}/bin/nvim "$@"'')
+    (pkgs.writeShellScriptBin "vim" ''exec ${pkgs.neovim}/bin/nvim "$@"'')
   ];
 
   # Enable nix-ld for dynamically linked binaries (e.g., VS Code Server)
