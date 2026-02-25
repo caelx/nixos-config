@@ -76,6 +76,7 @@
       vissh = "nvim ~/.ssh/config";
       j = "z";
       run = ",";
+      open = "wsl-open";
     };
     functions = {
       cd = {
