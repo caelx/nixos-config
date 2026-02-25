@@ -93,6 +93,15 @@
     };
     plugins = [
       # Plugins from old config
+      {
+        name = "gitignore";
+        src = pkgs.fetchFromGitHub {
+          owner = "oh-my-fish";
+          repo = "plugin-gi";
+          rev = "5ef64f89d363b9000a6e0c4a4f898a339f408985"; # Use a stable revision
+          sha256 = "sha256-RIn02XhDqXl636wB9a84q6Xy8n6oWqXy8n6oWqXy8n6="; # Placeholder, will need update
+        };
+      }
       { name = "autopair"; src = pkgs.fishPlugins.autopair.src; }
       { name = "sponge"; src = pkgs.fishPlugins.sponge.src; }
       { name = "puffer"; src = pkgs.fishPlugins.puffer.src; }
