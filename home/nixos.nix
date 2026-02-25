@@ -68,10 +68,10 @@
       cat = "bat --style plain --paging never";
       fd = "fd --follow";
       gi = "git-ignore";
-      ll = "eza -lha --group-directories-first --icons=never";
-      ls = "eza";
+      ll = "eza -lha --group-directories-first";
+      ls = "eza --group-directories-first";
       rg = "rga";
-      tree = "eza --tree";
+      tree = "eza --group-directories-first --tree";
       reload = "clear; exec fish";
       vissh = "nvim ~/.ssh/config";
       j = "z";
