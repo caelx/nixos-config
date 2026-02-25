@@ -24,6 +24,7 @@
     python3Packages.pipx
     ripgrep-all
     nodejs
+    git-ignore
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -67,6 +68,7 @@
       c = "cat";
       cat = "bat --style plain --paging never";
       fd = "fd --follow";
+      gi = "git-ignore";
       l = "eza --color=always -h --group-directories-first -p";
       ld = "fd --type directory --max-depth 1";
       lda = "fd --type directory";
@@ -93,30 +95,9 @@
     };
     plugins = [
       # Plugins from old config
-      {
-        name = "gitignore";
-        src = pkgs.fetchFromGitHub {
-          owner = "oh-my-fish";
-          repo = "plugin-gi";
-          rev = "48bc41a86c5dcf14ffe3745a7f61cba728a4de0c";
-          sha256 = "sha256-0000000000000000000000000000000000000000000=";
-        };
-      }
       { name = "autopair"; src = pkgs.fishPlugins.autopair.src; }
       { name = "sponge"; src = pkgs.fishPlugins.sponge.src; }
-      {
-        name = "puffer";
-        src = pkgs.fishPlugins.puffer.src;
-      }
-      {
-        name = "autovenv";
-        src = pkgs.fetchFromGitHub {
-          owner = "aohorodnyk";
-          repo = "fish-autovenv";
-          rev = "1a493ea4851b974e80f5009009e2ee2bf0084fb7";
-          sha256 = "sha256-0000000000000000000000000000000000000000000=";
-        };
-      }
+      { name = "puffer"; src = pkgs.fishPlugins.puffer.src; }
       { name = "colored-man-pages"; src = pkgs.fishPlugins.colored-man-pages.src; }
     ];
   };
