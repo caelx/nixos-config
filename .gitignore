@@ -18,3 +18,4 @@ result-*
 
 # Reference data
 old/
+.sops-age-key.txt
