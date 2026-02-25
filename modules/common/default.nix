@@ -9,6 +9,9 @@
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];
     auto-optimise-store = true;
+    # Optimize for large downloads
+    download-buffer-size = 134217728; # 128MB
+    max-jobs = "auto";
   };
 
   # Common System Packages
