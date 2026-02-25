@@ -2,7 +2,7 @@
 
 ## Phase 1: Automation Module
 - [x] Task: Create `modules/common/automation.nix` (fa79842) with autoUpgrade settings
-- [ ] Task: Integrate `automation.nix` into `modules/common/default.nix` or host config
+- [x] Task: Integrate `automation.nix` (d8b59f5) into `modules/common/default.nix` or host config
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Automation Module' (Protocol in workflow.md)
 
 ## Phase 2: Host Integration & Verification
