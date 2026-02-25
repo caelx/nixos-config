@@ -19,10 +19,10 @@ This plan outlines the steps to port features from the legacy `old/wsl-config` (
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: SSH Configuration' (Protocol in workflow.md)
 
 ## Phase 3: WSL SMB Mounting (mount-z)
-- [ ] Task: Implement mount-z systemd service
-    - [ ] Create a NixOS module or script to handle the mount logic from `mount-z.sh`.
-    - [ ] Ensure the service depends on network availability and successfully decrypted secrets.
-    - [ ] Configure the mount point `/mnt/z`.
+- [x] Task: Implement mount-z systemd service (7465ed6)
+    - [x] Create a NixOS module or script to handle the mount logic from `mount-z.sh`.
+    - [x] Ensure the service depends on network availability and successfully decrypted secrets.
+    - [x] Configure the mount point `/mnt/z`.
 - [ ] Task: Verify WSL mounting
     - [ ] Test that the drive mounts correctly when accessible.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: WSL SMB Mounting' (Protocol in workflow.md)
