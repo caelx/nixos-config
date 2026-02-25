@@ -98,8 +98,8 @@
         src = pkgs.fetchFromGitHub {
           owner = "oh-my-fish";
           repo = "plugin-gi";
-          rev = "5ef64f89d363b9000a6e0c4a4f898a339f408985"; # Use a stable revision
-          sha256 = "sha256-RIn02XhDqXl636wB9a84q6Xy8n6oWqXy8n6oWqXy8n6="; # Placeholder, will need update
+          rev = "48bc41a86c5dcf14ffe3745a7f61cba728a4de0c";
+          sha256 = "sha256-0000000000000000000000000000000000000000000=";
         };
       }
       { name = "autopair"; src = pkgs.fishPlugins.autopair.src; }
@@ -113,8 +113,8 @@
         src = pkgs.fetchFromGitHub {
           owner = "aohorodnyk";
           repo = "fish-autovenv";
-          rev = "786a3472097e3b567d1219b6748281f62c26f047";
-          sha256 = "sha256-RIn02XhDqXl636wB9a84q6Xy8n6oWqXy8n6oWqXy8n6="; # Placeholder
+          rev = "1a493ea4851b974e80f5009009e2ee2bf0084fb7";
+          sha256 = "sha256-0000000000000000000000000000000000000000000=";
         };
       }
       { name = "colored-man-pages"; src = pkgs.fishPlugins.colored-man-pages.src; }
