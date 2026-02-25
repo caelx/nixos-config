@@ -89,20 +89,22 @@
       };
       __ghostship_autols_hook = {
         description = "Auto ls on directory change";
-        onVariable = "PWD";
+        onEvent = "fish_prompt";
         body = ''
           if status is-interactive
-            # Skip the first run when the shell starts
-            if not set -q __ghostship_autols_initialized
-              set -g __ghostship_autols_initialized 1
+            if not set -q __ghostship_last_pwd
+              set -g __ghostship_last_pwd "$PWD"
               return
             end
-            
-            echo ""
-            if type -q eza
-              eza --group-directories-first --icons=never
-            else
-              ls --color -h --group-directories-first -p
+
+            if test "$__ghostship_last_pwd" != "$PWD"
+              set -g __ghostship_last_pwd "$PWD"
+              echo ""
+              if type -q eza
+                eza --group-directories-first --icons=never
+              else
+                ls --color -h --group-directories-first -p
+              end
             end
           end
         '';
