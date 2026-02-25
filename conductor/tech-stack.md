@@ -19,3 +19,5 @@
 - **nvd (Nix Visual Diff)**: For analyzing differences between Nix package generations.
 - **comma (, )**: To run any binary from nixpkgs without permanent installation.
 - **pre-commit-hooks.nix**: To enforce code quality and formatting before commits.
+- **Modern CLI Tools**: eza (replacement for ls), bat, fd, zoxide, and starship for a feature-rich shell experience.
+- **Fish Shell**: The primary interactive shell, pre-configured with aliases and plugins.
