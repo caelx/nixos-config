@@ -78,6 +78,15 @@
       run = ",";
     };
     functions = {
+      fish_greeting = {
+        description = "Ghostship Welcome Banner";
+        body = ''
+          if type -q fastfetch
+            fastfetch --structure "Title:Separator:OS:Host:Kernel:Uptime:Packages:Shell:Terminal:CPU:GPU:Memory:Swap:Disk:LocalIp:Battery:Break:Colors"
+          end
+          set_color normal
+        '';
+      };
       __ghostship_autols_hook = {
         description = "Auto ls on directory change";
         onVariable = "PWD";
