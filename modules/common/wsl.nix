@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, ... }:
 
 {
   # WSL-specific networking tweaks
@@ -20,6 +20,12 @@
   # Share USERPROFILE from Windows to WSL and translate the path (/p)
   # This makes $USERPROFILE available in WSL as /mnt/c/Users/<user>
   environment.variables.WSLENV = "USERPROFILE/p";
+
+  environment.systemPackages = [
+    # Allows opening files and directories in Windows applications
+    # e.g., 'wsl-open .' opens the current folder in Windows Explorer
+    pkgs.wsl-open
+  ];
 
   # Activation script to create ~/win-home symlink for the nixos user
   system.activationScripts.wslHomeSymlink = {
@@ -46,7 +52,7 @@
             if [ -n "$LINUX_WIN_HOME" ] && [ -d "$LINUX_WIN_HOME" ]; then
               echo "Creating symlink $USER_HOME/win-home -> $LINUX_WIN_HOME"
               ln -sf "$LINUX_WIN_HOME" "$USER_HOME/win-home"
-              chown -h $WSL_USER:nixos "$USER_HOME/win-home"
+              chown -h $USER_HOME/win-home $WSL_USER:nixos
             fi
           fi
         fi
