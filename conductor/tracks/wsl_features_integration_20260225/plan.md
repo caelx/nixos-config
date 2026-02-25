@@ -1,0 +1,26 @@
+# Implementation Plan: WSL2 Features Integration
+
+## Phase 1: WSLENV & Path Integration
+- [ ] Task: Configure `WSLENV` for `USERPROFILE/p` sharing
+    - [ ] Add `wsl.wslConf.interop.enabled = true` to common WSL config
+    - [ ] Use `wsl.wslConf.automount.enabled = true` (if not already enabled)
+    - [ ] Update `modules/common/wsl.nix` with the `WSLENV` setting
+- [ ] Task: Implement `~/win-home` Symlink Creation
+    - [ ] Create a NixOS activation script to dynamically link `~/win-home` based on the `$USERPROFILE` environment variable.
+- [ ] Task: Conductor - User Manual Verification 'WSLENV & Path Integration' (Protocol in workflow.md)
+
+## Phase 2: Explorer & Navigation
+- [ ] Task: Install and Configure `wsl-open`
+    - [ ] Add `wsl-open` to `environment.systemPackages` in `modules/common/wsl.nix`
+- [ ] Task: Create `open` Alias
+    - [ ] Update shell configuration (common home-manager or bash/fish) to add `alias open="wsl-open"`
+- [ ] Task: Conductor - User Manual Verification 'Explorer & Navigation' (Protocol in workflow.md)
+
+## Phase 3: Multimedia & Services
+- [ ] Task: Enable Clipboard Sharing
+    - [ ] Research and enable `nixos-wsl.wslConf.interop.includePath` or similar if needed for clipboard tools (e.g., `clip.exe`).
+- [ ] Task: Configure PulseAudio for Windows Sound
+    - [ ] Add PulseAudio configuration to `modules/common/wsl.nix` to allow sound to flow to the Windows host.
+- [ ] Task: Docker Desktop Compatibility Check
+    - [ ] Verify if the current user is added to the `docker` group and ensure the host config allows Docker socket access.
+- [ ] Task: Conductor - User Manual Verification 'Multimedia & Services' (Protocol in workflow.md)

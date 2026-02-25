@@ -21,6 +21,7 @@
   users.users.nixos = {
     isNormalUser = true;
     uid = 1000;
+    group = "nixos";
     description = "nixos";
     extraGroups = [ "wheel" ];
     packages = with pkgs; [
