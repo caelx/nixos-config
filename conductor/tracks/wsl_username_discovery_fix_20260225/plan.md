@@ -13,6 +13,6 @@
 
 ## Phase 2: Testing and Checkpointing
 
-- [ ] Task: Test the activation script (if possible to run it manually or verify via system rebuild).
-- [ ] Task: Verify the symlink `~/win-home` exists and points to the correct Windows user directory.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Testing and Checkpointing' (Protocol in workflow.md)
+- [~] Task: Test the activation script (if possible to run it manually or verify via system rebuild).
+- [~] Task: Verify the symlink `~/win-home` exists and points to the correct Windows user directory.
+- [~] Task: Conductor - User Manual Verification 'Phase 2: Testing and Checkpointing' (Protocol in workflow.md)
