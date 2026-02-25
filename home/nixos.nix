@@ -78,6 +78,19 @@
       run = ",";
     };
     functions = {
+      __ghostship_autols_hook = {
+        description = "Auto ls on directory change";
+        onVariable = "PWD";
+        body = ''
+          if status is-interactive
+            if type -q eza
+              eza --group-directories-first --icons=never
+            else
+              ls --color -h --group-directories-first -p
+            end
+          end
+        '';
+      };
       rmssh = {
         description = "Cleanup SSH multiplexing sockets";
         body = ''
