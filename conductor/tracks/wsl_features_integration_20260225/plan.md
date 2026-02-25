@@ -5,7 +5,7 @@
     - [ ] Add `wsl.wslConf.interop.enabled = true` to common WSL config
     - [ ] Use `wsl.wslConf.automount.enabled = true` (if not already enabled)
     - [ ] Update `modules/common/wsl.nix` with the `WSLENV` setting
-- [ ] Task: Implement `~/win-home` Symlink Creation
+- [x] Task: Implement `~/win-home` Symlink Creation (1ab0880)
     - [ ] Create a NixOS activation script to dynamically link `~/win-home` based on the `$USERPROFILE` environment variable.
 - [ ] Task: Conductor - User Manual Verification 'WSLENV & Path Integration' (Protocol in workflow.md)
 
