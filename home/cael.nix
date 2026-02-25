@@ -1,8 +1,8 @@
 { pkgs, ... }:
 
 {
-  home.username = "james";
-  home.homeDirectory = "/home/james";
+  home.username = "cael";
+  home.homeDirectory = "/home/cael";
 
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
@@ -41,7 +41,7 @@
   #
   # or
   #
-  #  /etc/profiles/per-user/james/etc/profile.d/hm-session-vars.sh
+  #  /etc/profiles/per-user/cael/etc/profile.d/hm-session-vars.sh
   #
   home.sessionVariables = {
     EDITOR = "vim";
@@ -54,6 +54,6 @@
   programs.git = {
     enable = true;
     userName = "James";
-    # userEmail = "james@example.com"; # User should override
+    # userEmail = "cael@example.com"; # User should override
   };
 }
