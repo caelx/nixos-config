@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   home.username = "nixos";
@@ -47,7 +47,7 @@
   };
 
   # Activation script for one-time home directory ownership fix
-  home.activation.homeChown = config.lib.hm.dag.entryAfter ["writeBoundary"] ''
+  home.activation.homeChown = lib.hm.dag.entryAfter ["writeBoundary"] ''
     SENTINEL="${config.home.homeDirectory}/.local/state/nix/home_chown.done"
     if [ ! -f "$SENTINEL" ]; then
       echo "Running one-time home directory chown..."
