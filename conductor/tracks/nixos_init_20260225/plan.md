@@ -1,6 +1,6 @@
 # Implementation Plan: Initialize Base Flake Structure and Bootstrap First Host
 
-## Phase 1: Foundation
+## Phase 1: Foundation [checkpoint: e81d6cd]
 - [x] Task: Create initial `flake.nix` (82748dd) with nixpkgs and home-manager inputs
 - [x] Task: Scaffold directory structure (4fe7651) (`hosts/`, `modules/`, `home/`, `lib/`, `pkgs/`)
 - [x] Task: Create a basic `.gitignore` (7105dfd) for the repository
