@@ -6,7 +6,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Automation Refactor' (Protocol in workflow.md)
 
 ## Phase 2: Launch Octopus Configuration
-- [ ] Task: Create `hosts/launch-octopus/hardware-configuration.nix` (using workstation as template or user-provided data)
-- [ ] Task: Create `hosts/launch-octopus/default.nix`
+- [x] Task: Create `hosts/launch-octopus/hardware-configuration.nix` (d4f15f7) (using workstation as template or user-provided data)
+- [x] Task: Create `hosts/launch-octopus/default.nix` (d4f15f7)
 - [ ] Task: Expose `launch-octopus` in `flake.nix`
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Launch Octopus Configuration' (Protocol in workflow.md)
