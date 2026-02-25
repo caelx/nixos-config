@@ -7,7 +7,7 @@
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Foundation' (Protocol in workflow.md)
 
 ## Phase 2: Core Modules
-- [ ] Task: Implement a `modules/common/default.nix` for shared system settings
+- [x] Task: Implement a `modules/common/default.nix` (85a4836) for shared system settings
 - [ ] Task: Implement a `home/default.nix` for base Home Manager user configuration
 - [ ] Task: Implement a `lib/default.nix` for helper functions (if needed)
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Core Modules' (Protocol in workflow.md)
