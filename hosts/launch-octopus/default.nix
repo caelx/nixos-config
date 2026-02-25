@@ -4,6 +4,7 @@
   imports = [
     ./hardware-configuration.nix
     ../../modules/common/default.nix
+    ../../modules/common/wsl.nix
   ];
 
   # Hostname
