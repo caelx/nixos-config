@@ -11,6 +11,10 @@
     - `home/`: User-level configurations (home-manager modules).
     - `lib/`: Helper functions and Nix utility logic.
     - `pkgs/`: Custom packages or overlays.
+- **Mixed-Platform Fleet Architecture**:
+    - The repository is designed to support a heterogeneous fleet (e.g., WSL2 instances and Bare Metal installs like Mac Studio).
+    - **Common Logic**: Shared settings (locale, core packages, automation) MUST reside in `modules/common/` and be platform-agnostic.
+    - **Platform Integration**: Environmental integrations (e.g., `nixos-wsl`, hardware-specific bootloaders) MUST be handled at the host level or via specialized platform modules, never in the common core.
 - **Flake Integration**: The root `flake.nix` will serve as the primary entry point, cleanly exposing `nixosConfigurations`, `homeConfigurations`, and `devShells`.
 
 ## User Experience (UX) & Environment
