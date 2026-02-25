@@ -1,8 +1,9 @@
 { inputs, config, pkgs, ... }:
 
 let
-  # Path to the age key in the user's state directory
-  ageKeyPath = "/home/nixos/.local/state/sops-nix/sops-age.key";
+  # Derive home directory from user config
+  homeDir = config.users.users.nixos.home;
+  ageKeyPath = "${homeDir}/.local/state/sops-nix/sops-age.key";
 
   generate-age-key = pkgs.writeShellScriptBin "generate-age-key" ''
     set -euo pipefail
