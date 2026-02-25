@@ -1,9 +1,9 @@
 # Implementation Plan: Multi-Host Support and 'launch-octopus' Configuration
 
-## Phase 1: Automation Refactor
+## Phase 1: Automation Refactor [checkpoint: 79048be]
 - [x] Task: Update `modules/common/automation.nix` (6926518) to define and use a custom toggle option
-- [ ] Task: Update `hosts/workstation/default.nix` to use the new toggle
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Automation Refactor' (Protocol in workflow.md)
+- [x] Task: Update `hosts/workstation/default.nix` to use the new toggle (Done in previous task)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Automation Refactor' (Protocol in workflow.md)
 
 ## Phase 2: Launch Octopus Configuration
 - [ ] Task: Create `hosts/launch-octopus/hardware-configuration.nix` (using workstation as template or user-provided data)
