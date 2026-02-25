@@ -13,7 +13,7 @@
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Core Modules' (Protocol in workflow.md)
 
 ## Phase 3: First Host Bootstrap
-- [ ] Task: Create `hosts/workstation/default.nix` and `hosts/workstation/hardware-configuration.nix`
+- [x] Task: Create `hosts/workstation/default.nix` (bbd7d6a) and `hosts/workstation/hardware-configuration.nix`
 - [ ] Task: Expose the `workstation` host in `flake.nix`
 - [ ] Task: Verify the configuration builds successfully with `nix build .#nixosConfigurations.workstation.config.system.build.toplevel`
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: First Host Bootstrap' (Protocol in workflow.md)
