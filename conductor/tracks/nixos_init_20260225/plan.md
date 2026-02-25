@@ -2,7 +2,7 @@
 
 ## Phase 1: Foundation
 - [x] Task: Create initial `flake.nix` (82748dd) with nixpkgs and home-manager inputs
-- [ ] Task: Scaffold directory structure (`hosts/`, `modules/`, `home/`, `lib/`, `pkgs/`)
+- [x] Task: Scaffold directory structure (4fe7651) (`hosts/`, `modules/`, `home/`, `lib/`, `pkgs/`)
 - [ ] Task: Create a basic `.gitignore` for the repository
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Foundation' (Protocol in workflow.md)
 
