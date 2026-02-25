@@ -11,8 +11,8 @@
     - [x] Ensure `tr -d '\r'` is used for cleaning PowerShell output. ffcfc75
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Update Discovery Logic' (Protocol in workflow.md) e26d7d7
 
-## Phase 2: Testing and Checkpointing
+## Phase 2: Testing and Checkpointing [checkpoint: 7ad0064]
 
-- [~] Task: Test the activation script (if possible to run it manually or verify via system rebuild).
-- [~] Task: Verify the symlink `~/win-home` exists and points to the correct Windows user directory.
-- [~] Task: Conductor - User Manual Verification 'Phase 2: Testing and Checkpointing' (Protocol in workflow.md)
+- [x] Task: Test the activation script (if possible to run it manually or verify via system rebuild). 7ad0064
+- [x] Task: Verify the symlink `~/win-home` exists and points to the correct Windows user directory. 7ad0064
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Testing and Checkpointing' (Protocol in workflow.md) 7ad0064
