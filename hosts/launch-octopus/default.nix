@@ -20,17 +20,11 @@
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.nixos = {
-    isNormalUser = true;
-    uid = 1000;
-    group = "nixos";
-    description = "nixos";
     extraGroups = [ "wheel" ];
     packages = with pkgs; [
       # User specific packages can also go here
     ];
   };
-
-  users.groups.nixos.gid = 1000;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
