@@ -20,7 +20,7 @@
 ## Consistency & Upstream Alignment
 - **Identity Management**: 
     - All users MUST have their `uid` and `gid` statically set to ensure consistency across different hardware and installations.
-    - Usernames MUST be consistently lowercase (e.g., `cael`).
+    - Usernames MUST be consistently lowercase (e.g., `nixos`).
 - **Networking Standard**: Use `systemd-networkd` as the default networking manager across all managed systems for better consistency and integration.
 - **Git Identity Policy**: Do not set global `user.name` or `user.email` in Home Manager configurations; identity should be managed on a per-project basis using local Git configs.
 - **Community Standards**: Follow established Nix community patterns and best practices. Prioritize "the Nix way" over custom abstractions unless necessary.
