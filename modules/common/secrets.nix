@@ -27,12 +27,32 @@ let
 
   sops-edit = pkgs.writeShellScriptBin "sops-edit" ''
     export SOPS_AGE_KEY_FILE="${ageKeyPath}"
-    exec ${pkgs.sops}/bin/sops "${toString ../../secrets.yaml}" "$@"
+    REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
+    if [ -z "''${1:-}" ]; then
+      echo "Usage: sops-edit <filename>"
+      exit 1
+    fi
+    # If file exists locally, use it. Otherwise try repo root.
+    if [ -f "$1" ]; then
+      exec ${pkgs.sops}/bin/sops "$@"
+    else
+      exec ${pkgs.sops}/bin/sops "$REPO_ROOT/$1"
+    fi
   '';
 
   sops-decrypt = pkgs.writeShellScriptBin "sops-decrypt" ''
     export SOPS_AGE_KEY_FILE="${ageKeyPath}"
-    exec ${pkgs.sops}/bin/sops -d "${toString ../../secrets.yaml}" "$@"
+    REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
+    if [ -z "''${1:-}" ]; then
+      echo "Usage: sops-decrypt <filename>"
+      exit 1
+    fi
+    # If file exists locally, use it. Otherwise try repo root.
+    if [ -f "$1" ]; then
+      exec ${pkgs.sops}/bin/sops -d "$@"
+    else
+      exec ${pkgs.sops}/bin/sops -d "$REPO_ROOT/$1"
+    fi
   '';
 
   sops-encrypt = pkgs.writeShellScriptBin "sops-encrypt" ''
@@ -64,6 +84,8 @@ in
     secrets = {
       smb-user = { };
       smb-pass = { };
+      smb-server = { };
+      smb-share = { };
     };
   };
 }
