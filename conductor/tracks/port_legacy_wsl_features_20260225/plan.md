@@ -2,13 +2,13 @@
 
 This plan outlines the steps to port features from the legacy `old/wsl-config` (Ansible) repository to the new NixOS flake configuration, including WSL SMB mounting, standard packages, SSH configuration, and Fish shell setup.
 
-## Phase 1: Secrets and Base Packages
+## Phase 1: Secrets and Base Packages [checkpoint: 39b94b4]
 - [x] Task: Configure sops-nix for SMB credentials (61f45b0)
     - [x] Add `smb-user` and `smb-pass` to `secrets.yaml`.
     - [x] Configure `modules/common/secrets.nix` to decrypt these secrets.
 - [x] Task: Audit and add standard packages (229a59f)
     - [x] Verify `7zip`, `bat`, `cifs-utils`, `direnv`, `fastfetch`, `fd`, `eza`, `ripgrep-all`, `starship`, `zoxide` are in `modules/common/default.nix`.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Secrets and Base Packages' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Secrets and Base Packages' (Protocol in workflow.md) (39b94b4)
 
 ## Phase 2: SSH Configuration
 - [ ] Task: Enable ssh-agent user service
