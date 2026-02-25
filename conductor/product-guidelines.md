@@ -25,7 +25,9 @@
 - **Identity Management**: 
     - All users MUST have their `uid` and `gid` statically set to ensure consistency across different hardware and installations.
     - Usernames MUST be consistently lowercase (e.g., `nixos`).
-- **Networking Standard**: Use `systemd-networkd` as the default networking manager across all managed systems for better consistency and integration.
+- **Networking Standard**: 
+    - Use `systemd-networkd` as the default networking manager ONLY for hardware hosts (e.g., Mac Studio).
+    - WSL2 instances MUST use the shared `modules/common/wsl.nix` module which disables `systemd-resolved` and `networkd` to ensure compatibility with WSL's own networking stack.
 - **Git Identity Policy**: Do not set global `user.name` or `user.email` in Home Manager configurations; identity should be managed on a per-project basis using local Git configs.
 - **Community Standards**: Follow established Nix community patterns and best practices. Prioritize "the Nix way" over custom abstractions unless necessary.
 - **Upstream Alignment**: Where possible, contribute improvements back to upstream projects (e.g., nixpkgs, home-manager) rather than maintaining local forks or complex overrides.
