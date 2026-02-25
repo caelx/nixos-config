@@ -1,7 +1,7 @@
 # Implementation Plan: WSL2 Features Integration
 
 ## Phase 1: WSLENV & Path Integration
-- [ ] Task: Configure `WSLENV` for `USERPROFILE/p` sharing
+- [x] Task: Configure `WSLENV` for `USERPROFILE/p` sharing (38bb7f2)
     - [ ] Add `wsl.wslConf.interop.enabled = true` to common WSL config
     - [ ] Use `wsl.wslConf.automount.enabled = true` (if not already enabled)
     - [ ] Update `modules/common/wsl.nix` with the `WSLENV` setting
