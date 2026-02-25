@@ -104,7 +104,19 @@
       }
       { name = "autopair"; src = pkgs.fishPlugins.autopair.src; }
       { name = "sponge"; src = pkgs.fishPlugins.sponge.src; }
-      { name = "puffer"; src = pkgs.fishPlugins.puffer.src; }
+      {
+        name = "puffer";
+        src = pkgs.fishPlugins.puffer.src;
+      }
+      {
+        name = "autovenv";
+        src = pkgs.fetchFromGitHub {
+          owner = "aohorodnyk";
+          repo = "fish-autovenv";
+          rev = "786a3472097e3b567d1219b6748281f62c26f047";
+          sha256 = "sha256-RIn02XhDqXl636wB9a84q6Xy8n6oWqXy8n6oWqXy8n6="; # Placeholder
+        };
+      }
       { name = "colored-man-pages"; src = pkgs.fishPlugins.colored-man-pages.src; }
     ];
   };
