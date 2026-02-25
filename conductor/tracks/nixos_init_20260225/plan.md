@@ -8,7 +8,7 @@
 
 ## Phase 2: Core Modules
 - [x] Task: Implement a `modules/common/default.nix` (85a4836) for shared system settings
-- [ ] Task: Implement a `home/default.nix` for base Home Manager user configuration
+- [x] Task: Implement a `home/james.nix` for base Home Manager user configuration (b8a086c)
 - [ ] Task: Implement a `lib/default.nix` for helper functions (if needed)
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Core Modules' (Protocol in workflow.md)
 
