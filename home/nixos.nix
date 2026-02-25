@@ -95,10 +95,6 @@
             fastfetch --structure "Title:Separator:OS:Host:Kernel:Uptime:Packages:Shell:Terminal:CPU:GPU:Memory:Swap:Disk:LocalIp:Battery:Break:Colors"
           end
           set_color normal
-          if status is-interactive
-            echo ""
-            eza --group-directories-first --icons=auto
-          end
         '';
       };
       rmssh = {
