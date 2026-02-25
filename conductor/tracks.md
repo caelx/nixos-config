@@ -4,6 +4,6 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Implement support for wsl2 features like open . explorer, dynamic windows user directory mounting via WSLENV/symlink, and system integration (clipboard, sound, docker).**
+- [x] **Track: Implement support for wsl2 features like open . explorer, dynamic windows user directory mounting via WSLENV/symlink, and system integration (clipboard, sound, docker).**
 *Link: [./tracks/wsl_features_integration_20260225/](./tracks/wsl_features_integration_20260225/)*
 
