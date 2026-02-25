@@ -92,6 +92,13 @@
         onVariable = "PWD";
         body = ''
           if status is-interactive
+            # Skip the first run when the shell starts
+            if not set -q __ghostship_autols_initialized
+              set -g __ghostship_autols_initialized 1
+              return
+            end
+            
+            echo ""
             if type -q eza
               eza --group-directories-first --icons=never
             else
