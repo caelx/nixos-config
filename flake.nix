@@ -28,7 +28,7 @@
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.users.cael = import ./home/cael.nix;
+            home-manager.users.nixos = import ./home/nixos.nix;
           }
         ];
       };
