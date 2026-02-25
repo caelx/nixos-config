@@ -155,7 +155,6 @@
         user = "cael";
         identityFile = "~/.ssh/id_ed25519";
         extraOptions = {
-          "GSSAPIAuthentication" = "no";
           "StrictHostKeyChecking" = "accept-new";
         };
       };
