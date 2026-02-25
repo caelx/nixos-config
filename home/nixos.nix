@@ -156,6 +156,7 @@
         identityFile = "~/.ssh/id_ed25519";
         extraOptions = {
           "StrictHostKeyChecking" = "accept-new";
+          "UserKnownHostsFile" = "~/.ssh/known_hosts";
         };
       };
     };
