@@ -1,0 +1,17 @@
+# Nix
+result
+result-*
+.direnv/
+
+# Secrets (using sops-nix, but good to have safety nets)
+*.secret
+*.key
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*~
+
+# OS
+.DS_Store
