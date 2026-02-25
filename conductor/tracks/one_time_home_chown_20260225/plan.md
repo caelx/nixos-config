@@ -10,7 +10,7 @@
 - [x] Task: Verify the changes. 54fc779
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Implement Activation Script' (Protocol in workflow.md) 54fc779
 
-## Phase 2: Testing and Checkpointing
+## Phase 2: Testing and Checkpointing [checkpoint: 5e1e57b]
 
-- [~] Task: Rebuild on NixOS and verify.
-- [~] Task: Conductor - User Manual Verification 'Phase 2: Testing and Checkpointing' (Protocol in workflow.md)
+- [x] Task: Rebuild on NixOS and verify. 5e1e57b
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Testing and Checkpointing' (Protocol in workflow.md) 5e1e57b

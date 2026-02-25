@@ -4,5 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: One-time home directory chown via home-manager**
+- [x] **Track: One-time home directory chown via home-manager**
 *Link: [./tracks/one_time_home_chown_20260225/](./tracks/one_time_home_chown_20260225/)*
