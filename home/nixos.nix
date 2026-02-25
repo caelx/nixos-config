@@ -78,6 +78,16 @@
       run = ",";
     };
     functions = {
+      cd = {
+        description = "Change directory and auto-ls";
+        body = ''
+          builtin cd $argv
+          if status is-interactive
+            echo ""
+            eza --group-directories-first --icons=auto
+          end
+        '';
+      };
       fish_greeting = {
         description = "Ghostship Welcome Banner";
         body = ''
@@ -85,23 +95,6 @@
             fastfetch --structure "Title:Separator:OS:Host:Kernel:Uptime:Packages:Shell:Terminal:CPU:GPU:Memory:Swap:Disk:LocalIp:Battery:Break:Colors"
           end
           set_color normal
-        '';
-      };
-      __ghostship_autols_hook = {
-        description = "Auto ls on directory change";
-        onEvent = "fish_postexec";
-        body = ''
-          if status is-interactive
-            if not set -q __ghostship_last_pwd
-              set -g __ghostship_last_pwd "$PWD"
-            end
-
-            if test "$__ghostship_last_pwd" != "$PWD"
-              set -g __ghostship_last_pwd "$PWD"
-              echo ""
-              eza --group-directories-first --icons=never
-            end
-          end
         '';
       };
       rmssh = {
