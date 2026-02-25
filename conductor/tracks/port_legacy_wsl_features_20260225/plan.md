@@ -28,12 +28,12 @@ This plan outlines the steps to port features from the legacy `old/wsl-config` (
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: WSL SMB Mounting' (Protocol in workflow.md)
 
 ## Phase 4: Fish Shell Implementation
-- [ ] Task: Set Fish as default shell
-    - [ ] Configure `users.users.nixos.shell = pkgs.fish;`.
-- [ ] Task: Port Fish configurations
-    - [ ] Migrate aliases and functions from `old/wsl-config/ansible/roles/fish/files/conf.d/` to Home Manager.
-- [ ] Task: Configure Starship prompt
-    - [ ] Enable `programs.starship` in Home Manager and port `starship.toml` settings.
-- [ ] Task: Manage Fish plugins
-    - [ ] Use `programs.fish.plugins` in Home Manager to install `autopair`, `sponge`, `puffer-fish`, and `fish-colored-man`. (Skipping `gitignore` and `autovenv` as requested).
+- [x] Task: Set Fish as default shell (already in common modules)
+    - [x] Configure `users.users.nixos.shell = pkgs.fish;`.
+- [x] Task: Port Fish configurations (1e6ee81)
+    - [x] Migrate aliases and functions from `old/wsl-config/ansible/roles/fish/files/conf.d/` to Home Manager.
+- [x] Task: Configure Starship prompt (1e6ee81)
+    - [x] Enable `programs.starship` in Home Manager and port `starship.toml` settings.
+- [x] Task: Manage Fish plugins (1e6ee81)
+    - [x] Use `programs.fish.plugins` in Home Manager to install `autopair`, `sponge`, `puffer-fish`, and `fish-colored-man`. (Skipping `gitignore` and `autovenv` as requested).
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Fish Shell Implementation' (Protocol in workflow.md)
