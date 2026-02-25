@@ -1,8 +1,8 @@
 { pkgs, ... }:
 
 {
-  home.username = "cael";
-  home.homeDirectory = "/home/cael";
+  home.username = "nixos";
+  home.homeDirectory = "/home/nixos";
 
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
@@ -41,7 +41,7 @@
   #
   # or
   #
-  #  /etc/profiles/per-user/cael/etc/profile.d/hm-session-vars.sh
+  #  /etc/profiles/per-user/nixos/etc/profile.d/hm-session-vars.sh
   #
   home.sessionVariables = {
     EDITOR = "nvim";
