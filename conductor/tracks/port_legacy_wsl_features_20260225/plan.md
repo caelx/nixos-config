@@ -6,8 +6,8 @@ This plan outlines the steps to port features from the legacy `old/wsl-config` (
 - [x] Task: Configure sops-nix for SMB credentials (61f45b0)
     - [x] Add `smb-user` and `smb-pass` to `secrets.yaml`.
     - [x] Configure `modules/common/secrets.nix` to decrypt these secrets.
-- [ ] Task: Audit and add standard packages
-    - [ ] Verify `7zip`, `bat`, `cifs-utils`, `direnv`, `fastfetch`, `fd`, `eza`, `ripgrep-all`, `starship`, `zoxide` are in `modules/common/default.nix`.
+- [x] Task: Audit and add standard packages (229a59f)
+    - [x] Verify `7zip`, `bat`, `cifs-utils`, `direnv`, `fastfetch`, `fd`, `eza`, `ripgrep-all`, `starship`, `zoxide` are in `modules/common/default.nix`.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Secrets and Base Packages' (Protocol in workflow.md)
 
 ## Phase 2: SSH Configuration
