@@ -87,6 +87,7 @@ in
       smb-pass = { };
       smb-server = { };
       smb-share = { };
+      nixos-password = { neededForUsers = true; };
     };
   };
 }

@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
 {
   # Global shell configuration
@@ -12,7 +12,14 @@
     description = "nixos";
     extraGroups = [ "wheel" "networkmanager" ];
     shell = pkgs.fish;
+    hashedPasswordFile = config.sops.secrets.nixos-password.path;
   };
+
+  # Sudo configuration
+  security.sudo.extraConfig = ''
+    # Require password re-authentication every 15 minutes
+    Defaults timestamp_timeout=15
+  '';
 
   users.groups.nixos.gid = 1000;
 }
