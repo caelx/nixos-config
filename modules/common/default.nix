@@ -39,8 +39,4 @@
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
-
-  # Common networking settings
-  networking.useNetworkd = true;
-  systemd.network.enable = true;
 }
