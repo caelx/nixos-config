@@ -4,12 +4,12 @@
 - [x] Task: Create initial `flake.nix` (82748dd) with nixpkgs and home-manager inputs
 - [x] Task: Scaffold directory structure (4fe7651) (`hosts/`, `modules/`, `home/`, `lib/`, `pkgs/`)
 - [x] Task: Create a basic `.gitignore` (7105dfd) for the repository
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Foundation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Foundation' (Protocol in workflow.md)
 
-## Phase 2: Core Modules
+## Phase 2: Core Modules [checkpoint: a750c67]
 - [x] Task: Implement a `modules/common/default.nix` (85a4836) for shared system settings
-- [x] Task: Implement a `home/james.nix` for base Home Manager user configuration (b8a086c)
-- [ ] Task: Implement a `lib/default.nix` for helper functions (if needed)
+- [x] Task: Implement a `home/cael.nix` for base Home Manager user configuration (479bb9e)
+- [x] Task: Implement a `lib/default.nix` for helper functions (N/A - Not needed yet)
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Core Modules' (Protocol in workflow.md)
 
 ## Phase 3: First Host Bootstrap
