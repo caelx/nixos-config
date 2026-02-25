@@ -1,6 +1,10 @@
 { pkgs, ... }:
 
 {
+  imports = [
+    ./automation.nix
+  ];
+
   # Core Nix Settings
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];
