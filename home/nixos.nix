@@ -96,6 +96,7 @@
       { name = "autopair"; src = pkgs.fishPlugins.autopair.src; }
       { name = "sponge"; src = pkgs.fishPlugins.sponge.src; }
       { name = "puffer"; src = pkgs.fishPlugins.puffer.src; }
+      { name = "colored-man-pages"; src = pkgs.fishPlugins.colored-man-pages.src; }
     ];
   };
 
