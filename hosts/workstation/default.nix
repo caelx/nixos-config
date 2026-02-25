@@ -16,8 +16,8 @@
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.cael = {
     isNormalUser = true;
-    description = "Cael";
-    extraGroups = [ "networkmanager" "wheel" ];
+    description = "cael";
+    extraGroups = [ "wheel" ];
     packages = with pkgs; [
       # User specific packages can also go here
     ];

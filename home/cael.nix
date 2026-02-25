@@ -44,7 +44,7 @@
   #  /etc/profiles/per-user/cael/etc/profile.d/hm-session-vars.sh
   #
   home.sessionVariables = {
-    EDITOR = "vim";
+    EDITOR = "nvim";
   };
 
   # Let Home Manager install and manage itself.
@@ -53,7 +53,5 @@
   # Git configuration
   programs.git = {
     enable = true;
-    userName = "James";
-    # userEmail = "cael@example.com"; # User should override
   };
 }

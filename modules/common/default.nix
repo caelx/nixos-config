@@ -15,10 +15,10 @@
     comma       # Run any binary from nixpkgs
     direnv      # Automatic environment loading
     nix-direnv  # Nix integration for direnv
-    
+
     # Essential CLI tools
     git
-    vim
+    nvim
     curl
     wget
     htop
@@ -37,5 +37,6 @@
   i18n.defaultLocale = "en_US.UTF-8";
 
   # Common networking settings
-  networking.networkmanager.enable = true;
+  networking.useNetworkd = true;
+  systemd.network.enable = true;
 }
