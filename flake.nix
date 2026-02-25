@@ -19,9 +19,14 @@
       url = "github:nix-community/NixOS-WSL/main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    nix-index-database = {
+      url = "github:Mic92/nix-index-database";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, nixos-wsl, ... }@inputs: {
+  outputs = { self, nixpkgs, home-manager, nixos-wsl, nix-index-database, ... }@inputs: {
     nixosConfigurations = {
       # Primary host
       launch-octopus = nixpkgs.lib.nixosSystem {
@@ -35,6 +40,9 @@
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.users.nixos = ./home/nixos.nix;
+            home-manager.sharedModules = [
+              nix-index-database.hmModules.nix-index
+            ];
           }
         ];
       };
