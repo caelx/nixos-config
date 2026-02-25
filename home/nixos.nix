@@ -83,7 +83,6 @@
         body = ''
           builtin cd $argv
           if status is-interactive
-            echo ""
             eza --group-directories-first --icons=auto
           end
         '';
