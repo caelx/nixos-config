@@ -19,21 +19,7 @@
 
   outputs = { self, nixpkgs, home-manager, ... }@inputs: {
     nixosConfigurations = {
-      # Generic placeholder host
-      workstation = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs; };
-        modules = [
-          ./hosts/workstation/default.nix
-          home-manager.nixosModules.home-manager
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users.cael = import ./home/cael.nix;
-          }
-        ];
-      };
-
-      # First specific host
+      # Primary host
       launch-octopus = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; };
         modules = [
