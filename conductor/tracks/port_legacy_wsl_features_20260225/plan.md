@@ -11,11 +11,11 @@ This plan outlines the steps to port features from the legacy `old/wsl-config` (
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Secrets and Base Packages' (Protocol in workflow.md) (39b94b4)
 
 ## Phase 2: SSH Configuration
-- [ ] Task: Enable ssh-agent user service
-    - [ ] Configure `programs.ssh.startAgent = true;` or equivalent user-level systemd service in `home/nixos.nix`.
-- [ ] Task: Declarative SSH client configuration
-    - [ ] Port settings from `old/wsl-config/ansible/roles/ssh/tasks/main.yml` to `home-manager.users.nixos.programs.ssh`.
-    - [ ] Include `ControlMaster`, `Compression`, and `IdentityFile` settings.
+- [x] Task: Enable ssh-agent user service (823b334)
+    - [x] Configure `programs.ssh.startAgent = true;` or equivalent user-level systemd service in `home/nixos.nix`.
+- [x] Task: Declarative SSH client configuration (823b334)
+    - [x] Port settings from `old/wsl-config/ansible/roles/ssh/tasks/main.yml` to `home-manager.users.nixos.programs.ssh`.
+    - [x] Include `ControlMaster`, `Compression`, and `IdentityFile` settings.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: SSH Configuration' (Protocol in workflow.md)
 
 ## Phase 3: WSL SMB Mounting (mount-z)
