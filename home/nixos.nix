@@ -120,6 +120,33 @@
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
+  # SSH Agent
+  services.ssh-agent.enable = true;
+
+  # SSH Client Configuration
+  programs.ssh = {
+    enable = true;
+    addKeysToAgent = "yes";
+    compression = true;
+    controlMaster = "auto";
+    controlPath = "~/.ssh/+%h-%p-%r";
+    controlPersist = "5m";
+    forwardAgent = true;
+    serverAliveCountMax = 30;
+    serverAliveInterval = 60;
+    
+    matchBlocks = {
+      "*" = {
+        user = "cael";
+        identityFile = "~/.ssh/id_ed25519";
+        extraOptions = {
+          "GSSAPIAuthentication" = "no";
+          "StrictHostKeyChecking" = "accept-new";
+        };
+      };
+    };
+  };
+
   # Git configuration
   programs.git = {
     enable = true;
