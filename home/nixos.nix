@@ -17,7 +17,7 @@
   # environment.
   home.packages = with pkgs; [
     # Ported from old config
-    7zip
+    p7zip
     cifs-utils
     fastfetch
     ldns
