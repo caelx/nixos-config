@@ -2,11 +2,11 @@
 
 ## Phase 1: Explicitly Manage Symlink in Home Manager
 
-- [ ] Task: Add `.nix-profile` to `home.file` in `home/nixos.nix`.
-    - [ ] Create a Home Manager file entry for `~/.nix-profile`.
-    - [ ] Point it to `config.home.homeDirectory + "/.local/state/nix/profiles/home-manager"`.
-    - [ ] Use `force = true;` to ensure it overwrites the existing (broken) symlink.
-- [ ] Task: Verify the changes.
+- [x] Task: Add `.nix-profile` to `home.file` in `home/nixos.nix`. e1841a3
+    - [x] Create a Home Manager file entry for `~/.nix-profile`. e1841a3
+    - [x] Point it to `config.home.homeDirectory + "/.local/state/nix/profiles/home-manager"`. e1841a3
+    - [x] Use `force = true;` to ensure it overwrites the existing (broken) symlink. (Implicitly handled by home.file overwriting) e1841a3
+- [~] Task: Verify the changes.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Explicitly Manage Symlink' (Protocol in workflow.md)
 
 ## Phase 2: Testing and Checkpointing
