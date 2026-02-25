@@ -9,12 +9,12 @@
   # Hostname
   networking.hostName = "launch-octopus";
 
+  # WSL Integration
+  wsl.enable = true;
+  wsl.defaultUser = "nixos";
+
   # Automation
   myOptions.autoUpgrade.enable = true;
-
-  # Bootloader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.nixos = {
