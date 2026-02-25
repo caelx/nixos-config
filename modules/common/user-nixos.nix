@@ -10,7 +10,7 @@
     uid = 1000;
     group = "nixos";
     description = "nixos";
-    extraGroups = [ "wheel" ];
+    extraGroups = [ "wheel" "networkmanager" ];
     shell = pkgs.fish;
   };
 
