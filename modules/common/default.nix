@@ -1,0 +1,41 @@
+{ pkgs, ... }:
+
+{
+  # Core Nix Settings
+  nix.settings = {
+    experimental-features = [ "nix-command" "flakes" ];
+    auto-optimise-store = true;
+  };
+
+  # Common System Packages
+  environment.systemPackages = with pkgs; [
+    # Tech Stack Tools
+    nh          # Nix Helper
+    nvd         # Nix Visual Diff
+    comma       # Run any binary from nixpkgs
+    direnv      # Automatic environment loading
+    nix-direnv  # Nix integration for direnv
+    
+    # Essential CLI tools
+    git
+    vim
+    curl
+    wget
+    htop
+  ];
+
+  # Direnv integration
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;
+  };
+
+  # Set your time zone.
+  time.timeZone = "UTC"; # User should override this in host config if needed
+
+  # Select internationalisation properties.
+  i18n.defaultLocale = "en_US.UTF-8";
+
+  # Common networking settings
+  networking.networkmanager.enable = true;
+}
