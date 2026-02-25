@@ -32,7 +32,21 @@
     curl
     wget
     htop
+
+    # Standard Utilities
+    _7zz
+    bat
+    cifs-utils
+    fastfetch
+    fd
+    eza
+    ripgrep-all
+    starship
+    zoxide
   ];
+
+  # Enable nix-ld for dynamically linked binaries (e.g., VS Code Server)
+  programs.nix-ld.enable = true;
 
   # Set your time zone.
   time.timeZone = "UTC"; # User should override this in host config if needed
