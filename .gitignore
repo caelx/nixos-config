@@ -19,3 +19,4 @@ result-*
 # Reference data
 old/
 .sops-age-key.txt
+secrets.dec.yaml
