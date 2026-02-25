@@ -76,7 +76,6 @@
       vissh = "nvim ~/.ssh/config";
       j = "z";
       run = ",";
-      dig = "drill";
     };
     functions = {
       rmssh = {

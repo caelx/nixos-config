@@ -43,6 +43,10 @@
     ripgrep-all
     starship
     zoxide
+    ldns # Provides drill
+
+    # Provide dig as a wrapper around drill system-wide
+    (pkgs.writeShellScriptBin "dig" ''exec ${pkgs.ldns}/bin/drill "$@"'')
   ];
 
   # Enable nix-ld for dynamically linked binaries (e.g., VS Code Server)
