@@ -10,11 +10,11 @@
 - [ ] Task: Conductor - User Manual Verification 'WSLENV & Path Integration' (Protocol in workflow.md)
 
 ## Phase 2: Explorer & Navigation
-- [ ] Task: Install and Configure `wsl-open`
-    - [ ] Add `wsl-open` to `environment.systemPackages` in `modules/common/wsl.nix`
-- [ ] Task: Create `open` Alias
+- [x] Task: Install and Configure `wsl-open` (568dc0a)
+    - [x] Add `wsl-open` to `environment.systemPackages` in `modules/common/wsl.nix` (568dc0a)
+- [ ] Task: Create `open` Alias (Deferred: To be configured with shell setup)
     - [ ] Update shell configuration (common home-manager or bash/fish) to add `alias open="wsl-open"`
-- [ ] Task: Conductor - User Manual Verification 'Explorer & Navigation' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Explorer & Navigation' (Protocol in workflow.md)
 
 ## Phase 3: Multimedia & Services
 - [ ] Task: Enable Clipboard Sharing

@@ -47,10 +47,6 @@
     EDITOR = "nvim";
   };
 
-  home.shellAliases = {
-    open = "wsl-open";
-  };
-
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
