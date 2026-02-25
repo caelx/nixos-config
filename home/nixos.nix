@@ -119,6 +119,12 @@
     enableFishIntegration = true;
   };
 
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;
+    enableFishIntegration = true; # True by default, but keeping for clarity
+  };
+
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 

@@ -34,12 +34,6 @@
     htop
   ];
 
-  # Direnv integration
-  programs.direnv = {
-    enable = true;
-    nix-direnv.enable = true;
-  };
-
   # Set your time zone.
   time.timeZone = "UTC"; # User should override this in host config if needed
 
