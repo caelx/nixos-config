@@ -168,14 +168,7 @@
   programs.home-manager.enable = true;
 
   # SSH Agent
-  services.ssh-agent = {
-    enable = true;
-    extraArguments = [ "-a /run/user/1000/ssh-agent" ]; # Explicitly set agent socket path
-    # serviceConfig options are for the generated systemd unit.
-    serviceConfig = {
-      ExecStartPre = "-/bin/rm -f /run/user/1000/ssh-agent"; # Remove old socket
-    };
-  };
+  services.ssh-agent.enable = true;
 
   # SSH Client Configuration
   programs.ssh = {
