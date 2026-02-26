@@ -204,18 +204,18 @@
       "*" = {
         user = "cael";
         identityFile = "~/.ssh/id_ed25519";
-        forwardAgent = true;
-        addKeysToAgent = "yes";
-        compression = true;
-        serverAliveInterval = 60;
-        serverAliveCountMax = 30;
-        controlMaster = "auto";
-        controlPath = "~/.ssh/+%h-%p-%r";
-        controlPersist = "5m";
         extraOptions = {
-          "StrictHostKeyChecking" = "accept-new";
+          "AddKeysToAgent" = "yes";
+          "ForwardAgent" = "yes";
+          "Compression" = "yes";
+          "ServerAliveInterval" = "60";
+          "ServerAliveCountMax" = "30";
           "HashKnownHosts" = "no";
           "UserKnownHostsFile" = "~/.ssh/known_hosts";
+          "ControlMaster" = "auto";
+          "ControlPath" = "~/.ssh/+%h-%p-%r";
+          "ControlPersist" = "5m";
+          "StrictHostKeyChecking" = "accept-new";
         };
       };
     };
