@@ -163,6 +163,13 @@
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
+  home.activation = {
+    sshConfigD = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      $DRY_RUN_CMD mkdir -p $VERBOSE_ARG $HOME/.ssh/conf.d
+      $DRY_RUN_CMD chmod $VERBOSE_ARG 0700 $HOME/.ssh/conf.d
+    '';
+  };
+
   # SSH Agent
   services.ssh-agent.enable = true;
 
