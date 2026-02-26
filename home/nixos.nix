@@ -209,12 +209,12 @@
         serverAliveCountMax = 30;
         hashKnownHosts = false;
         userKnownHostsFile = "~/.ssh/known_hosts";
-        controlMaster = "auto";
-        controlPath = "~/.ssh/+%h-%p-%r";
-        controlPersist = "5m";
         extraOptions = {
           "StrictHostKeyChecking" = "accept-new";
           "AddKeysToAgent" = "yes";
+          "ControlMaster" = "auto";
+          "ControlPath" = "~/.ssh/+%h-%p-%r";
+          "ControlPersist" = "5m";
         };
       };
     };
