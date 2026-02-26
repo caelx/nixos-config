@@ -207,14 +207,14 @@
         compression = true;
         serverAliveInterval = 60;
         serverAliveCountMax = 30;
-        controlMaster = "auto";
-        controlPath = "~/.ssh/+%h-%p-%r";
-        controlPersist = "5m";
         extraOptions = {
           "AddKeysToAgent" = "yes";
           "StrictHostKeyChecking" = "accept-new";
           "HashKnownHosts" = "no";
           "UserKnownHostsFile" = "~/.ssh/known_hosts";
+          "ControlMaster" = "auto";
+          "ControlPath" = "~/.ssh/+%h-%p-%r";
+          "ControlPersist" = "5m";
         };
       };
     };
