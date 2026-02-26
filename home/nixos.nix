@@ -71,9 +71,20 @@
       # Initialize inshellisense
       test -f ~/.inshellisense/fish/init.fish && source ~/.inshellisense/fish/init.fish
 
-      # Source SSH agent environment from custom systemd service
-      if test -f ~/.config/ssh-agent.env
-        source ~/.config/ssh-agent.env
+      # Custom SSH agent integration
+      if test -z "$SSH_AUTH_SOCK" -o ! -S "$SSH_AUTH_SOCK"
+        # Look for the ssh-agent process started by systemd user service
+        set -l agent_pid (pgrep -fu $USER ssh-agent)
+
+        if test -n "$agent_pid"
+          # Get the SSH_AUTH_SOCK from the running agent
+          set -l agent_sock (grep -ozP 'SSH_AUTH_SOCK=[^=\x00]+' /proc/$agent_pid/environ | head -z | cut -d= -f2-)
+          set -gx SSH_AUTH_SOCK $agent_sock
+          set -gx SSH_AGENT_PID $agent_pid
+          echo "SSH agent environment set from existing agent (PID: $SSH_AGENT_PID)"
+        else
+          echo "No running ssh-agent found for user $USER. Home Manager service should start it."
+        end
       end
     '';
     shellAliases = {
@@ -156,35 +167,8 @@
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
-  systemd.user.services.ssh-agent-env-writer = {
-    enable = true;
-    Unit = {
-      Description = "SSH Agent Environment Writer";
-      After = [ "default.target" ];
-      BindsTo = [ "default.target" ]; # Ensure it stops when user logs out
-    };
-    Service = {
-      Type = "oneshot";
-      RemainAfterExit = "yes";
-      ExecStart = ''
-        ${pkgs.gnused}/bin/sed -i '/^set -gx SSH_AGENT_PID/d' ~/.config/ssh-agent.env
-        ${pkgs.gnused}/bin/sed -i '/^set -gx SSH_AUTH_SOCK/d' ~/.config/ssh-agent.env
-        ${pkgs.openssh}/bin/ssh-agent -c > ~/.config/ssh-agent.env
-      '';
-      ExecStop = ''
-        test -f ~/.config/ssh-agent.env && . ~/.config/ssh-agent.env && ${pkgs.openssh}/bin/ssh-agent -k
-        ${pkgs.coreutils}/bin/rm -f ~/.config/ssh-agent.env
-      '';
-      Restart = "on-failure";
-      RestartSec = 5;
-    };
-    Install = {
-      WantedBy = [ "default.target" ];
-    };
-  };
-
   # SSH Agent
-  services.ssh-agent.enable = false;
+  services.ssh-agent.enable = true;
 
   # SSH Client Configuration
   programs.ssh = {
