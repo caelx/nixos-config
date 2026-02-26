@@ -204,7 +204,6 @@
         user = "cael";
         identityFile = "~/.ssh/id_ed25519";
         forwardAgent = true;
-        addKeysToAgent = "yes";
         compression = true;
         serverAliveInterval = 60;
         serverAliveCountMax = 30;
@@ -215,6 +214,7 @@
         controlPersist = "5m";
         extraOptions = {
           "StrictHostKeyChecking" = "accept-new";
+          "AddKeysToAgent" = "yes";
         };
       };
     };
