@@ -6,8 +6,8 @@
 - [x] Task: Configure `programs.ssh` to include `~/.ssh/conf.d/*`. 8eb0a2a
 - [x] Task: Conductor - User Manual Verification 'Phase 1: SSH Config.d Management' (Protocol in workflow.md) 8eb0a2a
 
-## Phase 2: SSH Configuration Refactor and Agent Timeout [checkpoint: e4f6eb0]
+## Phase 2: SSH Configuration Refactor and Agent Timeout [checkpoint: 9c178fd]
 
-- [x] Task: Consolidate all SSH options into a single `matchBlocks."*"` block. e4f6eb0
+- [x] Task: Consolidate all SSH options into a single `matchBlocks."*"` block. 9c178fd
 - [x] Task: Configure `services.ssh-agent` with a 15-minute key timeout (`-t 15m`). 41c636e
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: SSH Configuration Refactor and Agent Timeout' (Protocol in workflow.md)
