@@ -197,6 +197,7 @@
   # SSH Client Configuration
   programs.ssh = {
     enable = true;
+    includes = [ "conf.d/*" ];
     addKeysToAgent = "yes";
     compression = true;
     controlMaster = "auto";
