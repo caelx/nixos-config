@@ -1,12 +1,12 @@
 # Implementation Plan: Deep System Cleanup and Generation Pruning
 
-## Phase 1: Preparation and Pruning
+## Phase 1: Preparation and Pruning [checkpoint: f638622]
 
-- [ ] Task: Record current disk usage (`df -h /nix/store`).
-- [ ] Task: List current system and Home Manager generations.
-- [ ] Task: Delete old Home Manager generations.
-- [ ] Task: Delete all old NixOS system generations (`sudo nix-collect-garbage -d`).
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Preparation and Pruning' (Protocol in workflow.md)
+- [x] Task: Record current disk usage (`df -h /nix/store`). (Initial: 26G) 102b1eb
+- [x] Task: List current system and Home Manager generations. 102b1eb
+- [x] Task: Delete old Home Manager generations. 102b1eb
+- [x] Task: Delete all old NixOS system generations (`sudo nix-collect-garbage -d`). 102b1eb
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Preparation and Pruning' (Protocol in workflow.md) f638622
 
 ## Phase 2: Garbage Collection and Finalization
 
