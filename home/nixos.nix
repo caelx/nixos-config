@@ -158,7 +158,7 @@
                 };            Service = {
               Type = "oneshot";
               RemainAfterExit = "yes";
-              ExecStart = "${pkgs.keychain}/bin/keychain --eval --quiet --systemd --inherit-env > %t/keychain-env";
+              ExecStart = "${pkgs.bash}/bin/bash -c 'mkdir -p ~/.config && ${pkgs.keychain}/bin/keychain --eval --quiet --agent ssh --systemd --inherit-env > ~/.config/keychain-env'";
               Restart = "on-failure";
               RestartSec = 5;
             };
