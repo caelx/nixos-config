@@ -208,14 +208,14 @@
         compression = true;
         serverAliveInterval = 60;
         serverAliveCountMax = 30;
+        addKeysToAgent = "yes";
+        controlMaster = "auto";
+        controlPath = "~/.ssh/+%h-%p-%r";
+        controlPersist = "5m";
+        hashKnownHosts = false;
+        userKnownHostsFile = "~/.ssh/known_hosts";
         extraOptions = {
           "StrictHostKeyChecking" = "accept-new";
-          "AddKeysToAgent" = "yes";
-          "ControlMaster" = "auto";
-          "ControlPath" = "~/.ssh/+%h-%p-%r";
-          "ControlPersist" = "5m";
-          "HashKnownHosts" = "no";
-          "UserKnownHostsFile" = "~/.ssh/known_hosts";
         };
       };
     };
