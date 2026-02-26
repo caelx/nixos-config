@@ -8,9 +8,9 @@
 - [x] Task: Delete all old NixOS system generations (`sudo nix-collect-garbage -d`). 102b1eb
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Preparation and Pruning' (Protocol in workflow.md) f638622
 
-## Phase 2: Garbage Collection and Finalization
+## Phase 2: Garbage Collection and Finalization [checkpoint: d9fed83]
 
-- [ ] Task: Run aggressive Nix garbage collection (`nix-store --gc`).
-- [ ] Task: Optimize the Nix store (`nix-store --optimize`).
-- [ ] Task: Verify remaining generations and record new disk usage.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Garbage Collection and Finalization' (Protocol in workflow.md)
+- [x] Task: Run aggressive Nix garbage collection (`nix-store --gc`). 52fcae4
+- [x] Task: Optimize the Nix store (`nix-store --optimize`). 52fcae4
+- [x] Task: Verify remaining generations and record new disk usage. (Final: 15G) 52fcae4
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Garbage Collection and Finalization' (Protocol in workflow.md) d9fed83
