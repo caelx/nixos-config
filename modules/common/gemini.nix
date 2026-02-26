@@ -8,12 +8,12 @@ let
     export NODE_NO_WARNINGS=1
     
     # Ensure conductor extension is installed
-    if ! "${pkgs.nodejs}/bin/npx" -y @google/gemini-cli extensions list | grep -q "conductor"; then
+    if [ ! -d "$HOME/.gemini/extensions/conductor" ]; then
       "${pkgs.nodejs}/bin/npx" -y @google/gemini-cli extensions install https://github.com/gemini-cli-extensions/conductor --auto-update --consent
     fi
 
     # Ensure security extension is installed
-    if ! "${pkgs.nodejs}/bin/npx" -y @google/gemini-cli extensions list | grep -q "security"; then
+    if [ ! -d "$HOME/.gemini/extensions/gemini-cli-security" ]; then
       "${pkgs.nodejs}/bin/npx" -y @google/gemini-cli extensions install https://github.com/gemini-cli-extensions/security --auto-update --consent
     fi
 
