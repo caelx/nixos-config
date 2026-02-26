@@ -171,7 +171,10 @@
   };
 
   # SSH Agent
-  services.ssh-agent.enable = true;
+  services.ssh-agent = {
+    enable = true;
+    extraArguments = [ "-t 15m" ];
+  };
 
   systemd.user.services.ssh-agent.Service = {
     ExecStartPre = "-${pkgs.coreutils}/bin/rm -f /run/user/1000/ssh-agent";
@@ -198,22 +201,23 @@
   programs.ssh = {
     enable = true;
     includes = [ "conf.d/*" ];
-    addKeysToAgent = "yes";
-    compression = true;
-    controlMaster = "auto";
-    controlPath = "~/.ssh/+%h-%p-%r";
-    controlPersist = "5m";
-    forwardAgent = true;
-    serverAliveCountMax = 30;
-    serverAliveInterval = 60;
-    userKnownHostsFile = "~/.ssh/known_hosts";
 
     matchBlocks = {
       "*" = {
         user = "cael";
         identityFile = "~/.ssh/id_ed25519";
+        forwardAgent = true;
+        addKeysToAgent = "yes";
+        compression = true;
+        serverAliveInterval = 60;
+        serverAliveCountMax = 30;
+        controlMaster = "auto";
+        controlPath = "~/.ssh/+%h-%p-%r";
+        controlPersist = "5m";
         extraOptions = {
           "StrictHostKeyChecking" = "accept-new";
+          "HashKnownHosts" = "no";
+          "UserKnownHostsFile" = "~/.ssh/known_hosts";
         };
       };
     };
