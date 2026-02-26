@@ -198,6 +198,7 @@
   # SSH Client Configuration
   programs.ssh = {
     enable = true;
+    enableDefaultConfig = false;
     includes = [ "conf.d/*" ];
     matchBlocks = {
       "*" = {
