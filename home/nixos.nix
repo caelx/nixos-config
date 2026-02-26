@@ -29,7 +29,6 @@
     fastfetch
     eza
     inshellisense
-    keychain
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -71,10 +70,6 @@
     interactiveShellInit = ''
       # Initialize inshellisense
       test -f ~/.inshellisense/fish/init.fish && source ~/.inshellisense/fish/init.fish
-
-      # Initialize keychain for SSH agent management
-      # This ensures only one ssh-agent is running and sources its environment variables
-      eval (${pkgs.keychain}/bin/keychain --eval --quiet --agents ssh --host $(hostname))
     '';
     shellAliases = {
       # Core Aliases
