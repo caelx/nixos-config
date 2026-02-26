@@ -71,20 +71,9 @@
       # Initialize inshellisense
       test -f ~/.inshellisense/fish/init.fish && source ~/.inshellisense/fish/init.fish
 
-      # Custom SSH agent integration
-      if test -z "$SSH_AUTH_SOCK" -o ! -S "$SSH_AUTH_SOCK"
-        # Look for the ssh-agent process started by systemd user service
-        set -l agent_pid (pgrep -fu $USER ssh-agent)
-
-        if test -n "$agent_pid"
-          # Get the SSH_AUTH_SOCK from the running agent
-          set -l agent_sock (grep -ozP 'SSH_AUTH_SOCK=[^=\x00]+' /proc/$agent_pid/environ | head -z | cut -d= -f2-)
-          set -gx SSH_AUTH_SOCK $agent_sock
-          set -gx SSH_AGENT_PID $agent_pid
-          echo "SSH agent environment set from existing agent (PID: $SSH_AGENT_PID)"
-        else
-          echo "No running ssh-agent found for user $USER. Home Manager service should start it."
-        end
+      # Source SSH agent environment provided by Home Manager's services.ssh-agent
+      if test -f "$XDG_RUNTIME_DIR/ssh-agent-environment"
+          source "$XDG_RUNTIME_DIR/ssh-agent-environment"
       end
     '';
     shellAliases = {
