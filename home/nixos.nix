@@ -152,20 +152,8 @@
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
-      systemd.user.services.keychain = {
-        enable = true;
-        unitConfig.Description = "keychain service for SSH agent";
-        wantedBy = [ "default.target" ];    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = "yes";
-      ExecStart = "${pkgs.keychain}/bin/keychain --eval --quiet --systemd --inherit-env > %t/keychain-env";
-      Restart = "on-failure";
-      RestartSec = 5;
-    };
-  };
-
   # SSH Agent
-  services.ssh-agent.enable = false;
+  services.ssh-agent.enable = true;
 
   # SSH Client Configuration
   programs.ssh = {
