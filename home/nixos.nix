@@ -206,15 +206,13 @@
     forwardAgent = true;
     serverAliveCountMax = 30;
     serverAliveInterval = 60;
+    userKnownHostsFile = "~/.ssh/known_hosts";
 
     matchBlocks = {
       "*" = {
         user = "cael";
         identityFile = "~/.ssh/id_ed25519";
-        extraOptions = {
-          "StrictHostKeyChecking" = "accept-new";
-          "UserKnownHostsFile" = "~/.ssh/known_hosts";
-        };
+        strictHostKeyChecking = "accept-new";
       };
     };
   };
