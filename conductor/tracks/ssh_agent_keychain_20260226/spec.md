@@ -1,31 +1,34 @@
-# Specification: SSH Agent with Keychain (Shell Login)
+# Specification: SSH Agent with Systemd and Fish Shell Integration
 
 ## Overview
-Implement a user-specific SSH agent using the `keychain` utility, initialized within the Fish shell on login. This approach ensures the agent starts with the user's shell session, avoids `systemd` complexities for `keychain`, and prevents multiple `ssh-agent` instances while providing a seamless experience.
+Implement a user-specific SSH agent by launching it as a `systemd` user service via Home Manager's `services.ssh-agent`. Integration with the Fish shell will be handled by a custom script that detects the running agent's environment variables and sets them in each shell session, avoiding the use of `keychain`.
 
 ## Functional Requirements
-- **Package Installation**: Install `keychain` via Home Manager (`home.packages`).
-- **Home Manager `services.ssh-agent`**: Ensure `services.ssh-agent.enable = true;` is configured in `home/nixos.nix` to allow `keychain` to manage `ssh-agent`.
-- **Fish Shell Integration**: Configure `programs.fish.interactiveShellInit` in `home/nixos.nix` to initialize `keychain` on login.
-    - The initialization script should ensure `keychain` starts `ssh-agent` only if one is not already running.
-    - It should export the necessary environment variables (`SSH_AUTH_SOCK`, `SSH_AGENT_PID`) to the current shell.
-- **SSH Client Configuration**: Configure `programs.ssh.addKeysToAgent = "yes"` (or the equivalent `extraConfig`). This ensures that keys are added to the running agent as soon as they are used.
+- **Home Manager `services.ssh-agent`**: Configure `services.ssh-agent.enable = true;` in `home/nixos.nix` to launch `ssh-agent` as a persistent user service.
+- **Fish Shell Integration Script**:
+    - Remove `keychain` from `home.packages` and any `keychain` initialization from `programs.fish.interactiveShellInit`.
+    - Create a custom Fish shell script, integrated into `programs.fish.interactiveShellInit`, that will:
+        - Detect if an `ssh-agent` process (launched by `systemd`) is already running.
+        - If an agent is found, extract its `SSH_AUTH_SOCK` and `SSH_AGENT_PID` environment variables.
+        - Set these variables in the current Fish shell session.
+        - If no agent is found (e.g., `systemd` service hasn't started yet), do nothing or provide a fallback.
+- **SSH Client Configuration**: Configure `programs.ssh.addKeysToAgent = "yes"`. This ensures keys are added to the agent on first use.
 
 ## Non-Functional Requirements
-- **No Duplicate Agents**: `keychain` must prevent the launch of multiple `ssh-agent` instances.
-- **Seamless Login**: The agent should start or connect to an existing instance on shell login without user intervention or noticeable delay.
-- **Persistence**: `keychain` should manage agent persistence across shell sessions.
-- **Simplicity**: Avoid complex GPG-agent configurations and `systemd` user service definitions for `keychain` itself.
+- **Persistence**: The `ssh-agent` must persist across user logouts and reboots, managed by `systemd`.
+- **Seamless Login**: The Fish shell script should integrate with the existing `ssh-agent` on shell login without user intervention or noticeable delay.
+- **No Duplicate Agents**: The setup must ensure only one `ssh-agent` instance runs per user.
+- **Simplicity**: Avoid `keychain` utility.
 
 ## Acceptance Criteria
-- [ ] `keychain` package is installed and functional.
-- [ ] `services.ssh-agent.enable = true;` is configured.
-- [ ] Opening a new Fish shell initializes `keychain`, which then connects to or starts an `ssh-agent`.
+- [ ] `keychain` is not installed or referenced.
+- [ ] `services.ssh-agent.enable = true;` is configured in `home/nixos.nix`.
+- [ ] A user-level `ssh-agent` is running as a `systemd` service.
+- [ ] Opening a new Fish shell correctly sets `SSH_AUTH_SOCK` and `SSH_AGENT_PID` from the `systemd`-launched agent.
 - [ ] Only one `ssh-agent` process is running after opening multiple Fish shells.
-- [ ] `SSH_AUTH_SOCK` and `SSH_AGENT_PID` environment variables are correctly set in the Fish shell.
 - [ ] Running `ssh` with a key for the first time automatically adds that key to the agent (verify with `ssh-add -l`).
 
 ## Out of Scope
-- Direct `systemd` user service configuration for `keychain`.
+- `keychain` utility.
 - GPG-agent or `gpg-connect-agent` configuration.
-- System-wide (root) SSH agent configuration.
+- Custom `systemd` unit files for `ssh-agent` (relying on Home Manager's `services.ssh-agent`).

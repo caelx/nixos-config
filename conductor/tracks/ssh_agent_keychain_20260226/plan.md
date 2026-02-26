@@ -1,10 +1,11 @@
-# Implementation Plan: SSH Agent with Keychain (Shell Login)
+# Implementation Plan: SSH Agent with Systemd and Fish Shell Integration
 
-## Phase 1: Keychain Installation and Fish Shell Integration
+## Phase 1: SSH Agent Systemd Service and Fish Integration
 
-- [x] Task: Revert `systemd.user.services.keychain` configuration and ensure `services.ssh-agent.enable = true;`. 3195148
-- [x] Task: Configure Fish shell to initialize `keychain` on login, preventing multiple agents and exporting environment variables. a52617f
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Keychain Installation and Fish Shell Integration' (Protocol in workflow.md)
+- [ ] Task: Remove `keychain` from `home.packages` and `keychain` initialization from `programs.fish.interactiveShellInit`.
+- [ ] Task: Ensure `services.ssh-agent.enable = true;` is configured in `home/nixos.nix`.
+- [ ] Task: Create a custom Fish script to detect and configure `ssh-agent` environment variables on shell login.
+- [ ] Task: Conductor - User Manual Verification 'Phase 1: SSH Agent Systemd Service and Fish Integration' (Protocol in workflow.md)
 
 ## Phase 2: SSH Client Configuration
 
