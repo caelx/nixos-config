@@ -37,6 +37,13 @@
     ".nix-profile" = {
       source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.local/state/nix/profiles/home-manager";
     };
+    ".config/inshellisense/config.json" = {
+      text = builtins.toJSON {
+        shell = "fish";
+        showHelp = true;
+        completionMode = "shell";
+      };
+    };
   };
 
   # You can also manage environment variables through 'home.sessionVariables'.
