@@ -62,6 +62,16 @@
 
   # Enable nix-ld for dynamically linked binaries (e.g., VS Code Server)
   programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = with pkgs; [
+    stdenv.cc.cc
+    zlib
+    fuse3
+    icu
+    nss
+    openssl
+    curl
+    expat
+  ];
 
   # Set your time zone.
   time.timeZone = "UTC"; # User should override this in host config if needed

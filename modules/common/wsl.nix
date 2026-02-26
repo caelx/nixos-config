@@ -11,6 +11,8 @@
 
   # WSL-specific integration
   wsl = {
+    enable = true;
+    interop.register = true;
     wslConf = {
       automount.enabled = true;
       interop.enabled = true;
