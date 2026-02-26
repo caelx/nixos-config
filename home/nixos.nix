@@ -212,7 +212,9 @@
       "*" = {
         user = "cael";
         identityFile = "~/.ssh/id_ed25519";
-        strictHostKeyChecking = "accept-new";
+        extraOptions = {
+          "StrictHostKeyChecking" = "accept-new";
+        };
       };
     };
   };
