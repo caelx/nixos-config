@@ -18,13 +18,17 @@
   home.packages = with pkgs; [
     # Ported from old config
     p7zip
-    cifs-utils
-    fastfetch
-    ldns
-    python3Packages.pipx
     ripgrep-all
     nodejs
     git-ignore
+    starship
+    zoxide
+    fd
+    bat
+    cifs-utils
+    fastfetch
+    eza
+    inshellisense
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
