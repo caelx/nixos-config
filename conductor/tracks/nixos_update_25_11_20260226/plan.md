@@ -1,11 +1,11 @@
 # Implementation Plan: Update NixOS to 25.11
 
-## Phase 1: Flake Update and Dry Run
+## Phase 1: Flake Update and Dry Run [checkpoint: 16b4685]
 
-- [ ] Task: Update `nixpkgs` and `home-manager` URLs in `flake.nix`.
-- [ ] Task: Update flake lock file (`nix flake update`).
-- [ ] Task: Dry-run rebuild to identify immediate configuration errors (`nixos-rebuild build --dry-run`).
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Flake Update and Dry Run' (Protocol in workflow.md)
+- [x] Task: Update `nixpkgs` and `home-manager` URLs in `flake.nix`. 4c8f775
+- [x] Task: Update flake lock file (`nix flake update`). 9b3e094
+- [x] Task: Dry-run rebuild to identify immediate configuration errors (`nixos-rebuild build --dry-run`). 9b3e094
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Flake Update and Dry Run' (Protocol in workflow.md) 16b4685
 
 ## Phase 2: Configuration Adjustment
 
