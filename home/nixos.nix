@@ -199,26 +199,22 @@
   programs.ssh = {
     enable = true;
     includes = [ "conf.d/*" ];
-
-    matchBlocks = {
-      "*" = {
-        user = "cael";
-        identityFile = "~/.ssh/id_ed25519";
-        extraOptions = {
-          "AddKeysToAgent" = "yes";
-          "ForwardAgent" = "yes";
-          "Compression" = "yes";
-          "ServerAliveInterval" = "60";
-          "ServerAliveCountMax" = "30";
-          "HashKnownHosts" = "no";
-          "UserKnownHostsFile" = "~/.ssh/known_hosts";
-          "ControlMaster" = "auto";
-          "ControlPath" = "~/.ssh/+%h-%p-%r";
-          "ControlPersist" = "5m";
-          "StrictHostKeyChecking" = "accept-new";
-        };
-      };
-    };
+    extraConfig = ''
+      Host *
+        User cael
+        IdentityFile ~/.ssh/id_ed25519
+        AddKeysToAgent yes
+        Compression yes
+        ControlMaster auto
+        ControlPath ~/.ssh/+%h-%p-%r
+        ControlPersist 5m
+        ForwardAgent yes
+        HashKnownHosts no
+        ServerAliveCountMax 30
+        ServerAliveInterval 60
+        StrictHostKeyChecking accept-new
+        UserKnownHostsFile ~/.ssh/known_hosts
+    '';
   };
 
   # Git configuration
