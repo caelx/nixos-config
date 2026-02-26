@@ -2,7 +2,7 @@
 
 ## Phase 1: Keychain Installation and Systemd Service Setup
 
-- [ ] Task: Install `keychain` package via Home Manager.
+- [x] Task: Install `keychain` package via Home Manager. 0b7b15e
 - [ ] Task: Define Home Manager `systemd.user.services` for `keychain`.
     - [ ] Configure `keychain` to manage `ssh-agent`.
     - [ ] Configure `keychain` to export environment variables to a well-known file (e.g., `~/.config/keychain-env`).
