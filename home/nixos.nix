@@ -207,7 +207,6 @@
         compression = true;
         serverAliveInterval = 60;
         serverAliveCountMax = 30;
-        hashKnownHosts = false;
         userKnownHostsFile = "~/.ssh/known_hosts";
         extraOptions = {
           "StrictHostKeyChecking" = "accept-new";
@@ -215,6 +214,7 @@
           "ControlMaster" = "auto";
           "ControlPath" = "~/.ssh/+%h-%p-%r";
           "ControlPersist" = "5m";
+          "HashKnownHosts" = "no";
         };
       };
     };
