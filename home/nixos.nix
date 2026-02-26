@@ -71,6 +71,11 @@
     interactiveShellInit = ''
       # Initialize inshellisense
       test -f ~/.inshellisense/fish/init.fish && source ~/.inshellisense/fish/init.fish
+
+      # Initialize keychain for SSH agent management
+      # This ensures only one ssh-agent is running and sources its environment variables
+      ${pkgs.keychain}/bin/keychain --eval --quiet --agents ssh --host $(hostname) > ~/.keychain/$(hostname)-fish
+      source ~/.keychain/$(hostname)-fish
     '';
     shellAliases = {
       # Core Aliases
