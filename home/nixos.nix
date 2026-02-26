@@ -161,7 +161,15 @@
 
   systemd.user.services.ssh-agent.Service = {
     ExecStartPre = "-${pkgs.coreutils}/bin/rm -f /run/user/1000/ssh-agent";
-    ExecStartPost = "${pkgs.bash}/bin/bash -c \"mkdir -p ~/.config && echo 'set -gx SSH_AUTH_SOCK /run/user/1000/ssh-agent;' > ~/.config/ssh-agent.env && echo 'set -gx SSH_AGENT_PID ' \\$MAINPID ';' >> ~/.config/ssh-agent.env\"";
+    ExecStartPost = let
+      script = pkgs.writeShellScript "ssh-agent-post-start" ''
+        ${pkgs.coreutils}/bin/mkdir -p $HOME/.config
+        # Get socket from process arguments
+        SOCK=$(${pkgs.procps}/bin/ps -p $1 -o args= | ${pkgs.gnugrep}/bin/grep -oP '(?<=-a\s)\S+')
+        echo "set -gx SSH_AUTH_SOCK $SOCK;" > $HOME/.config/ssh-agent.env
+        echo "set -gx SSH_AGENT_PID $1;" >> $HOME/.config/ssh-agent.env
+      '';
+    in "${script} $MAINPID";
   };
 
   # SSH Client Configuration
