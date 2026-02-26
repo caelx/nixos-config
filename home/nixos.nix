@@ -29,6 +29,7 @@
     fastfetch
     eza
     inshellisense
+    openssh
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -43,6 +44,26 @@
         showHelp = true;
         completionMode = "shell";
       };
+    };
+    ".ssh/config" = {
+      text = ''
+        Include conf.d/*
+
+        Host *
+          User cael
+          IdentityFile ~/.ssh/id_ed25519
+          AddKeysToAgent yes
+          Compression yes
+          ControlMaster auto
+          ControlPath ~/.ssh/+%h-%p-%r
+          ControlPersist 5m
+          ForwardAgent yes
+          HashKnownHosts no
+          ServerAliveCountMax 30
+          ServerAliveInterval 60
+          StrictHostKeyChecking accept-new
+          UserKnownHostsFile ~/.ssh/known_hosts
+      '';
     };
   };
 
@@ -196,26 +217,7 @@
   };
 
   # SSH Client Configuration
-  programs.ssh = {
-    enable = true;
-    includes = [ "conf.d/*" ];
-    extraConfig = ''
-      Host *
-        User cael
-        IdentityFile ~/.ssh/id_ed25519
-        AddKeysToAgent yes
-        Compression yes
-        ControlMaster auto
-        ControlPath ~/.ssh/+%h-%p-%r
-        ControlPersist 5m
-        ForwardAgent yes
-        HashKnownHosts no
-        ServerAliveCountMax 30
-        ServerAliveInterval 60
-        StrictHostKeyChecking accept-new
-        UserKnownHostsFile ~/.ssh/known_hosts
-    '';
-  };
+  programs.ssh.enable = false;
 
   # Git configuration
   programs.git = {
