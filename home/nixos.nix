@@ -165,9 +165,17 @@
       script = pkgs.writeShellScript "ssh-agent-post-start" ''
         ${pkgs.coreutils}/bin/mkdir -p $HOME/.config
         # Get socket from process arguments
-        SOCK=$(${pkgs.procps}/bin/ps -p $1 -o args= | ${pkgs.gnugrep}/bin/grep -oP '(?<=-a\s)\S+')
-        echo "set -gx SSH_AUTH_SOCK $SOCK;" > $HOME/.config/ssh-agent.env
-        echo "set -gx SSH_AGENT_PID $1;" >> $HOME/.config/ssh-agent.env
+        # We use $1 which is passed as $MAINPID
+        ARGS=$(${pkgs.procps}/bin/ps -p $1 -o args=)
+        SOCK=$(echo "$ARGS" | ${pkgs.gnugrep}/bin/grep -oP '(?<=-a\s)\S+')
+        
+        if [ -n "$SOCK" ]; then
+          echo "set -gx SSH_AUTH_SOCK $SOCK;" > $HOME/.config/ssh-agent.env
+          echo "set -gx SSH_AGENT_PID $1;" >> $HOME/.config/ssh-agent.env
+        else
+          echo "Could not find socket in ssh-agent arguments: $ARGS" >&2
+          exit 1
+        fi
       '';
     in "${script} $MAINPID";
   };
