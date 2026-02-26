@@ -1,15 +1,20 @@
 # Implementation Plan: Implement Fish Shell for nixos User
 
 ## Phase 1: Core Fish & Package Setup
-- [ ] Task: Enable `fish` shell globally and for the `nixos` user.
-    - [ ] Update `hosts/launch-octopus/default.nix` to enable `programs.fish.enable = true;`.
-    - [ ] Set `users.users.nixos.shell = pkgs.fish;`.
-- [ ] Task: Update `home/nixos.nix` to include ported packages.
-    - [ ] Add `7zip`, `bat`, `cifs-utils`, `fastfetch`, `fd`, `git-lfs`, `ldns`, `lsd`, `python3Packages.pipx`, `ripgrep-all`, `zoxide`, `nodejs`, `starship`.
-- [ ] Task: Conductor - User Manual Verification 'Core Fish & Package Setup' (Protocol in workflow.md)
+- [x] Task: Enable `fish` shell for the `nixos` user (not root).
+    - [x] Update `modules/common/user-nixos.nix` to enable `programs.fish.enable = true;`.
+    - [x] Set `users.users.nixos.shell = pkgs.fish;`.
+    - [x] Ensure `root` shell remains `bash` (default).
+- [x] Task: Update `home/nixos.nix` to include ported packages.
+    - [x] Add `p7zip`, `bat`, `cifs-utils`, `fastfetch`, `fd`, `git-lfs`, `ldns`, `python3Packages.pipx`, `ripgrep-all`, `zoxide`, `nodejs`, `starship`.
+    - [x] Remove `lsd` as per user request.
+- [x] Task: Silence Nix evaluation and dirty tree warnings.
+    - [x] Add `warn-dirty = false` to `modules/common/default.nix`.
+    - [x] Add `nixpkgs.config.allowAliases = false` to `modules/common/default.nix`.
+- [x] Task: Conductor - User Manual Verification 'Core Fish & Package Setup' (Protocol in workflow.md)
 
 ## Phase 2: Fish Configuration & Plugins
-- [ ] Task: Configure `fish` in Home Manager (`home/nixos.nix`).
+- [~] Task: Configure `fish` in Home Manager (`home/nixos.nix`).
     - [ ] Enable `programs.fish.enable = true;`.
     - [ ] Enable `programs.starship.enable = true;`.
     - [ ] Enable `programs.zoxide.enable = true;`.

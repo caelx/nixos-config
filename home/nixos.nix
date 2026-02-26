@@ -69,7 +69,7 @@
     enable = true;
     interactiveShellInit = ''
       # Initialize inshellisense
-      inshellisense init fish | source
+      test -f ~/.inshellisense/fish/init.fish && source ~/.inshellisense/fish/init.fish
     '';
     shellAliases = {
       # Core Aliases
@@ -142,6 +142,11 @@
   };
 
   programs.nix-index.enable = true;
+
+  programs.fzf = {
+    enable = true;
+    enableFishIntegration = true;
+  };
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;

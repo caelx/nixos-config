@@ -4,6 +4,9 @@
   # Global shell configuration
   programs.fish.enable = true;
 
+  # Force declarative user management
+  users.mutableUsers = false;
+
   # Common user definition for 'nixos'
   users.users.nixos = {
     isNormalUser = true;
@@ -16,7 +19,10 @@
   };
 
   # Sudo configuration
+  security.sudo.wheelNeedsPassword = true;
   security.sudo.extraConfig = ''
+    # Disable the sudo lecture (the "With great power comes great responsibility" warning)
+    Defaults lecture="never"
     # Require password re-authentication every 15 minutes
     Defaults timestamp_timeout=15
   '';

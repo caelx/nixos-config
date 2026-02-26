@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     home-manager = {
       url = "github:nix-community/home-manager/release-24.11";
@@ -41,7 +42,7 @@
             home-manager.useUserPackages = true;
             home-manager.users.nixos = ./home/nixos.nix;
             home-manager.sharedModules = [
-              nix-index-database.hmModules.nix-index
+              nix-index-database.homeModules.nix-index
             ];
           }
         ];

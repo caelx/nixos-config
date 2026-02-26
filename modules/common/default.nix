@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ inputs, pkgs, ... }:
 
 {
   imports = [
@@ -12,15 +12,28 @@
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];
     auto-optimise-store = true;
+    warn-dirty = false;
     # Optimize for large downloads
     download-buffer-size = 134217728; # 128MB
     max-jobs = "auto";
   };
 
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 30d";
+  };
+
+  nixpkgs.config.allowAliases = false;
+
+  environment.variables = {
+    NIXPKGS_ALLOW_ALIASES = "0";
+  };
+
   # Common System Packages
   environment.systemPackages = with pkgs; [
     # Tech Stack Tools
-    nh          # Nix Helper
+    inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.nh
     nvd         # Nix Visual Diff
     comma       # Run any binary from nixpkgs
     direnv      # Automatic environment loading
@@ -35,14 +48,8 @@
 
     # Standard Utilities
     _7zz
-    bat
-    cifs-utils
-    fastfetch
     fd
-    eza
-    ripgrep-all
-    starship
-    zoxide
+    fzf
     ldns # Provides drill
 
     # Provide dig as a wrapper around drill system-wide

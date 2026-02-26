@@ -26,11 +26,11 @@ let
     ${pkgs.age}/bin/age-keygen -y "$TARGET_FILE"
   '';
 
-  sops-edit = pkgs.writeShellScriptBin "sops-edit" ''
+  secrets-edit = pkgs.writeShellScriptBin "secrets-edit" ''
     export SOPS_AGE_KEY_FILE="${ageKeyPath}"
     REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
     if [ -z "''${1:-}" ]; then
-      echo "Usage: sops-edit <filename>"
+      echo "Usage: secrets-edit <filename>"
       exit 1
     fi
     # If file exists locally, use it. Otherwise try repo root.
@@ -41,11 +41,11 @@ let
     fi
   '';
 
-  sops-decrypt = pkgs.writeShellScriptBin "sops-decrypt" ''
+  secrets-decrypt = pkgs.writeShellScriptBin "secrets-decrypt" ''
     export SOPS_AGE_KEY_FILE="${ageKeyPath}"
     REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
     if [ -z "''${1:-}" ]; then
-      echo "Usage: sops-decrypt <filename>"
+      echo "Usage: secrets-decrypt <filename>"
       exit 1
     fi
     # If file exists locally, use it. Otherwise try repo root.
@@ -56,7 +56,7 @@ let
     fi
   '';
 
-  sops-encrypt = pkgs.writeShellScriptBin "sops-encrypt" ''
+  secrets-encrypt = pkgs.writeShellScriptBin "secrets-encrypt" ''
     export SOPS_AGE_KEY_FILE="${ageKeyPath}"
     exec ${pkgs.sops}/bin/sops -e "$@"
   '';
@@ -68,9 +68,9 @@ in
 
   environment.systemPackages = [ 
     generate-age-key 
-    sops-edit
-    sops-decrypt
-    sops-encrypt
+    secrets-edit
+    secrets-decrypt
+    secrets-encrypt
   ];
 
   sops = {
@@ -78,7 +78,7 @@ in
     defaultSopsFormat = "yaml";
 
     # Ensure we use the package from sops-nix itself
-    package = inputs.sops-nix.packages.${pkgs.system}.sops-install-secrets;
+    package = inputs.sops-nix.packages.${pkgs.stdenv.hostPlatform.system}.sops-install-secrets;
 
     age.keyFile = ageKeyPath;
 
