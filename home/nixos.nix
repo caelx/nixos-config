@@ -67,6 +67,10 @@
 
   programs.fish = {
     enable = true;
+    interactiveShellInit = ''
+      # Initialize inshellisense
+      inshellisense init fish | source
+    '';
     shellAliases = {
       # Core Aliases
       cat = "bat --style plain --paging never";
