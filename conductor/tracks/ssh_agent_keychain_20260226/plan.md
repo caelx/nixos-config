@@ -7,7 +7,7 @@
 - [x] Task: Create a custom Fish script to detect and configure `ssh-agent` environment variables on shell login. 4cbb9f8
 - [x] Task: Conductor - User Manual Verification 'Phase 1: SSH Agent Systemd Service and Fish Integration' (Protocol in workflow.md) 8e5a0c1
 
-## Phase 2: SSH Client Configuration
+## Phase 2: SSH Client Configuration [checkpoint: 0ecf21c]
 
 - [x] Task: Configure `programs.ssh.addKeysToAgent`. b4b053e
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: SSH Client Configuration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: SSH Client Configuration' (Protocol in workflow.md) 0ecf21c
