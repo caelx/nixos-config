@@ -157,12 +157,9 @@
   programs.home-manager.enable = true;
 
   # SSH Agent
-  services.ssh-agent = {
-    enable = true;
-    serviceConfig = {
-      ExecStartPost = "${pkgs.bash}/bin/bash -c \"mkdir -p ~/.config && AGENT_SOCK=\\$(${pkgs.procps}/bin/ps -p \\$MAINPID -o args= | ${pkgs.gnugrep}/bin/grep -oP '(?<=-a\\\\s)\\\\S+') && echo 'set -gx SSH_AUTH_SOCK ' \\$AGENT_SOCK ';' > ~/.config/ssh-agent.env && echo 'set -gx SSH_AGENT_PID ' \\$MAINPID ';' >> ~/.config/ssh-agent.env\"";
-    };
-  };
+  services.ssh-agent.enable = true;
+
+  systemd.user.services.ssh-agent.Service.ExecStartPost = "${pkgs.bash}/bin/bash -c \"mkdir -p ~/.config && AGENT_SOCK=\\$(${pkgs.procps}/bin/ps -p \\$MAINPID -o args= | ${pkgs.gnugrep}/bin/grep -oP '(?<=-a\\\\s)\\\\S+') && echo 'set -gx SSH_AUTH_SOCK ' \\$AGENT_SOCK ';' > ~/.config/ssh-agent.env && echo 'set -gx SSH_AGENT_PID ' \\$MAINPID ';' >> ~/.config/ssh-agent.env\"";
 
   # SSH Client Configuration
   programs.ssh = {
