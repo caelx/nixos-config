@@ -9,5 +9,5 @@
 
 ## Phase 2: SSH Client Configuration
 
-- [ ] Task: Configure `programs.ssh.addKeysToAgent`.
+- [x] Task: Configure `programs.ssh.addKeysToAgent`. b4b053e
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: SSH Client Configuration' (Protocol in workflow.md)
