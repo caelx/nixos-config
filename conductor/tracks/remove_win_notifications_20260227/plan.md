@@ -2,7 +2,7 @@
 
 ## Phase 1: Code Cleanup [checkpoint: ]
 
-- [ ] Task: Remove `win-notify` integrations from `home/wsl.nix`.
+- [x] Task: Remove `win-notify` integrations from `home/wsl.nix`. 8edc59f
 - [ ] Task: Remove `win-notify` usage in `modules/common/gemini.nix`.
 - [ ] Task: Conductor - User Manual Verification 'Code Cleanup' (Protocol in workflow.md)
 
