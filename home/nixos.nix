@@ -45,6 +45,44 @@
         completionMode = "shell";
       };
     };
+    ".gemini/settings.json" = {
+      text = builtins.toJSON {
+        general = {
+          sessionRetention = {
+            enabled = true;
+            maxAge = "30d";
+            warningAcknowledged = true;
+          };
+          defaultApprovalMode = "default";
+          enablePromptCompletion = true;
+        };
+        security = {
+          auth = {
+            selectedType = "oauth-personal";
+          };
+          enablePermanentToolApproval = true;
+        };
+        context = {
+          fileFiltering = {
+            respectGitIgnore = false;
+          };
+        };
+        hooks = {
+          AfterAgent = [
+            {
+              matcher = "*";
+              hooks = [
+                {
+                  name = "notify-waiting";
+                  type = "command";
+                  command = "notify-send \"Gemini\" \"Waiting for input...\" -u critical";
+                }
+              ];
+            }
+          ];
+        };
+      };
+    };
   };
 
   # You can also manage environment variables through 'home.sessionVariables'.
