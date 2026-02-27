@@ -6,8 +6,8 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Implementation' (Protocol in workflow.md) [b637441]
 
 ## Phase 2: Verification
-- [ ] Task: System Apply and Test
-    - [ ] Run `sudo nixos-rebuild switch --flake .#launch-octopus`.
-    - [ ] Run `devenv version`.
-    - [ ] Test `devenv init` in a temporary directory.
+- [x] Task: System Apply and Test [a2827db]
+    - [x] Run `sudo nixos-rebuild switch --flake .#launch-octopus`.
+    - [x] Run `devenv version`.
+    - [x] Test `devenv init` in a temporary directory.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Verification' (Protocol in workflow.md)
