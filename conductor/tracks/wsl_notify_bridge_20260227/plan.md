@@ -11,11 +11,11 @@
 - [x] Task: Finalize the inline PowerShell snippet within the Bash script. [4cb4000]
 - [x] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md) [7a46346]
 
-## Phase 3: NixOS Integration
+## Phase 3: NixOS Integration [checkpoint: 86a6930]
 - [x] Task: Create a new module or package definition in `modules/common/wsl.nix` for the `notify-send` bridge. [c8eb748]
 - [x] Task: Add the package to `environment.systemPackages` for the WSL host. [e094843]
 - [ ] Task: Perform a `nixos-rebuild switch --flake .#launch-octopus` to deploy the new tool.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md) [86a6930]
 
 ## Phase 4: Final Verification and Documentation
 - [ ] Task: Verify the bridge with various flags (app-name, urgency, icon).
