@@ -5,11 +5,11 @@
 - [x] Task: Prototype a direct `powershell.exe` call from WSL to trigger a notification with title and body. [7812957]
 - [x] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md) [9abd5c3]
 
-## Phase 2: Bridge Script Implementation
+## Phase 2: Bridge Script Implementation [checkpoint: 7a46346]
 - [x] Task: Develop the `notify-send` Bash wrapper that parses standard flags (`-a`, `-i`, `-u`, `-t`). [70c8e29]
 - [x] Task: Implement path translation for icons (Linux path to `/mnt/c/...` or Windows path). [b25bd7a]
 - [x] Task: Finalize the inline PowerShell snippet within the Bash script. [4cb4000]
-- [ ] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md) [7a46346]
 
 ## Phase 3: NixOS Integration
 - [ ] Task: Create a new module or package definition in `modules/common/wsl.nix` for the `notify-send` bridge.
