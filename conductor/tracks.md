@@ -9,7 +9,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Windows Notifications for WSL2**
+- [x] **Track: Windows Notifications for WSL2**
 *Link: [./tracks/win_notifications_20260227/](./tracks/win_notifications_20260227/)*
 
 ---
