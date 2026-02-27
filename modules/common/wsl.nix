@@ -27,6 +27,30 @@
     # Allows opening files and directories in Windows applications
     # e.g., 'wsl-open .' opens the current folder in Windows Explorer
     pkgs.wsl-open
+
+    # Windows Notification Bridge
+    (pkgs.writeShellScriptBin "win-notify" ''
+      MESSAGE="$1"
+      TITLE="''${2:-WSL2 Notification}"
+      
+      # Use PowerShell to show a toast notification
+      /mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -NoProfile -Command "
+        \$ErrorActionPreference = 'SilentlyContinue'
+        [void][Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime]
+        [void][Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime]
+        
+        \$template = [Windows.UI.Notifications.ToastNotificationManager]::GetTemplateContent([Windows.UI.Notifications.ToastTemplateType]::ToastText02)
+        \$xml = [Windows.Data.Xml.Dom.XmlDocument]::new()
+        \$xml.LoadXml(\$template.GetXml())
+        
+        \$textNodes = \$xml.GetElementsByTagName('text')
+        \$textNodes.Item(0).AppendChild(\$xml.CreateTextNode('$TITLE')) > \$null
+        \$textNodes.Item(1).AppendChild(\$xml.CreateTextNode(\"$MESSAGE\")) > \$null
+        
+        \$toast = [Windows.UI.Notifications.ToastNotification]::new(\$xml)
+        [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier('WSL2').Show(\$toast)
+      "
+    '')
   ];
 
   # Activation script to create ~/win-home symlink for the nixos user
