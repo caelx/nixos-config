@@ -9,7 +9,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Refactor WSL-specific Home Manager Configuration**
+- [x] **Track: Refactor WSL-specific Home Manager Configuration**
 *Link: [./tracks/refactor_wsl_home_20260227/](./tracks/refactor_wsl_home_20260227/)*
 
 ---
