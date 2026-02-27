@@ -6,10 +6,10 @@
 - [x] Task: Remove `devenv` from `tech-stack.md`. 5735df0
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Removal and Cleanup' (Protocol in workflow.md)
 
-## Phase 2: nix-direnv Transition
+## Phase 2: nix-direnv Transition [checkpoint: 5bedf39]
 - [x] Task: Enable `nix-direnv` in the system configuration (e.g., `programs.direnv.nix-direnv.enable = true`). 0474f75
 - [x] Task: Verify that `direnv` and `nix-direnv` are correctly configured for the Fish shell. 8e1281a
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: nix-direnv Transition' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: nix-direnv Transition' (Protocol in workflow.md)
 
 ## Phase 3: Final Verification
 - [ ] Task: Apply configuration with `sudo nixos-rebuild switch --flake .#launch-octopus`.
