@@ -1,9 +1,9 @@
 # Implementation Plan: Remove global Node.js from User Environment
 
-## Phase 1: Implementation [checkpoint: ]
+## Phase 1: Implementation [checkpoint: ab28426]
 
 - [x] Task: Remove `nodejs` from `home.packages` in `home/nixos.nix`. 73269a7
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Implementation' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Implementation' (Protocol in workflow.md)
 
 ## Phase 2: Verification [checkpoint: ]
 
