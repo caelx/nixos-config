@@ -16,6 +16,7 @@ To create a robust, modular, and reproducible NixOS configuration repository tha
 - **Absolute Reproducibility**: Ensure that any system can be rebuilt from scratch to an identical state using the configuration.
 - **Comprehensive Dotfile Management**: Use Home Manager to manage user environments, shell configurations, and application settings declaratively.
 - **Efficient Remote Deployment**: Enable seamless updates and configuration deployments to remote servers and devices.
+- **Seamless Platform Integration**: Implement deep integration between guest environments (e.g., WSL2) and host systems (Windows) for notifications, file sharing, and interoperability.
 
 ## Key Features
 - **Nix Flakes**: Utilize the modern Flakes ecosystem for dependency management and standardized outputs.

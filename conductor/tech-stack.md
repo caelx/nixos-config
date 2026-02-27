@@ -22,3 +22,4 @@
 - **pre-commit-hooks.nix**: To enforce code quality and formatting before commits.
 - **Modern CLI Tools**: eza (replacement for ls), bat, fd, zoxide, and starship for a feature-rich shell experience.
 - **Fish Shell**: The primary interactive shell, pre-configured with aliases and plugins.
+- **win-notify**: Custom WSL2-to-Windows notification bridge for automated terminal alerts.
