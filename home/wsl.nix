@@ -10,7 +10,56 @@
       if test -f ~/.config/ssh-agent.env
         source ~/.config/ssh-agent.env
       end
+
+      # Windows Notification Hooks
+      function __win_notify_postexec --on-event fish_postexec
+          set -l last_status $status
+          set -l duration_ms $CMD_DURATION
+          set -l duration_s (math "scale=0; $duration_ms / 1000")
+          
+          # Only notify for commands that take longer than 3 seconds to avoid spam
+          if test $duration_s -ge 3
+              set -l msg "Command: $argv[1]"
+              if test $last_status -ne 0
+                  set msg "$msg (failed with $last_status)"
+              end
+              
+              set -l title "Command Finished"
+              if test $duration_s -ge 180
+                  set title "Long Task Finished"
+                  set msg "$msg (took (math "scale=1; $duration_s / 60")m)"
+              end
+              
+              set -l tab_title (hostname):(prompt_pwd)
+              win-notify "$msg" "$title" "$tab_title"
+          end
+      end
     '';
+    functions = {
+      fish_title = {
+        body = ''
+          set -l cmd $argv[1]
+          set -l tab_title (hostname):(prompt_pwd)
+          # Check for specific titles that require action
+          if string match -q "*Action Required*" "$cmd"
+              win-notify "Terminal needs attention: $cmd" "Action Required" "$tab_title"
+          else if string match -q "*Ready*" "$cmd"
+              win-notify "Terminal is ready" "Status Update" "$tab_title"
+          end
+          echo $cmd
+        '';
+      };
+      sudo = {
+        description = "Wrap sudo to notify on potential password prompt";
+        body = ''
+          if status is-interactive
+              set -l tab_title (hostname):(prompt_pwd)
+              win-notify "Sudo password may be requested" "Action Required" "$tab_title"
+          end
+          command sudo $argv
+        '';
+      };
+    };
     shellAliases = {
       open = "wsl-open";
     };

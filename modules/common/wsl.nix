@@ -32,10 +32,16 @@
     (pkgs.writeShellScriptBin "win-notify" ''
       MESSAGE="$1"
       TITLE="''${2:-WSL2 Notification}"
+      TAB_TITLE="$3"
       
       # Use a temporary file for the PowerShell script to avoid escaping issues
       PS_SCRIPT=$(mktemp --suffix=.ps1)
       
+      # If TAB_TITLE is provided, append it to the message
+      if [ -n "$TAB_TITLE" ]; then
+          MESSAGE="$MESSAGE (Tab: $TAB_TITLE)"
+      fi
+
       cat <<EOF > "$PS_SCRIPT"
 \$ErrorActionPreference = 'SilentlyContinue'
 try {
@@ -52,10 +58,10 @@ try {
         \$iconPath = Get-ChildItem -Path "\$(\$wt.InstallLocation)\Images" -Include "Square150x150Logo.scale-200.png", "Square44x44Logo.targetsize-256.png", "terminal_contrast-white.ico" -Recurse | Select-Object -First 1 -ExpandProperty FullName
     }
 
-    # Use modern ToastGeneric template with a louder sound and Terminal focus launch
+    # Use modern ToastGeneric template with a louder sound
+    # No launch attribute as requested
     \$xml = [Windows.Data.Xml.Dom.XmlDocument]::new()
-    # Using 'wt://' with activationType='protocol' to ensure clicking focuses the terminal
-    \$xml.LoadXml("<toast launch='wt://' activationType='protocol'><visual><binding template='ToastGeneric'><text id='1'/><text id='2'/></binding></visual><audio src='ms-winsoundevent:Notification.Reminder'/></toast>")
+    \$xml.LoadXml("<toast><visual><binding template='ToastGeneric'><text id='1'/><text id='2'/></binding></visual><audio src='ms-winsoundevent:Notification.Reminder'/></toast>")
     
     \$xml.GetElementsByTagName('text').Item(0).InnerText = '$TITLE'
     \$xml.GetElementsByTagName('text').Item(1).InnerText = @'
