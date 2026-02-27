@@ -8,7 +8,7 @@
 
 ## Phase 2: Tool and Script Removal [checkpoint: ]
 
-- [ ] Task: Delete the `win-notify` script definition from `modules/common/wsl.nix`.
+- [x] Task: Delete the `win-notify` script definition from `modules/common/wsl.nix`. 2c3efec
 - [ ] Task: Verify the system builds without the notification bridge: `sudo nixos-rebuild build --flake .#launch-octopus`.
 - [ ] Task: Conductor - User Manual Verification 'Tool and Script Removal' (Protocol in workflow.md)
 
