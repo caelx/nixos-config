@@ -1,7 +1,7 @@
 # Implementation Plan: WSL notify-send Bridge
 
 ## Phase 1: Research and Prototyping
-- [ ] Task: Research PowerShell command for modern Windows toast notifications without external dependencies.
+- [x] Task: Research PowerShell command for modern Windows toast notifications without external dependencies. [fb18438]
 - [ ] Task: Prototype a direct `powershell.exe` call from WSL to trigger a notification with title and body.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
 
