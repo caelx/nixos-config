@@ -9,10 +9,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [x] **Track: Windows Notifications for WSL2**
-*Link: [./tracks/win_notifications_20260227/](./tracks/win_notifications_20260227/)*
-
----
-
-- [ ] **Track: Remove all the code related to the win_notifications track we're going to change the way that is done.**
+- [~] **Track: Remove all the code related to the win_notifications track we're going to change the way that is done.**
 *Link: [./tracks/remove_win_notifications_20260227/](./tracks/remove_win_notifications_20260227/)*
