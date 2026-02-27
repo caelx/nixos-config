@@ -2,7 +2,7 @@
 
 ## Phase 1: Implementation [checkpoint: ]
 
-- [ ] Task: Remove `nodejs` from `home.packages` in `home/nixos.nix`.
+- [x] Task: Remove `nodejs` from `home.packages` in `home/nixos.nix`. 73269a7
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Implementation' (Protocol in workflow.md)
 
 ## Phase 2: Verification [checkpoint: ]
