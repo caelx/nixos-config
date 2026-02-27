@@ -21,7 +21,6 @@
     # Ported from old config
     p7zip
     ripgrep-all
-    nodejs
     git-ignore
     starship
     zoxide
