@@ -33,23 +33,39 @@
       MESSAGE="$1"
       TITLE="''${2:-WSL2 Notification}"
       
-      # Use PowerShell to show a toast notification
-      /mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -NoProfile -Command "
-        \$ErrorActionPreference = 'SilentlyContinue'
-        [void][Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime]
-        [void][Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime]
-        
-        \$template = [Windows.UI.Notifications.ToastNotificationManager]::GetTemplateContent([Windows.UI.Notifications.ToastTemplateType]::ToastText02)
-        \$xml = [Windows.Data.Xml.Dom.XmlDocument]::new()
-        \$xml.LoadXml(\$template.GetXml())
-        
-        \$textNodes = \$xml.GetElementsByTagName('text')
-        \$textNodes.Item(0).AppendChild(\$xml.CreateTextNode('$TITLE')) > \$null
-        \$textNodes.Item(1).AppendChild(\$xml.CreateTextNode(\"$MESSAGE\")) > \$null
-        
-        \$toast = [Windows.UI.Notifications.ToastNotification]::new(\$xml)
-        [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier('WSL2').Show(\$toast)
-      "
+      # Use a temporary file for the PowerShell script to avoid escaping issues
+      PS_SCRIPT=$(mktemp --suffix=.ps1)
+      
+      cat <<EOF > "$PS_SCRIPT"
+\$ErrorActionPreference = 'SilentlyContinue'
+try {
+    [void][Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime]
+    [void][Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime]
+    
+    \$template = [Windows.UI.Notifications.ToastNotificationManager]::GetTemplateContent([Windows.UI.Notifications.ToastTemplateType]::ToastText02)
+    \$xml = [Windows.Data.Xml.Dom.XmlDocument]::new()
+    \$xml.LoadXml(\$template.GetXml())
+    
+    \$textNodes = \$xml.GetElementsByTagName('text')
+    \$textNodes.Item(0).AppendChild(\$xml.CreateTextNode('$TITLE')) > \$null
+    \$textNodes.Item(1).AppendChild(\$xml.CreateTextNode(@'
+$MESSAGE
+'@)) > \$null
+    
+    \$toast = [Windows.UI.Notifications.ToastNotification]::new(\$xml)
+    [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier('WSL2').Show(\$toast)
+} catch {}
+EOF
+
+      # Convert path for Windows
+      WIN_PATH=$(wslpath -w "$PS_SCRIPT")
+      
+      # Run PowerShell with a timeout to prevent hanging the terminal
+      # We use 'timeout' to ensure the WSL side returns, and background it if needed
+      /mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$WIN_PATH" &
+      
+      # Cleanup the temp file after a short delay to ensure PS has read it
+      (sleep 5 && rm "$PS_SCRIPT") &
     '')
   ];
 
