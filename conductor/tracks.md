@@ -13,3 +13,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 *Link: [./archive/add_devenv_20260227/](./archive/add_devenv_20260227/)*
 
 ---
+
+---
+
+- [ ] **Track: Remove nodejs from my home packages**
+*Link: [./tracks/remove_node_home_20260227/](./tracks/remove_node_home_20260227/)*
