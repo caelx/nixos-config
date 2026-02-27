@@ -11,7 +11,7 @@
 - [x] Task: Verify that `direnv` and `nix-direnv` are correctly configured for the Fish shell. 8e1281a
 - [x] Task: Conductor - User Manual Verification 'Phase 2: nix-direnv Transition' (Protocol in workflow.md)
 
-## Phase 3: Final Verification
-- [ ] Task: Apply configuration with `sudo nixos-rebuild switch --flake .#launch-octopus`.
-- [ ] Task: Verify `devenv` is gone and `nix-direnv` is working.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Final Verification' (Protocol in workflow.md)
+## Phase 3: Final Verification [checkpoint: 8bbe837]
+- [x] Task: Apply configuration with `sudo nixos-rebuild switch --flake .#launch-octopus`. manual
+- [x] Task: Verify `devenv` is gone and `nix-direnv` is working. manual
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Final Verification' (Protocol in workflow.md)
