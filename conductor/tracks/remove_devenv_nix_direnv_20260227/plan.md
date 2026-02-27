@@ -1,7 +1,7 @@
 # Implementation Plan: Replace direnv with nix-direnv and Remove devenv/cachix
 
 ## Phase 1: Removal and Cleanup
-- [ ] Task: Remove `devenv` and `cachix` substituters from `modules/common/default.nix`.
+- [x] Task: Remove `devenv` and `cachix` substituters from `modules/common/default.nix`. 42236b8
 - [ ] Task: Remove `devenv` from `home/nixos.nix` (Home Manager packages).
 - [ ] Task: Remove `devenv` from `tech-stack.md`.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Removal and Cleanup' (Protocol in workflow.md)
