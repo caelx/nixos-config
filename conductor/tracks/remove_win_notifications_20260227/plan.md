@@ -16,5 +16,5 @@
 
 - [x] Task: Remove `win-notify` entry from `conductor/tech-stack.md`. b643ad2
 - [x] Task: Remove "Windows Notifications for WSL2" from `conductor/tracks.md`. b7d2b49
-- [ ] Task: Delete the track directory `conductor/tracks/win_notifications_20260227/`.
+- [x] Task: Delete the track directory `conductor/tracks/win_notifications_20260227/`. e77c383
 - [ ] Task: Conductor - User Manual Verification 'Track and Documentation Removal' (Protocol in workflow.md)
