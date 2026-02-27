@@ -66,23 +66,24 @@
       APP_NAME_ESCAPED=\$(echo \"\$APP_NAME\" | sed \"s/'/''/g\")
 
       # Invoke PowerShell to show the toast
+      # We use \\\$ to ensure the dollar signs reach PowerShell without being expanded by bash.
       /mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -NoProfile -ExecutionPolicy Bypass -Command \"
-          [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] > \$null
-          \$wtPackage = Get-AppxPackage -Name Microsoft.WindowsTerminal
-          if (\$wtPackage) { \$iconPath = Join-Path \$wtPackage.InstallLocation 'Images\\\\Square44x44Logo.targetsize-256.png' }
-          \$Template = [Windows.UI.Notifications.ToastNotificationManager]::GetTemplateContent([Windows.UI.Notifications.ToastTemplateType]::ToastImageAndText02)
-          \$RawXml = [xml]\$Template.GetXml()
-          (\$RawXml.toast.visual.binding.text | Where-Object { \$_.id -eq '1' }).AppendChild(\$RawXml.CreateTextNode('\$SUMMARY_ESCAPED')) > \$null
-          (\$RawXml.toast.visual.binding.text | Where-Object { \$_.id -eq '2' }).AppendChild(\$RawXml.CreateTextNode('\$BODY_ESCAPED')) > \$null
-          if (\$iconPath -and (Test-Path \$iconPath)) {
-              \$imageNode = (\$RawXml.toast.visual.binding.image | Where-Object { \$_.id -eq '1' })
-              if (\$imageNode) { \$imageNode.SetAttribute('src', \$iconPath) }
+          [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] > \\\$null
+          \\\$wtPackage = Get-AppxPackage -Name Microsoft.WindowsTerminal
+          if (\\\$wtPackage) { \\\$iconPath = Join-Path \\\$wtPackage.InstallLocation 'Images\\\\Square44x44Logo.targetsize-256.png' }
+          \\\$Template = [Windows.UI.Notifications.ToastNotificationManager]::GetTemplateContent([Windows.UI.Notifications.ToastTemplateType]::ToastImageAndText02)
+          \\\$RawXml = [xml]\\\$Template.GetXml()
+          (\\\$RawXml.toast.visual.binding.text | Where-Object { \\\$_.id -eq '1' }).AppendChild(\\\$RawXml.CreateTextNode('\$SUMMARY_ESCAPED')) > \\\$null
+          (\\\$RawXml.toast.visual.binding.text | Where-Object { \\\$_.id -eq '2' }).AppendChild(\\\$RawXml.CreateTextNode('\$BODY_ESCAPED')) > \\\$null
+          if (\\\$iconPath -and (Test-Path \\\$iconPath)) {
+              \\\$imageNode = (\\\$RawXml.toast.visual.binding.image | Where-Object { \\\$_.id -eq '1' })
+              if (\\\$imageNode) { \\\$imageNode.SetAttribute('src', \\\$iconPath) }
           }
-          \$SerializedXml = [Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime]::New()
-          \$SerializedXml.LoadXml(\$RawXml.OuterXml)
-          \$Toast = [Windows.UI.Notifications.ToastNotification, Windows.UI.Notifications, ContentType = WindowsRuntime]::New(\$SerializedXml)
-          \$Toast.Tag = '\$APP_NAME_ESCAPED'; \$Toast.Group = 'WSL'
-          [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier('PowerShell').Show(\$Toast)
+          \\\$SerializedXml = [Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime]::New()
+          \\\$SerializedXml.LoadXml(\\\$RawXml.OuterXml)
+          \\\$Toast = [Windows.UI.Notifications.ToastNotification, Windows.UI.Notifications, ContentType = WindowsRuntime]::New(\\\$SerializedXml)
+          \\\$Toast.Tag = '\$APP_NAME_ESCAPED'; \\\$Toast.Group = 'WSL'
+          [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier('PowerShell').Show(\\\$Toast)
       \"
     ")
   ];

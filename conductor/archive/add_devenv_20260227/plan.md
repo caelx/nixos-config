@@ -12,7 +12,7 @@
     - [x] Test `devenv init` in a temporary directory.
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Verification' (Protocol in workflow.md) [90a36d9]
 
-## Phase 3: Binary Cache Configuration
+## Phase 3: Binary Cache Configuration [checkpoint: 8414be1]
 - [x] Task: Add `devenv.cachix.org` binary cache to `modules/common/default.nix`. [8700ed0]
-- [~] Task: Apply configuration and verify cache in `/etc/nix/nix.conf`.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Binary Cache Configuration' (Protocol in workflow.md)
+- [x] Task: Apply configuration and verify cache in `/etc/nix/nix.conf`.
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Binary Cache Configuration' (Protocol in workflow.md)

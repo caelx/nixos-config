@@ -19,5 +19,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 ---
 
 
-- [ ] **Track: Remove devenv and cachix, transition to nix-direnv**
+- [~] **Track: Remove devenv and cachix, transition to nix-direnv**
 *Link: [./tracks/remove_devenv_nix_direnv_20260227/](./tracks/remove_devenv_nix_direnv_20260227/)*
