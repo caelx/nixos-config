@@ -1,12 +1,12 @@
 # Implementation Plan: Refactor Gemini CLI Wrapper
 
-## Phase 1: Package Refactoring [checkpoint: ]
+## Phase 1: Package Refactoring [checkpoint: a3246fd]
 
 - [x] Task: Update `modules/common/gemini.nix` to use `makeWrapper`. 6e35081
     - [x] Change the `gemini-cli` definition to use `stdenv.mkDerivation` or `symlinkJoin` with `makeWrapper`.
     - [x] Ensure `${pkgs.nodejs}/bin` is prefixed to the script's `PATH`.
     - [x] Ensure `NODE_NO_WARNINGS=1` is exported in the wrapper.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Package Refactoring' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Package Refactoring' (Protocol in workflow.md) a3246fd
 
 ## Phase 2: Deployment and Verification [checkpoint: ]
 
