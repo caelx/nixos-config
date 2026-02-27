@@ -15,6 +15,6 @@
 ## Phase 3: Track and Documentation Removal [checkpoint: ]
 
 - [x] Task: Remove `win-notify` entry from `conductor/tech-stack.md`. b643ad2
-- [ ] Task: Remove "Windows Notifications for WSL2" from `conductor/tracks.md`.
+- [x] Task: Remove "Windows Notifications for WSL2" from `conductor/tracks.md`. b7d2b49
 - [ ] Task: Delete the track directory `conductor/tracks/win_notifications_20260227/`.
 - [ ] Task: Conductor - User Manual Verification 'Track and Documentation Removal' (Protocol in workflow.md)
