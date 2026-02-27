@@ -14,5 +14,3 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [x] **Track: Refactor Gemini CLI wrapper into a Nix package with bundled Node.js**
-*Link: [./tracks/gemini_package_refactor_20260227/](./tracks/gemini_package_refactor_20260227/)*
