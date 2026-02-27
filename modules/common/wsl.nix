@@ -55,11 +55,10 @@ $MESSAGE
     # Try to find Windows Terminal icon
     \$wtPath = (Get-AppxPackage -Name Microsoft.WindowsTerminal).InstallLocation
     if (\$wtPath) {
-        \$iconPath = Join-Path \$wtPath "Images\Terminal.ico"
-        if (-not (Test-Path \$iconPath)) {
-            \$iconPath = Join-Path \$wtPath "Images\Terminal.png"
-        }
-        if (Test-Path \$iconPath) {
+        # Search for a suitable icon in the Images folder
+        \$iconPath = Get-ChildItem -Path "\$wtPath\Images" -Include "Square44x44Logo.targetsize-256.png", "Square150x150Logo.scale-200.png", "terminal_contrast-white.ico" -Recurse | Select-Object -First 1 -ExpandProperty FullName
+        
+        if (\$iconPath -and (Test-Path \$iconPath)) {
             \$imageNodes = \$xml.GetElementsByTagName('image')
             \$imageNodes.Item(0).Attributes.GetNamedItem('src').Value = \$iconPath
         }
