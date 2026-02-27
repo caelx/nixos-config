@@ -42,26 +42,30 @@ try {
     [void][Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime]
     [void][Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime]
     
-    \$template = [Windows.UI.Notifications.ToastNotificationManager]::GetTemplateContent([Windows.UI.Notifications.ToastTemplateType]::ToastImageAndText02)
-    \$xml = [Windows.Data.Xml.Dom.XmlDocument]::new()
-    \$xml.LoadXml(\$template.GetXml())
-    
-    \$textNodes = \$xml.GetElementsByTagName('text')
-    \$textNodes.Item(0).AppendChild(\$xml.CreateTextNode('$TITLE')) > \$null
-    \$textNodes.Item(1).AppendChild(\$xml.CreateTextNode(@'
-$MESSAGE
-'@)) > \$null
-    
     # Try to find Windows Terminal icon
     \$wtPath = (Get-AppxPackage -Name Microsoft.WindowsTerminal).InstallLocation
+    \$iconPath = \$null
     if (\$wtPath) {
-        # Search for a suitable icon in the Images folder
-        \$iconPath = Get-ChildItem -Path "\$wtPath\Images" -Include "Square44x44Logo.targetsize-256.png", "Square150x150Logo.scale-200.png", "terminal_contrast-white.ico" -Recurse | Select-Object -First 1 -ExpandProperty FullName
-        
-        if (\$iconPath -and (Test-Path \$iconPath)) {
-            \$imageNodes = \$xml.GetElementsByTagName('image')
-            \$imageNodes.Item(0).Attributes.GetNamedItem('src').Value = \$iconPath
-        }
+        # Search for a high-res icon in the Images folder
+        \$iconPath = Get-ChildItem -Path "\$wtPath\Images" -Include "Square150x150Logo.scale-200.png", "Square44x44Logo.targetsize-256.png", "terminal_contrast-white.ico" -Recurse | Select-Object -First 1 -ExpandProperty FullName
+    }
+
+    # Use modern ToastGeneric template for better layout control
+    \$xml = [Windows.Data.Xml.Dom.XmlDocument]::new()
+    \$xml.LoadXml("<toast><visual><binding template='ToastGeneric'><text id='1'/><text id='2'/></binding></visual><audio src='ms-winsoundevent:Notification.Default'/></toast>")
+    
+    \$xml.GetElementsByTagName('text').Item(0).InnerText = '$TITLE'
+    \$xml.GetElementsByTagName('text').Item(1).InnerText = @'
+$MESSAGE
+'@
+
+    if (\$iconPath -and (Test-Path \$iconPath)) {
+        \$binding = \$xml.GetElementsByTagName('binding').Item(0)
+        \$image = \$xml.CreateElement('image')
+        \$image.SetAttribute('src', \$iconPath)
+        \$image.SetAttribute('placement', 'appLogoOverride')
+        \$image.SetAttribute('hint-crop', 'circle')
+        \$binding.AppendChild(\$image) > \$null
     }
     
     \$toast = [Windows.UI.Notifications.ToastNotification]::new(\$xml)
@@ -73,7 +77,6 @@ EOF
       WIN_PATH=$(wslpath -w "$PS_SCRIPT")
       
       # Run PowerShell with a timeout to prevent hanging the terminal
-      # We use 'timeout' to ensure the WSL side returns, and background it if needed
       /mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$WIN_PATH" &
       
       # Cleanup the temp file after a short delay to ensure PS has read it
