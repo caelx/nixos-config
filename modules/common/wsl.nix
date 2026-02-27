@@ -42,7 +42,7 @@ try {
     [void][Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime]
     [void][Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime]
     
-    \$template = [Windows.UI.Notifications.ToastNotificationManager]::GetTemplateContent([Windows.UI.Notifications.ToastTemplateType]::ToastText02)
+    \$template = [Windows.UI.Notifications.ToastNotificationManager]::GetTemplateContent([Windows.UI.Notifications.ToastTemplateType]::ToastImageAndText02)
     \$xml = [Windows.Data.Xml.Dom.XmlDocument]::new()
     \$xml.LoadXml(\$template.GetXml())
     
@@ -51,6 +51,19 @@ try {
     \$textNodes.Item(1).AppendChild(\$xml.CreateTextNode(@'
 $MESSAGE
 '@)) > \$null
+    
+    # Try to find Windows Terminal icon
+    \$wtPath = (Get-AppxPackage -Name Microsoft.WindowsTerminal).InstallLocation
+    if (\$wtPath) {
+        \$iconPath = Join-Path \$wtPath "Images\Terminal.ico"
+        if (-not (Test-Path \$iconPath)) {
+            \$iconPath = Join-Path \$wtPath "Images\Terminal.png"
+        }
+        if (Test-Path \$iconPath) {
+            \$imageNodes = \$xml.GetElementsByTagName('image')
+            \$imageNodes.Item(0).Attributes.GetNamedItem('src').Value = \$iconPath
+        }
+    }
     
     \$toast = [Windows.UI.Notifications.ToastNotification]::new(\$xml)
     [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier('WSL2').Show(\$toast)
