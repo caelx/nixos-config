@@ -42,15 +42,17 @@ try {
     [void][Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime]
     [void][Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime]
     
-    # Try to find Windows Terminal icon
-    \$wtPath = (Get-AppxPackage -Name Microsoft.WindowsTerminal).InstallLocation
+    # Try to find Windows Terminal info
+    \$wt = Get-AppxPackage -Name Microsoft.WindowsTerminal
     \$iconPath = \$null
-    if (\$wtPath) {
-        # Search for a high-res icon in the Images folder
-        \$iconPath = Get-ChildItem -Path "\$wtPath\Images" -Include "Square150x150Logo.scale-200.png", "Square44x44Logo.targetsize-256.png", "terminal_contrast-white.ico" -Recurse | Select-Object -First 1 -ExpandProperty FullName
+    \$aumid = "{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\WindowsPowerShell\v1.0\powershell.exe"
+    
+    if (\$wt) {
+        \$aumid = "\$(\$wt.PackageFamilyName)!App"
+        \$iconPath = Get-ChildItem -Path "\$(\$wt.InstallLocation)\Images" -Include "Square150x150Logo.scale-200.png", "Square44x44Logo.targetsize-256.png", "terminal_contrast-white.ico" -Recurse | Select-Object -First 1 -ExpandProperty FullName
     }
 
-    # Use modern ToastGeneric template for better layout control
+    # Use modern ToastGeneric template
     \$xml = [Windows.Data.Xml.Dom.XmlDocument]::new()
     \$xml.LoadXml("<toast><visual><binding template='ToastGeneric'><text id='1'/><text id='2'/></binding></visual><audio src='ms-winsoundevent:Notification.Default'/></toast>")
     
@@ -69,17 +71,17 @@ $MESSAGE
     }
     
     \$toast = [Windows.UI.Notifications.ToastNotification]::new(\$xml)
-    [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier('WSL2').Show(\$toast)
+    [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier(\$aumid).Show(\$toast)
 } catch {}
 EOF
 
       # Convert path for Windows
       WIN_PATH=$(wslpath -w "$PS_SCRIPT")
       
-      # Run PowerShell with a timeout to prevent hanging the terminal
+      # Run PowerShell in background
       /mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$WIN_PATH" &
       
-      # Cleanup the temp file after a short delay to ensure PS has read it
+      # Cleanup temp file
       (sleep 5 && rm "$PS_SCRIPT") &
     '')
   ];
