@@ -7,7 +7,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Removal and Cleanup' (Protocol in workflow.md)
 
 ## Phase 2: nix-direnv Transition
-- [ ] Task: Enable `nix-direnv` in the system configuration (e.g., `programs.direnv.nix-direnv.enable = true`).
+- [x] Task: Enable `nix-direnv` in the system configuration (e.g., `programs.direnv.nix-direnv.enable = true`). 0474f75
 - [ ] Task: Verify that `direnv` and `nix-direnv` are correctly configured for the Fish shell.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: nix-direnv Transition' (Protocol in workflow.md)
 
