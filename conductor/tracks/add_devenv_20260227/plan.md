@@ -1,7 +1,7 @@
 # Implementation Plan: Add 'devenv' to Packages
 
 ## Phase 1: Implementation
-- [ ] Task: Update Home Manager packages
+- [x] Task: Update Home Manager packages [edb1849]
     - [ ] Add `devenv` to `home.packages` in `home/nixos.nix`.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Implementation' (Protocol in workflow.md)
 
