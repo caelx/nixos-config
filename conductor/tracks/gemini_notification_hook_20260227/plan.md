@@ -8,10 +8,10 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Infrastructure' (Protocol in workflow.md) 112fb6e
 
 ## Phase 2: Configuration and Hook Integration [checkpoint: ]
-- [ ] Task: Configure the `AfterAgent` hook in `home/nixos.nix` via Home Manager.
-    - [ ] Merge the existing `settings.json` content (general, security, and context settings) with the new `hooks` section.
-    - [ ] Create `home.file.".gemini/settings.json"` with the merged JSON content.
-    - [ ] Implement the `AfterAgent` hook to call `notify-send "Gemini" "Waiting for input..." -u critical`.
+- [x] Task: Configure the `AfterAgent` hook in `home/nixos.nix` via Home Manager. 7d21434
+    - [x] Merge the existing `settings.json` content (general, security, and context settings) with the new `hooks` section.
+    - [x] Create `home.file.".gemini/settings.json"` with the merged JSON content.
+    - [x] Implement the `AfterAgent` hook to call `notify-send "Gemini" "Waiting for input..." -u critical`.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Configuration' (Protocol in workflow.md)
 
 ## Phase 3: Final Verification [checkpoint: ]
