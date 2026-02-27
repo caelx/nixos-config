@@ -9,10 +9,3 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Deploy WslNotifyd background service to bridge Linux D-Bus notifications to Windows 11**
-*Link: [./tracks/wsl_notifications_20260227/](./tracks/wsl_notifications_20260227/)*
-
----
-
-- [ ] **Track: Add devenv to the packages**
-*Link: [./tracks/add_devenv_20260227/](./tracks/add_devenv_20260227/)*
