@@ -20,7 +20,7 @@
   };
 
   # Share USERPROFILE from Windows to WSL and translate the path (/p)
-  # This makes $USERPROFILE available in WSL as /mnt/c/Users/<user>
+  # This makes $USERPROFILE available in WSL as /mnt/c/Users/$USER
   environment.variables.WSLENV = "USERPROFILE/p";
 
   environment.systemPackages = [
@@ -52,9 +52,10 @@ try {
         \$iconPath = Get-ChildItem -Path "\$(\$wt.InstallLocation)\Images" -Include "Square150x150Logo.scale-200.png", "Square44x44Logo.targetsize-256.png", "terminal_contrast-white.ico" -Recurse | Select-Object -First 1 -ExpandProperty FullName
     }
 
-    # Use modern ToastGeneric template
+    # Use modern ToastGeneric template with sound and click action
+    # Note: 'wt://' protocol support depends on Terminal version, falling back to focusing terminal via AUMID
     \$xml = [Windows.Data.Xml.Dom.XmlDocument]::new()
-    \$xml.LoadXml("<toast><visual><binding template='ToastGeneric'><text id='1'/><text id='2'/></binding></visual><audio src='ms-winsoundevent:Notification.Default'/></toast>")
+    \$xml.LoadXml("<toast><visual><binding template='ToastGeneric'><text id='1'/><text id='2'/></binding></visual><audio src='ms-winsoundevent:Notification.Reminder'/></toast>")
     
     \$xml.GetElementsByTagName('text').Item(0).InnerText = '$TITLE'
     \$xml.GetElementsByTagName('text').Item(1).InnerText = @'
