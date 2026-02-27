@@ -6,7 +6,7 @@
 - [x] Task: Remove `win-notify` usage in `modules/common/gemini.nix`. b6a535e
 - [ ] Task: Conductor - User Manual Verification 'Code Cleanup' (Protocol in workflow.md)
 
-## Phase 2: Tool and Script Removal [checkpoint: ]
+## Phase 2: Tool and Script Removal [checkpoint: d75c8a0]
 
 - [x] Task: Delete the `win-notify` script definition from `modules/common/wsl.nix`. 2c3efec
 - [x] Task: Verify the system builds without the notification bridge: `sudo nixos-rebuild build --flake .#launch-octopus`. 562e759
