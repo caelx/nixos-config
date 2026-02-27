@@ -54,8 +54,8 @@ try {
 
     # Use modern ToastGeneric template with a louder sound and Terminal focus launch
     \$xml = [Windows.Data.Xml.Dom.XmlDocument]::new()
-    # Using 'wt://' which is the standard Windows Terminal protocol
-    \$xml.LoadXml("<toast launch='wt://'><visual><binding template='ToastGeneric'><text id='1'/><text id='2'/></binding></visual><audio src='ms-winsoundevent:Notification.Reminder'/></toast>")
+    # Using 'wt://' with activationType='protocol' to ensure clicking focuses the terminal
+    \$xml.LoadXml("<toast launch='wt://' activationType='protocol'><visual><binding template='ToastGeneric'><text id='1'/><text id='2'/></binding></visual><audio src='ms-winsoundevent:Notification.Reminder'/></toast>")
     
     \$xml.GetElementsByTagName('text').Item(0).InnerText = '$TITLE'
     \$xml.GetElementsByTagName('text').Item(1).InnerText = @'
