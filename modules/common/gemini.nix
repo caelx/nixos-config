@@ -1,23 +1,31 @@
 { pkgs, ... }:
 
 let
-  gemini-cli = pkgs.writeShellScriptBin "gemini" ''
-    # Launch Gemini CLI via npx to avoid manual global installs
-    # and ensure we always have the tool available.
-    export NODE_NO_WARNINGS=1
-    
+  base-gemini = pkgs.writeShellScriptBin "gemini-base" ''
     # Ensure conductor extension is installed
     if [ ! -d "$HOME/.gemini/extensions/conductor" ]; then
-      "${pkgs.nodejs}/bin/npx" -y @google/gemini-cli extensions install https://github.com/gemini-cli-extensions/conductor --auto-update --consent
+      npx -y @google/gemini-cli extensions install https://github.com/gemini-cli-extensions/conductor --auto-update --consent
     fi
 
     # Ensure security extension is installed
     if [ ! -d "$HOME/.gemini/extensions/gemini-cli-security" ]; then
-      "${pkgs.nodejs}/bin/npx" -y @google/gemini-cli extensions install https://github.com/gemini-cli-extensions/security --auto-update --consent
+      npx -y @google/gemini-cli extensions install https://github.com/gemini-cli-extensions/security --auto-update --consent
     fi
 
-    "${pkgs.nodejs}/bin/npx" -y @google/gemini-cli "$@"
+    npx -y @google/gemini-cli "$@"
   '';
+
+  gemini-cli = pkgs.symlinkJoin {
+    name = "gemini";
+    paths = [ base-gemini ];
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      wrapProgram $out/bin/gemini-base \
+        --prefix PATH : ${pkgs.lib.makeBinPath [ pkgs.nodejs ]} \
+        --set NODE_NO_WARNINGS 1
+      mv $out/bin/gemini-base $out/bin/gemini
+    '';
+  };
 in
 {
   environment.systemPackages = [
