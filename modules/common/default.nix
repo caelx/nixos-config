@@ -36,6 +36,7 @@
     inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.nh
     nvd         # Nix Visual Diff
     comma       # Run any binary from nixpkgs
+    libnotify   # Desktop notifications
 
     # Essential CLI tools
     git
