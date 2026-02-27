@@ -38,17 +38,19 @@ while [[ $# -gt 0 ]]; do
             echo "  -t, --expire-time=TIME    Specify the timeout in milliseconds."
             exit 0
             ;;
-        -*)
-            # Ignore unknown options for now to maintain compatibility
-            shift
-            ;;
         *)
-            if [ -z "$SUMMARY" ]; then
+            if [[ "$1" == -* ]]; then
+                # Ignore unknown options for now to maintain compatibility
+                shift
+            elif [ -z "$SUMMARY" ]; then
                 SUMMARY="$1"
+                shift
             elif [ -z "$BODY" ]; then
                 BODY="$1"
+                shift
+            else
+                shift
             fi
-            shift
             ;;
     esac
 done
@@ -56,6 +58,21 @@ done
 if [ -z "$SUMMARY" ]; then
     echo "Error: At least a summary must be provided."
     exit 1
+fi
+
+# Handle icon path translation
+# We prioritize the provided icon if it exists.
+# If it's a Linux path, we use wslpath to convert it.
+ICON_WIN=""
+if [ -n "$ICON" ]; then
+    if [[ "$ICON" == /* ]]; then
+        if [ -f "$ICON" ]; then
+            ICON_WIN=$(wslpath -w "$ICON" 2>/dev/null | sed 's/\\/\\\\/g')
+        fi
+    else
+        # Possibly a Windows path already or a relative path
+        ICON_WIN=$(echo "$ICON" | sed 's/\\/\\\\/g')
+    fi
 fi
 
 # Escape single quotes for PowerShell
@@ -70,9 +87,13 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "
     # Locate Windows Terminal Icon for branding if no icon is specified
     # Or always use it if requested
     \$iconPath = \$null
-    \$wtPackage = Get-AppxPackage -Name Microsoft.WindowsTerminal
-    if (\$wtPackage) {
-        \$iconPath = Join-Path \$wtPackage.InstallLocation 'Images\Square44x44Logo.targetsize-256.png'
+    if ('$ICON_WIN' -eq '') {
+        \$wtPackage = Get-AppxPackage -Name Microsoft.WindowsTerminal
+        if (\$wtPackage) {
+            \$iconPath = Join-Path \$wtPackage.InstallLocation 'Images\Square44x44Logo.targetsize-256.png'
+        }
+    } else {
+        \$iconPath = '$ICON_WIN'
     }
 
     # Template
