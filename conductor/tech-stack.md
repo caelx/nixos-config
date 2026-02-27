@@ -19,6 +19,5 @@
 - **nvd (Nix Visual Diff)**: For analyzing differences between Nix package generations.
 - **comma (, )**: To run any binary from nixpkgs without permanent installation.
 - **nix-ld**: For running dynamically linked executables intended for generic Linux environments (e.g., VS Code Remote Server).
-- **devenv**: Fast, declarative, reproducible, and composable developer environments.
 - **Modern CLI Tools**: eza (replacement for ls), bat, fd, zoxide, and starship for a feature-rich shell experience.
 - **Fish Shell**: The primary interactive shell, pre-configured with aliases and plugins.
