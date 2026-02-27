@@ -17,7 +17,23 @@ let
       "${pkgs.nodejs}/bin/npx" -y @google/gemini-cli extensions install https://github.com/gemini-cli-extensions/security --auto-update --consent
     fi
 
-    exec ${pkgs.nodejs}/bin/npx -y @google/gemini-cli "$@"
+    # Use a temporary file to capture output for high demand detection
+    TMP_OUT=$(mktemp)
+    
+    # Run gemini and capture output while still showing it to the user
+    # We use a trap to ensure the temp file is cleaned up
+    trap 'rm -f "$TMP_OUT"' EXIT
+    
+    ${pkgs.nodejs}/bin/npx -y @google/gemini-cli "$@" | tee "$TMP_OUT"
+    
+    # Check for High Demand message
+    if grep -q "We are currently experiencing high demand" "$TMP_OUT"; then
+      if command -v win-notify >/dev/null 2>&1; then
+        # Get tab info if possible
+        TAB_INFO="$(hostname):$(pwd | sed "s|^$HOME|~|")"
+        win-notify "Gemini is experiencing high demand" "Action Required" "$TAB_INFO"
+      fi
+    fi
   '';
 in
 {
