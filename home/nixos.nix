@@ -1,6 +1,8 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, osConfig, ... }:
 
 {
+  imports = lib.optional (osConfig.wsl.enable or false) ./wsl.nix;
+
   home.username = "nixos";
   home.homeDirectory = "/home/nixos";
 
@@ -74,15 +76,6 @@
 
   programs.fish = {
     enable = true;
-    interactiveShellInit = ''
-      # Initialize inshellisense
-      test -f ~/.inshellisense/fish/init.fish && source ~/.inshellisense/fish/init.fish
-
-      # Source SSH agent environment if it exists
-      if test -f ~/.config/ssh-agent.env
-        source ~/.config/ssh-agent.env
-      end
-    '';
     shellAliases = {
       # Core Aliases
       cat = "bat --style plain --paging never";
@@ -96,7 +89,6 @@
       vissh = "nvim ~/.ssh/config";
       j = "z";
       run = ",";
-      open = "wsl-open";
     };
     functions = {
       cd = {
@@ -168,31 +160,6 @@
       $DRY_RUN_CMD mkdir -p $VERBOSE_ARG $HOME/.ssh/conf.d
       $DRY_RUN_CMD chmod $VERBOSE_ARG 0700 $HOME/.ssh/conf.d
     '';
-  };
-
-  # SSH Agent
-  services.ssh-agent.enable = true;
-
-  systemd.user.services.ssh-agent.Service = {
-    ExecStart = lib.mkForce "${pkgs.openssh}/bin/ssh-agent -D -a /run/user/1000/ssh-agent -t 15m";
-    ExecStartPre = "-${pkgs.coreutils}/bin/rm -f /run/user/1000/ssh-agent";
-    ExecStartPost = let
-      script = pkgs.writeShellScript "ssh-agent-post-start" ''
-        ${pkgs.coreutils}/bin/mkdir -p $HOME/.config
-        # Get socket from process arguments
-        # We use $1 which is passed as $MAINPID
-        ARGS=$(${pkgs.procps}/bin/ps -p $1 -o args=)
-        SOCK=$(echo "$ARGS" | ${pkgs.gnugrep}/bin/grep -oP '(?<=-a\s)\S+')
-        
-        if [ -n "$SOCK" ]; then
-          echo "set -gx SSH_AUTH_SOCK $SOCK;" > $HOME/.config/ssh-agent.env
-          echo "set -gx SSH_AGENT_PID $1;" >> $HOME/.config/ssh-agent.env
-        else
-          echo "Could not find socket in ssh-agent arguments: $ARGS" >&2
-          exit 1
-        fi
-      '';
-    in "${script} $MAINPID";
   };
 
   # SSH Client Configuration
