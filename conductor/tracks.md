@@ -17,3 +17,9 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 - [ ] **Track: Implement notify-send bridge from WSL2 to Windows**
 *Link: [./tracks/wsl_notify_bridge_20260227/](./tracks/wsl_notify_bridge_20260227/)*
+
+---
+
+
+- [ ] **Track: Remove devenv and cachix, transition to nix-direnv**
+*Link: [./tracks/remove_devenv_nix_direnv_20260227/](./tracks/remove_devenv_nix_direnv_20260227/)*
