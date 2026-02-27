@@ -6,10 +6,10 @@
 - [x] Task: Remove WSL-specific logic from `home/nixos.nix` and add a conditional import checking `osConfig.wsl.enable`. 4e156c0
 - [x] Task: Conductor - User Manual Verification 'Configuration Refactoring' (Protocol in workflow.md) d4f48b1
 
-## Phase 2: Verification and System Switch
+## Phase 2: Verification and System Switch [checkpoint: 20d41a0]
 
-- [ ] Task: Build the configuration to ensure no syntax or logical errors: `sudo nixos-rebuild build --flake .#launch-octopus`.
-- [ ] Task: Switch to the new configuration on the `launch-octopus` host: `sudo nixos-rebuild switch --flake .#launch-octopus`.
-- [ ] Task: Verify that `open` still works as `wsl-open` in a new Fish session.
-- [ ] Task: Verify that `systemctl --user status ssh-agent` is active and `~/.config/ssh-agent.env` is correctly generated.
-- [ ] Task: Conductor - User Manual Verification 'Verification and System Switch' (Protocol in workflow.md)
+- [x] Task: Build the configuration to ensure no syntax or logical errors: `sudo nixos-rebuild build --flake .#launch-octopus`. 7301a42
+- [x] Task: Switch to the new configuration on the `launch-octopus` host: `sudo nixos-rebuild switch --flake .#launch-octopus`. fb447a4
+- [x] Task: Verify that `open` still works as `wsl-open` in a new Fish session. e022dda
+- [x] Task: Verify that `systemctl --user status ssh-agent` is active and `~/.config/ssh-agent.env` is correctly generated. 56ea322
+- [x] Task: Conductor - User Manual Verification 'Verification and System Switch' (Protocol in workflow.md) 20d41a0
