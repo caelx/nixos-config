@@ -16,5 +16,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Remove nodejs from my home packages**
+- [~] **Track: Remove nodejs from my home packages**
 *Link: [./tracks/remove_node_home_20260227/](./tracks/remove_node_home_20260227/)*
