@@ -5,9 +5,9 @@
     - [ ] Add `devenv` to `home.packages` in `home/nixos.nix`.
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Implementation' (Protocol in workflow.md) [b637441]
 
-## Phase 2: Verification
+## Phase 2: Verification [checkpoint: 90a36d9]
 - [x] Task: System Apply and Test [a2827db]
     - [x] Run `sudo nixos-rebuild switch --flake .#launch-octopus`.
     - [x] Run `devenv version`.
     - [x] Test `devenv init` in a temporary directory.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Verification' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Verification' (Protocol in workflow.md) [90a36d9]
