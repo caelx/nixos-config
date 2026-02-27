@@ -15,8 +15,6 @@ This file tracks all major tracks for the project. Each track has its own detail
 ---
 
 
-- [x] **Track: Implement notify-send bridge from WSL2 to Windows**
-*Link: [./tracks/wsl_notify_bridge_20260227/](./tracks/wsl_notify_bridge_20260227/)*
 
 ---
 
