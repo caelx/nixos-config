@@ -1,10 +1,10 @@
 # Implementation Plan: Refactor WSL-specific Home Manager Configuration
 
-## Phase 1: Configuration Refactoring
+## Phase 1: Configuration Refactoring [checkpoint: d4f48b1]
 
-- [ ] Task: Create `home/wsl.nix` with extracted WSL-specific Home Manager logic (ssh-agent, wsl-open, fish init).
-- [ ] Task: Remove WSL-specific logic from `home/nixos.nix` and add a conditional import checking `osConfig.wsl.enable`.
-- [ ] Task: Conductor - User Manual Verification 'Configuration Refactoring' (Protocol in workflow.md)
+- [x] Task: Create `home/wsl.nix` with extracted WSL-specific Home Manager logic (ssh-agent, wsl-open, fish init). 02726c5
+- [x] Task: Remove WSL-specific logic from `home/nixos.nix` and add a conditional import checking `osConfig.wsl.enable`. 4e156c0
+- [x] Task: Conductor - User Manual Verification 'Configuration Refactoring' (Protocol in workflow.md) d4f48b1
 
 ## Phase 2: Verification and System Switch
 
