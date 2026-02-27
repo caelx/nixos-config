@@ -1,6 +1,6 @@
 # Implementation Plan: Remove Legacy Windows Notification Bridge
 
-## Phase 1: Code Cleanup [checkpoint: ]
+## Phase 1: Code Cleanup [checkpoint: 32469d5]
 
 - [x] Task: Remove `win-notify` integrations from `home/wsl.nix`. 8edc59f
 - [x] Task: Remove `win-notify` usage in `modules/common/gemini.nix`. b6a535e
