@@ -18,6 +18,6 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md) [86a6930]
 
 ## Phase 4: Final Verification and Documentation
-- [ ] Task: Verify the bridge with various flags (app-name, urgency, icon).
+- [x] Task: Verify the bridge with various flags (app-name, urgency, icon). [64c2c7c]
 - [ ] Task: Update `README.md` to document the availability of `notify-send` in WSL.
 - [ ] Task: Conductor - User Manual Verification 'Phase 4' (Protocol in workflow.md)
