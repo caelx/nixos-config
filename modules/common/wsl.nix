@@ -36,13 +36,15 @@
       APP_NAME=\"WSL\"
       SUMMARY=\"\"
       BODY=\"\"
+      URGENCY=\"normal\"
 
       # Parse arguments
       while [[ \$# -gt 0 ]]; do
           case \"\$1\" in
               -a|--app-name) APP_NAME=\"\$2\"; shift 2 ;;
               --app-name=*) APP_NAME=\"\${1#*=}\"; shift ;;
-              -u|--urgency|--urgency=*) shift 2 ;; # Ignore urgency
+              -u|--urgency) URGENCY=\"\$2\"; shift 2 ;;
+              --urgency=*) URGENCY=\"\${1#*=}\"; shift ;;
               -t|--expire-time|--expire-time=*) shift 2 ;; # Ignore timeout
               -i|--icon|--icon=*) shift 2 ;; # Ignore icon
               -h|--help)
@@ -79,10 +81,22 @@
               \\\$imageNode = (\\\$RawXml.toast.visual.binding.image | Where-Object { \\\$_.id -eq '1' })
               if (\\\$imageNode) { \\\$imageNode.SetAttribute('src', \\\$iconPath) }
           }
+          
+          # Set critical urgency attributes if requested
+          if ('$URGENCY' -eq 'critical') {
+              \\\$RawXml.toast.SetAttribute('scenario', 'reminder')
+          }
+
           \\\$SerializedXml = [Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom.XmlDocument, ContentType = WindowsRuntime]::New()
           \\\$SerializedXml.LoadXml(\\\$RawXml.OuterXml)
+          
           \\\$Toast = [Windows.UI.Notifications.ToastNotification, Windows.UI.Notifications, ContentType = WindowsRuntime]::New(\\\$SerializedXml)
           \\\$Toast.Tag = '\$APP_NAME_ESCAPED'; \\\$Toast.Group = 'WSL'
+          
+          if ('$URGENCY' -eq 'critical') {
+              \\\$Toast.Priority = [Windows.UI.Notifications.ToastNotificationPriority]::High
+          }
+
           [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier('PowerShell').Show(\\\$Toast)
       \"
     ")
