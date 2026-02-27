@@ -8,7 +8,7 @@
 ## Phase 2: Bridge Script Implementation
 - [x] Task: Develop the `notify-send` Bash wrapper that parses standard flags (`-a`, `-i`, `-u`, `-t`). [70c8e29]
 - [x] Task: Implement path translation for icons (Linux path to `/mnt/c/...` or Windows path). [b25bd7a]
-- [ ] Task: Finalize the inline PowerShell snippet within the Bash script.
+- [x] Task: Finalize the inline PowerShell snippet within the Bash script. [4cb4000]
 - [ ] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
 
 ## Phase 3: NixOS Integration
