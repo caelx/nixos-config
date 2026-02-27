@@ -7,9 +7,9 @@
 
 ## Phase 2: Verification [checkpoint: ]
 
-- [ ] Task: System Apply and Test
-    - [ ] Run `sudo nixos-rebuild switch --flake .#launch-octopus`.
-    - [ ] Run `node --version` and ensure it's not found globally.
-    - [ ] Run `gemini --help` to ensure the Gemini CLI still works via its internal Node.js.
-    - [ ] Run `inshellisense --help` to ensure Node.js-based system tools remain functional.
+- [x] Task: System Apply and Test a6563af
+    - [x] Run `sudo nixos-rebuild switch --flake .#launch-octopus`.
+    - [x] Run `node --version` and ensure it's not found globally.
+    - [x] Run `gemini --help` to ensure the Gemini CLI still works via its internal Node.js.
+    - [x] Run `inshellisense --help` to ensure Node.js-based system tools remain functional.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Verification' (Protocol in workflow.md)
