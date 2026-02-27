@@ -3,7 +3,7 @@
 ## Phase 1: Removal and Cleanup
 - [x] Task: Remove `devenv` and `cachix` substituters from `modules/common/default.nix`. 42236b8
 - [x] Task: Remove `devenv` from `home/nixos.nix` (Home Manager packages). d71d518
-- [ ] Task: Remove `devenv` from `tech-stack.md`.
+- [x] Task: Remove `devenv` from `tech-stack.md`. 5735df0
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Removal and Cleanup' (Protocol in workflow.md)
 
 ## Phase 2: nix-direnv Transition
