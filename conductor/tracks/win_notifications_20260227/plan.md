@@ -14,9 +14,9 @@ This plan outlines the steps to implement a Windows notification bridge for WSL2
 - [x] Task: Implement Sudo password prompt detection. 5b75812
 - [x] Task: Implement 'Long Task' notification (3+ minutes). 5b75812
     - [x] Add a background timer or check in Fish for tasks exceeding 3 minutes. 5b75812
-- [x] Task: Implement "High Demand" message detection. 73370dd
-    - [x] Use Fish hooks or a background process to detect the specific message. 73370dd
-- [x] Task: Conductor - User Manual Verification 'Fish Shell Hooks' (Protocol in workflow.md) 73370dd
+- [x] Task: Implement "High Demand" message detection. 86e527e
+    - [x] Use a background shell to tail the script session output for real-time detection. 86e527e
+- [x] Task: Conductor - User Manual Verification 'Fish Shell Hooks' (Protocol in workflow.md) 123aad9
 
 ## Phase 3: Integration & Cleanup
 - [x] Task: Final integration and configuration options. 123aad9
