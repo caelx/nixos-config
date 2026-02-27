@@ -1,0 +1,8 @@
+{
+  "track_id": "win_notifications_20260227",
+  "type": "feature",
+  "status": "new",
+  "created_at": "2026-02-27T10:00:00Z",
+  "updated_at": "2026-02-27T10:00:00Z",
+  "description": "I want to make it so that gemini cli will notify windows whenever it's waiting on input or it finishes a task. Also detect 'Action Required' title, sudo prompts, and tasks > 3 mins."
+}

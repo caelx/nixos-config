@@ -11,8 +11,3 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 - [x] **Track: Windows Notifications for WSL2**
 *Link: [./tracks/win_notifications_20260227/](./tracks/win_notifications_20260227/)*
-
----
-
-- [ ] **Track: Add instructions for Gemini Conductor globally so that it runs the verifications itself.**
-*Link: [./tracks/gemini_conductor_enhancement_20260227/](./tracks/gemini_conductor_enhancement_20260227/)*

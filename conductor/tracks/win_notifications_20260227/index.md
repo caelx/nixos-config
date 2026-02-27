@@ -1,4 +1,4 @@
-# Track refactor_wsl_home_20260227 Context
+# Track win_notifications_20260227 Context
 
 - [Specification](./spec.md)
 - [Implementation Plan](./plan.md)
