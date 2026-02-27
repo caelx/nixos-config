@@ -2,13 +2,28 @@
 
 # notify-send (WSL to Windows Bridge)
 # A drop-in replacement for notify-send that forwards notifications to Windows.
+# Hardcoded to use the Windows Terminal icon for branding.
+# Version: 1.1.0
 
 APP_NAME="WSL"
 URGENCY="normal"
 EXPIRE_TIME=""
-ICON=""
 SUMMARY=""
 BODY=""
+
+# Function to show usage
+show_help() {
+    echo "Usage: notify-send [OPTIONS] <SUMMARY> [BODY]"
+    echo ""
+    echo "A WSL bridge that forwards Linux notifications to the Windows Action Center."
+    echo ""
+    echo "Options:"
+    echo "  -a, --app-name=APP_NAME   Specify the application name (defaults to 'WSL')."
+    echo "  -u, --urgency=LEVEL       Specify the urgency level (low, normal, critical)."
+    echo "  -t, --expire-time=TIME    Specify the timeout in milliseconds (ignored)."
+    echo "  -h, --help                Show this help message."
+    exit 0
+}
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -17,30 +32,39 @@ while [[ $# -gt 0 ]]; do
             APP_NAME="$2"
             shift 2
             ;;
+        --app-name=*)
+            APP_NAME="${1#*=}"
+            shift
+            ;;
         -u|--urgency)
             URGENCY="$2"
             shift 2
+            ;;
+        --urgency=*)
+            URGENCY="${1#*=}"
+            shift
             ;;
         -t|--expire-time)
             EXPIRE_TIME="$2"
             shift 2
             ;;
+        --expire-time=*)
+            EXPIRE_TIME="${1#*=}"
+            shift
+            ;;
         -i|--icon)
-            ICON="$2"
+            # Icon is ignored as per hardcoding requirement
             shift 2
             ;;
+        --icon=*)
+            shift
+            ;;
         -h|--help)
-            echo "Usage: notify-send [OPTIONS] <SUMMARY> [BODY]"
-            echo "Options:"
-            echo "  -a, --app-name=APP_NAME   Specify the application name."
-            echo "  -i, --icon=ICON           Specify an icon."
-            echo "  -u, --urgency=LEVEL       Specify the urgency level (low, normal, critical)."
-            echo "  -t, --expire-time=TIME    Specify the timeout in milliseconds."
-            exit 0
+            show_help
             ;;
         *)
             if [[ "$1" == -* ]]; then
-                # Ignore unknown options for now to maintain compatibility
+                # Ignore unknown options
                 shift
             elif [ -z "$SUMMARY" ]; then
                 SUMMARY="$1"
@@ -56,23 +80,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [ -z "$SUMMARY" ]; then
-    echo "Error: At least a summary must be provided."
-    exit 1
-fi
-
-# Handle icon path translation
-# We prioritize the provided icon if it exists.
-# If it's a Linux path, we use wslpath to convert it.
-ICON_WIN=""
-if [ -n "$ICON" ]; then
-    if [[ "$ICON" == /* ]]; then
-        if [ -f "$ICON" ]; then
-            ICON_WIN=$(wslpath -w "$ICON" 2>/dev/null | sed 's/\\/\\\\/g')
-        fi
-    else
-        # Possibly a Windows path already or a relative path
-        ICON_WIN=$(echo "$ICON" | sed 's/\\/\\\\/g')
-    fi
+    show_help
 fi
 
 # Escape single quotes for PowerShell
@@ -84,16 +92,10 @@ APP_NAME_ESCAPED=$(echo "$APP_NAME" | sed "s/'/''/g")
 powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "
     [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] > \$null
     
-    # Locate Windows Terminal Icon for branding if no icon is specified
-    # Or always use it if requested
-    \$iconPath = \$null
-    if ('$ICON_WIN' -eq '') {
-        \$wtPackage = Get-AppxPackage -Name Microsoft.WindowsTerminal
-        if (\$wtPackage) {
-            \$iconPath = Join-Path \$wtPackage.InstallLocation 'Images\Square44x44Logo.targetsize-256.png'
-        }
-    } else {
-        \$iconPath = '$ICON_WIN'
+    # Locate Windows Terminal 256x256 Icon
+    \$wtPackage = Get-AppxPackage -Name Microsoft.WindowsTerminal
+    if (\$wtPackage) {
+        \$iconPath = Join-Path \$wtPackage.InstallLocation 'Images\Square44x44Logo.targetsize-256.png'
     }
 
     # Template
