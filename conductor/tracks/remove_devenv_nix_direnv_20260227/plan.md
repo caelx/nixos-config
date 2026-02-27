@@ -8,7 +8,7 @@
 
 ## Phase 2: nix-direnv Transition
 - [x] Task: Enable `nix-direnv` in the system configuration (e.g., `programs.direnv.nix-direnv.enable = true`). 0474f75
-- [ ] Task: Verify that `direnv` and `nix-direnv` are correctly configured for the Fish shell.
+- [x] Task: Verify that `direnv` and `nix-direnv` are correctly configured for the Fish shell. 8e1281a
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: nix-direnv Transition' (Protocol in workflow.md)
 
 ## Phase 3: Final Verification
