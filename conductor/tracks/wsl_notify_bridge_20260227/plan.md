@@ -12,7 +12,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md) [7a46346]
 
 ## Phase 3: NixOS Integration
-- [ ] Task: Create a new module or package definition in `modules/common/wsl.nix` for the `notify-send` bridge.
+- [x] Task: Create a new module or package definition in `modules/common/wsl.nix` for the `notify-send` bridge. [c8eb748]
 - [ ] Task: Add the package to `environment.systemPackages` for the WSL host.
 - [ ] Task: Perform a `nixos-rebuild switch --flake .#launch-octopus` to deploy the new tool.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3' (Protocol in workflow.md)
