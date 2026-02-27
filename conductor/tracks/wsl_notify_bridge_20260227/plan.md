@@ -2,7 +2,7 @@
 
 ## Phase 1: Research and Prototyping
 - [x] Task: Research PowerShell command for modern Windows toast notifications without external dependencies. [fb18438]
-- [ ] Task: Prototype a direct `powershell.exe` call from WSL to trigger a notification with title and body.
+- [x] Task: Prototype a direct `powershell.exe` call from WSL to trigger a notification with title and body. [7812957]
 - [ ] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
 
 ## Phase 2: Bridge Script Implementation
