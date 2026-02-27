@@ -36,8 +36,6 @@
     inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.nh
     nvd         # Nix Visual Diff
     comma       # Run any binary from nixpkgs
-    direnv      # Automatic environment loading
-    nix-direnv  # Nix integration for direnv
 
     # Essential CLI tools
     git
@@ -72,6 +70,12 @@
     curl
     expat
   ];
+
+  # Fast, persistent development environment loading
+  programs.direnv = {
+    enable = true;
+    nix-direnv.enable = true;
+  };
 
   # Set your time zone.
   time.timeZone = "UTC"; # User should override this in host config if needed
