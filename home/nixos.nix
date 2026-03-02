@@ -30,6 +30,10 @@
     fastfetch
     eza
     inshellisense
+
+    # Playwright for Gemini MCP
+    playwright-driver.browsers
+    playwright
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -98,6 +102,8 @@
   #
   home.sessionVariables = {
     EDITOR = "nvim";
+    PLAYWRIGHT_BROWSERS_PATH = "${pkgs.playwright-driver.browsers}";
+    PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1";
   };
 
   # Shell Configuration
@@ -224,5 +230,8 @@
   programs.git = {
     enable = true;
     lfs.enable = true;
+    settings = {
+      init.defaultBranch = "main";
+    };
   };
 }
