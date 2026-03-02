@@ -33,7 +33,7 @@
 
     # Playwright for Gemini MCP
     playwright-driver.browsers
-    playwright
+    playwright-mcp
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -87,8 +87,8 @@
         };
         mcpServers = {
           playwright = {
-            command = "npx";
-            args = [ "-y" "@modelcontextprotocol/server-playwright" ];
+            command = "mcp-server-playwright";
+            args = [ ];
           };
         };
       };
