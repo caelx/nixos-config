@@ -21,3 +21,7 @@
 - **nix-ld**: For running dynamically linked executables intended for generic Linux environments (e.g., VS Code Remote Server).
 - **Modern CLI Tools**: eza (replacement for ls), bat, fd, zoxide, and starship for a feature-rich shell experience.
 - **Fish Shell**: The primary interactive shell, pre-configured with aliases and plugins.
+
+## AI & Automation
+- **Gemini CLI**: Local AI agent interface with custom Nix packaging and Home Manager configuration.
+- **Playwright MCP**: Model Context Protocol server for browser automation, integrated with Nix-native browser binaries.
