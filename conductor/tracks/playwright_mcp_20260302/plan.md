@@ -1,11 +1,11 @@
 # Implementation Plan - Playwright MCP Integration for Gemini
 
 ## Phase 1: Package Installation & Environment Configuration
-- [ ] Task: Update `home/nixos.nix` to install Playwright packages.
-    - [ ] Add `pkgs.playwright-driver.browsers` and `pkgs.playwright` to `home.packages`.
-- [ ] Task: Configure Playwright environment variables in `home/nixos.nix`.
-    - [ ] Set `PLAYWRIGHT_BROWSERS_PATH = "${pkgs.playwright-driver.browsers}"`.
-    - [ ] Set `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1"`.
+- [x] Task: Update `home/nixos.nix` to install Playwright packages. 087513f
+    - [x] Add `pkgs.playwright-driver.browsers` and `pkgs.playwright` to `home.packages`.
+- [x] Task: Configure Playwright environment variables in `home/nixos.nix`. 087513f
+    - [x] Set `PLAYWRIGHT_BROWSERS_PATH = "${pkgs.playwright-driver.browsers}"`.
+    - [x] Set `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1"`.
 - [ ] Task: Conductor - User Manual Verification 'Package Installation & Environment Configuration' (Protocol in workflow.md)
 
 ## Phase 2: Gemini CLI Integration
