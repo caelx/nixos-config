@@ -85,6 +85,12 @@
             }
           ];
         };
+        mcpServers = {
+          playwright = {
+            command = "npx";
+            args = [ "-y" "@modelcontextprotocol/server-playwright" ];
+          };
+        };
       };
     };
   };
