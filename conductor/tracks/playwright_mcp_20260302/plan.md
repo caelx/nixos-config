@@ -9,9 +9,9 @@
 - [x] Task: Conductor - User Manual Verification 'Package Installation & Environment Configuration' (Protocol in workflow.md) e97c61a
 
 ## Phase 2: Gemini CLI Integration
-- [ ] Task: Update Gemini CLI settings in `home/nixos.nix`.
-    - [ ] Add `mcpServers` block to `home.file.".gemini/settings.json"`.
-    - [ ] Configure `playwright` MCP server with `command: "npx"` and `args: ["-y", "@modelcontextprotocol/server-playwright"]`.
+- [x] Task: Update Gemini CLI settings in `home/nixos.nix`. 7fb96da
+    - [x] Add `mcpServers` block to `home.file.".gemini/settings.json"`.
+    - [x] Configure `playwright` MCP server with `command: "npx"` and `args: ["-y", "@modelcontextprotocol/server-playwright"]`.
 - [ ] Task: Conductor - User Manual Verification 'Gemini CLI Integration' (Protocol in workflow.md)
 
 ## Phase 3: Validation & Testing
