@@ -89,6 +89,9 @@
           playwright = {
             command = "mcp-server-playwright";
             args = [ ];
+            env = {
+              PLAYWRIGHT_HEADLESS = "true";
+            };
           };
         };
       };
