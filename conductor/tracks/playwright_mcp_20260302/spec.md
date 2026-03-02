@@ -11,7 +11,7 @@ Integrate the Playwright Model Context Protocol (MCP) server into the Gemini CLI
 
 ## Technical Implementation
 1.  **Package Installation**:
-    - Add `pkgs.playwright-driver.browsers` and `pkgs.playwright` to `home.packages` in `home/nixos.nix`.
+    - Add `pkgs.playwright-driver.browsers` and `pkgs.playwright-mcp` to `home.packages` in `home/nixos.nix`.
 2.  **Environment Variables**:
     - Set `PLAYWRIGHT_BROWSERS_PATH = "${pkgs.playwright-driver.browsers}"` in `home.sessionVariables`.
     - Set `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1"` in `home.sessionVariables`.
@@ -20,8 +20,8 @@ Integrate the Playwright Model Context Protocol (MCP) server into the Gemini CLI
       ```json
       "mcpServers": {
         "playwright": {
-          "command": "npx",
-          "args": ["-y", "@modelcontextprotocol/server-playwright"]
+          "command": "mcp-server-playwright",
+          "args": []
         }
       }
       ```
