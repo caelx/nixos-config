@@ -8,11 +8,11 @@
     - [x] Set `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1"`.
 - [x] Task: Conductor - User Manual Verification 'Package Installation & Environment Configuration' (Protocol in workflow.md) e97c61a
 
-## Phase 2: Gemini CLI Integration
+## Phase 2: Gemini CLI Integration [checkpoint: dce16dc]
 - [x] Task: Update Gemini CLI settings in `home/nixos.nix`. 7fb96da
     - [x] Add `mcpServers` block to `home.file.".gemini/settings.json"`.
     - [x] Configure `playwright` MCP server with `command: "npx"` and `args: ["-y", "@modelcontextprotocol/server-playwright"]`.
-- [ ] Task: Conductor - User Manual Verification 'Gemini CLI Integration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Gemini CLI Integration' (Protocol in workflow.md) dce16dc
 
 ## Phase 3: Validation & Testing
 - [ ] Task: Verify integration and browser access.
