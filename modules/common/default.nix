@@ -39,6 +39,7 @@
     libnotify   # Desktop notifications
 
     # Essential CLI tools
+    coreutils
     git
     neovim
     curl

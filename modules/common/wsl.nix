@@ -17,6 +17,15 @@
       automount.enabled = true;
       interop.enabled = true;
     };
+    
+    # Enable Docker Desktop integration (provided by WSL)
+    # This automatically adds the 'docker' group and configures the socket.
+    docker-desktop.enable = true;
+
+    # Expose specific binaries to /bin for 'wsl -e' or direct execution from Windows
+    extraBin = [
+      { src = "${pkgs.coreutils}/bin/whoami"; }
+    ];
   };
 
   # Share USERPROFILE from Windows to WSL and translate the path (/p)
