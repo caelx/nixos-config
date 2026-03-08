@@ -17,8 +17,8 @@
 - [x] Task: Configure basic display options (non-WSL specific) z1jmx45
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Desktop Environment and Graphics' (Protocol in workflow.md) 39e80e2
 
-## Phase 4: Hardware Configuration (AMD HX100G)
+## Phase 4: Hardware Configuration (AMD HX100G) [checkpoint: 91dedec]
 - [x] Task: Configure `hosts/armored-armadillo/hardware-configuration.nix` for AMD HX100G b3napwy
 - [x] Task: Add necessary kernel modules and hardware tweaks for AMD performance b3napwy
 - [x] Task: Verify the configuration builds for the AMD target b3napwy
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Hardware Configuration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Hardware Configuration' (Protocol in workflow.md) 91dedec
