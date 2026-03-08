@@ -7,8 +7,8 @@
 
 ## Phase 2: Common Module Integration
 - [x] Task: Import `modules/common/default.nix`, `modules/common/users.nix`, and `modules/common/secrets.nix` 5a35d04
-- [ ] Task: Import `modules/common/gemini.nix` and `modules/common/automation.nix`
-- [ ] Task: Verify non-WSL modules are correctly imported and evaluated
+- [x] Task: Import `modules/common/gemini.nix` and `modules/common/automation.nix` 2bb9351
+- [x] Task: Verify non-WSL modules are correctly imported and evaluated 4wpgfbx
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Common Module Integration' (Protocol in workflow.md)
 
 ## Phase 3: Desktop Environment and Graphics
