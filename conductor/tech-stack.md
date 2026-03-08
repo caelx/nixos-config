@@ -12,6 +12,7 @@
 
 ## Security & Secrets
 - **sops-nix**: Integration of Mozilla SOPS with NixOS for secure, encrypted secret management (using `age` or `gpg`).
+- **Custom Secret Scripts**: `secrets-get-public-key`, `secrets-add-key`, `secrets-remove-key`, and `secrets-reencrypt` for per-host key management.
 
 ## Development & Utility Tools
 - **nh (Nix Helper)**: A modern, user-friendly wrapper for common Nix CLI operations.
@@ -19,7 +20,7 @@
 - **nvd (Nix Visual Diff)**: For analyzing differences between Nix package generations.
 - **comma (, )**: To run any binary from nixpkgs without permanent installation.
 - **nix-ld**: For running dynamically linked executables intended for generic Linux environments (e.g., VS Code Remote Server).
-- **Modern CLI Tools**: eza (replacement for ls), bat, fd, zoxide, and starship for a feature-rich shell experience.
+- **Modern CLI Tools**: eza (replacement for ls), bat, fd, zoxide, jq, and starship for a feature-rich shell experience.
 - **Fish Shell**: The primary interactive shell, pre-configured with aliases and plugins.
 
 ## AI & Automation
