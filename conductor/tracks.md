@@ -12,3 +12,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 - [x] **Track: Add Playwright MCP for Gemini CLI on NixOS**
 *Link: [./tracks/playwright_mcp_20260302/](./tracks/playwright_mcp_20260302/)*
 
+---
+
+- [ ] **Track: Add armored-armadillo host for emulator PC**
+*Link: [./tracks/armored_armadillo_20260308/](./tracks/armored_armadillo_20260308/)*
