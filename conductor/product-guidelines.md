@@ -1,5 +1,11 @@
 # Product Guidelines: Unified NixOS Configuration Repository
 
+## Core Mandates
+- **Modular Design**: Maintain strict separation between hardware-specific logic in `hosts/`, shared system modules in `modules/`, and user-level configurations in `home/`.
+- **Absolute Reproducibility**: Every system must be rebuildable from scratch to an identical state using the declarative Nix configuration.
+- **Security First**: No secrets in plain text. All sensitive data (API keys, passwords, credentials) must be managed through `sops-nix`.
+- **Literate Documentation**: Provide clear inline rationale for non-trivial Nix expressions and maintain up-to-date documentation in the `conductor/` directory.
+
 ## Documentation Standards
 - **Inline Rationale**: All non-trivial Nix expressions MUST include detailed inline comments explaining the *intent* and any "gotchas" discovered during implementation.
 - **Literate Exploration**: For complex subsystems (e.g., custom secrets logic or complex desktop environments), consider using literate programming techniques or dedicated Markdown overviews to bridge the gap between code and documentation.

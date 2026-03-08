@@ -9,12 +9,12 @@
 - [x] Task: Import `modules/common/default.nix`, `modules/common/users.nix`, and `modules/common/secrets.nix` 5a35d04
 - [x] Task: Import `modules/common/gemini.nix` and `modules/common/automation.nix` f08e709
 - [x] Task: Verify non-WSL modules are correctly imported and evaluated bggq62l
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Common Module Integration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Common Module Integration' (Protocol in workflow.md) bdd577a
 
 ## Phase 3: Desktop Environment and Graphics
-- [ ] Task: Enable Wayland and Hyprland in `hosts/armored-armadillo/default.nix`
-- [ ] Task: Enable XWayland support and Mesa graphics drivers
-- [ ] Task: Configure basic display options (non-WSL specific)
+- [x] Task: Enable Wayland and Hyprland in `hosts/armored-armadillo/default.nix` f08e709
+- [x] Task: Enable XWayland support and Mesa graphics drivers f08e709
+- [x] Task: Configure basic display options (non-WSL specific) z1jmx45
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Desktop Environment and Graphics' (Protocol in workflow.md)
 
 ## Phase 4: Conditional Hardware Configuration
