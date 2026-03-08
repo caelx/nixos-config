@@ -11,6 +11,7 @@ To create a robust, modular, and reproducible NixOS configuration repository tha
 - **Workstations/Laptops**: High-performance personal development environments with GUI and desktop tools.
 - **Servers/Home Lab**: Headless service hosting and infrastructure management.
 - **Embedded/ARM**: Lightweight configurations for devices like Raspberry Pi.
+- **Emulation PC**: Dedicated hardware (e.g., Minisforum HX100G) optimized for high-performance gaming and emulation.
 
 ## Primary Objectives
 - **Absolute Reproducibility**: Ensure that any system can be rebuilt from scratch to an identical state using the configuration.

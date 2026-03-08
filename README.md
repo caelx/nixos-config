@@ -23,6 +23,7 @@ To create an identical state across personal workstations, servers, and embedded
 
 ## 💻 Systems
 - **launch-octopus**: Primary WSL2 development environment on Windows 11.
+- **armored-armadillo**: Dedicated emulation-focused NixOS PC running on a Minisforum HX100G.
 
 ## ✨ Key Features
 
