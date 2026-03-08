@@ -16,3 +16,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 - [~] **Track: Add armored-armadillo host for emulator PC**
 *Link: [./tracks/armored_armadillo_20260308/](./tracks/armored_armadillo_20260308/)*
+
+---
+
+- [ ] **Track: Gemini Skill Manager**
+*Link: [./tracks/gemini_skill_manager_20260308/](./tracks/gemini_skill_manager_20260308/)*
