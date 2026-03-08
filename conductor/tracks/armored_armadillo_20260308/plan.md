@@ -1,7 +1,7 @@
 # Implementation Plan: Add armored-armadillo Host
 
 ## Phase 1: Foundation and Flake Registration
-- [ ] Task: Create directory structure for `hosts/armored-armadillo/`
+- [x] Task: Create directory structure for `hosts/armored-armadillo/` 73c7157
 - [ ] Task: Register `armored-armadillo` in `flake.nix` with initial `default.nix` and `hardware-configuration.nix`
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Foundation' (Protocol in workflow.md)
 
