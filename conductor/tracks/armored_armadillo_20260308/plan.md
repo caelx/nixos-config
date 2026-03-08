@@ -6,7 +6,7 @@
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Foundation' (Protocol in workflow.md)
 
 ## Phase 2: Common Module Integration
-- [ ] Task: Import `modules/common/default.nix`, `modules/common/users.nix`, and `modules/common/secrets.nix`
+- [x] Task: Import `modules/common/default.nix`, `modules/common/users.nix`, and `modules/common/secrets.nix` 5a35d04
 - [ ] Task: Import `modules/common/gemini.nix` and `modules/common/automation.nix`
 - [ ] Task: Verify non-WSL modules are correctly imported and evaluated
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Common Module Integration' (Protocol in workflow.md)
