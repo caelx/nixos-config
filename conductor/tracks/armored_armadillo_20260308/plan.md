@@ -2,7 +2,7 @@
 
 ## Phase 1: Foundation and Flake Registration
 - [x] Task: Create directory structure for `hosts/armored-armadillo/` 73c7157
-- [~] Task: Register `armored-armadillo` in `flake.nix` with initial `default.nix` and `hardware-configuration.nix`
+- [x] Task: Register `armored-armadillo` in `flake.nix` with initial `default.nix` and `hardware-configuration.nix` 888e37f
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Foundation' (Protocol in workflow.md)
 
 ## Phase 2: Common Module Integration
