@@ -83,10 +83,6 @@ in
     age.keyFile = ageKeyPath;
 
     secrets = {
-      smb-user = { };
-      smb-pass = { };
-      smb-server = { };
-      smb-share = { };
       nixos-password = { neededForUsers = true; };
     };
   };
