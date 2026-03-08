@@ -14,5 +14,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Add armored-armadillo host for emulator PC**
+- [~] **Track: Add armored-armadillo host for emulator PC**
 *Link: [./tracks/armored_armadillo_20260308/](./tracks/armored_armadillo_20260308/)*

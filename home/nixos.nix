@@ -4,7 +4,7 @@
   imports = lib.optional (osConfig.wsl.enable or false) ./wsl.nix;
 
   home.username = "nixos";
-  home.homeDirectory = "/home/nixos";
+  home.homeDirectory = lib.mkDefault "/home/nixos";
 
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release

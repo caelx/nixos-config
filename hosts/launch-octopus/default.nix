@@ -4,10 +4,8 @@
   imports = [
     ./hardware-configuration.nix
     ../../modules/common/default.nix
-    ../../modules/common/wsl.nix
-    ../../modules/common/users.nix
     ../../modules/common/secrets.nix
-    ../../modules/common/wsl-mounts.nix
+    ../../modules/wsl/default.nix
   ];
 
   # Hostname

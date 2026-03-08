@@ -5,7 +5,6 @@
     ./automation.nix
     ./user-nixos.nix
     ./users.nix
-    ./gemini.nix
   ];
 
   # Core Nix Settings
