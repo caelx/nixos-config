@@ -11,11 +11,11 @@
 - [x] Task: Verify non-WSL modules are correctly imported and evaluated bggq62l
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Common Module Integration' (Protocol in workflow.md) bdd577a
 
-## Phase 3: Desktop Environment and Graphics
+## Phase 3: Desktop Environment and Graphics [checkpoint: 39e80e2]
 - [x] Task: Enable Wayland and Hyprland in `hosts/armored-armadillo/default.nix` f08e709
 - [x] Task: Enable XWayland support and Mesa graphics drivers f08e709
 - [x] Task: Configure basic display options (non-WSL specific) z1jmx45
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Desktop Environment and Graphics' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Desktop Environment and Graphics' (Protocol in workflow.md) 39e80e2
 
 ## Phase 4: Conditional Hardware Configuration
 - [ ] Task: Implement conditional logic in `hosts/armored-armadillo/hardware-configuration.nix` for AMD vs. Gallium
