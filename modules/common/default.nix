@@ -46,6 +46,7 @@
     wget
     htop
     jq
+    dasel
 
     # Standard Utilities
     _7zz
