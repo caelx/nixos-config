@@ -4,7 +4,7 @@
 - [x] Task: Create host configuration directory `hosts/armored-armadillo-dev` [6c38dd6]
     - [ ] Initialize `default.nix` by adapting from `hosts/armored-armadillo/default.nix`
     - [ ] Create `hardware-configuration.nix` with Hyper-V specific modules (`hyperv-guest`)
-- [ ] Task: Define the host in `flake.nix`
+- [x] Task: Define the host in `flake.nix` [41e2467]
     - [ ] Add `armored-armadillo-dev` to `nixosConfigurations`
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: NixOS Host Configuration' (Protocol in workflow.md)
 
