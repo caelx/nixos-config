@@ -53,8 +53,8 @@
     ".gemini/skills/nixos-expert/SKILL.md".text = builtins.readFile ./config/skills/nixos-expert.md;
     ".gemini/skills/nixos-expert/metadata.json".text = builtins.toJSON {
       name = "nixos-expert";
-      description = "NixOS Expert for local and remote management using Fish and Flakes.";
-      tags = [ "nixos" "fish" "flakes" "expert" ];
+      description = "NixOS Expert for local and remote development and management using Fish and Flakes.";
+      tags = [ "nixos" "fish" "flakes" "expert" "development" ];
     };
 
     # Add more skills here
