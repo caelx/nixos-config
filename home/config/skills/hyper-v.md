@@ -11,30 +11,39 @@ This skill allows Gemini CLI to manage Hyper-V virtual machines and their resour
 
 * **PowerShell Bridge**: ALWAYS prefix Hyper-V commands with `/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -NoProfile -ExecutionPolicy Bypass -Command`.
 * **Output Handling**: Always pipe PowerShell output through `tr -d '\r'` to remove Windows carriage returns when capturing output into variables.
-* **Path Mapping**: When referring to paths on the Windows host, use Windows-style paths (e.g., `C:\VMs\disk.vhdx`). For files created in WSL, use `/mnt/c/...` paths.
+* **Path Management**: ALWAYS translate WSL paths to Windows paths using `wslpath -w` before passing them to PowerShell. DO NOT use `/mnt/c/...` style paths directly in PowerShell commands; always translate them to `C:\...` format. This ensures paths are correctly formatted for Windows and identifies paths that cannot be accessed by Hyper-V (e.g., those in the WSL root filesystem which should be moved to a Windows-accessible drive first).
 * **Permissions**: Assume the user has administrative privileges on the Windows host, as Hyper-V management typically requires it.
 
 ## Common Workflows
 
 ### 1. Creating a VM
 ```bash
-powershell.exe -Command "New-VM -Name '$VM_NAME' -MemoryStartupBytes $RAM_BYTES -Generation 2 -NewVHDPath '$VHD_PATH' -NewVHDSizeBytes $VHD_SIZE_BYTES"
+# Translate path first
+VHD_PATH_WIN=$(wslpath -w "$VHD_PATH")
+powershell.exe -Command "New-VM -Name '$VM_NAME' -MemoryStartupBytes $RAM_BYTES -Generation 2 -NewVHDPath '$VHD_PATH_WIN' -NewVHDSizeBytes $VHD_SIZE_BYTES"
 ```
 *Note: Default to Generation 2 VMs for modern operating systems like NixOS.*
 
-### 2. Configuring VM Settings
+### 2. Attaching an ISO
+```bash
+# Translate path first
+ISO_PATH_WIN=$(wslpath -w "$ISO_PATH")
+powershell.exe -Command "Set-VMDvdDrive -VMName '$VM_NAME' -Path '$ISO_PATH_WIN'"
+```
+
+### 3. Configuring VM Settings
 ```bash
 powershell.exe -Command "Set-VM -Name '$VM_NAME' -ProcessorCount 4 -DynamicMemoryEnabled $true"
 ```
 
-### 3. Disk & Partition Management
+### 4. Disk & Partition Management
 To initialize and partition a disk within a VM or a mounted VHD:
 ```bash
 # Initialize and partition a new disk
 powershell.exe -Command "Initialize-Disk -Number $DISK_NUM -PartitionStyle GPT; New-Partition -DiskNumber $DISK_NUM -UseMaximumSize -AssignDriveLetter; Format-Volume -DriveLetter $DRIVE_LETTER -FileSystem NTFS"
 ```
 
-### 4. Console Interaction (Serial Port)
+### 5. Console Interaction (Serial Port)
 To enable and interact with a serial console (e.g., for NixOS boot logs):
 1. **Map Serial Port to Named Pipe**:
    ```bash

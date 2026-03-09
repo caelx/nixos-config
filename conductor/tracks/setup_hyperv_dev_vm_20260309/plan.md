@@ -13,7 +13,7 @@
     - [ ] Verify if VM name 'armored-armadillo-dev' already exists
     - [ ] Create VM with 8GB RAM, 4 vCPUs, and Generation 2 settings
     - [ ] Create 64GB VHDX and attach to VM
-- [ ] Task: Configure Boot Media
+- [~] Task: Configure Boot Media
     - [ ] Attach ISO: `/home/nixos/win-home/Downloads/nixos-minimal-25.11.7198.71caefce12ba-x86_64-linux.iso`
     - [ ] Set DVD as the first boot device
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Hyper-V Resource Provisioning' (Protocol in workflow.md)
