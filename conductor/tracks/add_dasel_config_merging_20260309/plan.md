@@ -12,5 +12,5 @@
 
 ## Phase 3: Verification and Documentation
 - [x] Task: Create a sample configuration file and test the merging logic. 7cfef7b
-- [ ] Task: Update the project README to document the new configuration merging strategy.
+- [x] Task: Update the project README to document the new configuration merging strategy. a2cd113
 - [ ] Task: Conductor - User Manual Verification 'Verification and Finalization' (Protocol in workflow.md)
