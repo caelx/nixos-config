@@ -64,6 +64,13 @@
       tags = [ "python" "uv" "ruff" "pylance" "expert" "development" ];
     };
 
+    ".gemini/skills/general-dev/SKILL.md".text = builtins.readFile ./config/skills/general-dev.md;
+    ".gemini/skills/general-dev/metadata.json".text = builtins.toJSON {
+      name = "general-dev";
+      description = "General development workflow expert with automation and TDD focus.";
+      tags = [ "workflow" "tdd" "automation" "expert" "development" ];
+    };
+
     # Add more skills here
   };
 }
