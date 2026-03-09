@@ -29,11 +29,6 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Add dasel to common apps and implement a system configuration merging strategy for unmanaged configs.**
-*Link: [./tracks/add_dasel_config_merging_20260309/](./tracks/add_dasel_config_merging_20260309/)*
-
----
-
 - [ ] **Track: Static UID/GID Assignment and Anti-Overlap Policy**
 *Link: [./tracks/static_uid_gid_policy_20260309/](./tracks/static_uid_gid_policy_20260309/)*
 
