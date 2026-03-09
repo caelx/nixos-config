@@ -29,7 +29,13 @@
 
 ## Consistency & Upstream Alignment
 - **Identity Management**: 
-    - All users MUST have their `uid` and `gid` statically set to ensure consistency across different hardware and installations.
+    - All users and groups MUST have their `uid` and `gid` statically set to ensure consistency across different hardware and installations.
+    - Assigned IDs MUST be unique across the entire fleet to prevent permission conflicts (e.g., during data migration or shared storage).
+    - **ID Allocation Ranges**:
+        - `100 - 499`: System-level users and groups managed by NixOS.
+        - `1000 - 1999`: Primary human users (e.g., `nixos`).
+        - `2000 - 2999`: Specialized development or administrative users.
+        - `3000 - 4999`: OCI container / Self-hosted service users.
     - Usernames MUST be consistently lowercase (e.g., `nixos`).
 - **Networking Standard**: 
     - Use `systemd-networkd` as the default networking manager ONLY for hardware hosts (e.g., Mac Studio).
