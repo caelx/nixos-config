@@ -27,3 +27,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 - [x] **Track: Remove all dev configuration for armored-armadillo.**
 *Link: [./tracks/remove_armored_armadillo_dev_20260309/](./tracks/remove_armored_armadillo_dev_20260309/)*
 
+---
+
+- [ ] **Track: Add dasel to common apps and implement a system configuration merging strategy for unmanaged configs.**
+*Link: [./tracks/add_dasel_config_merging_20260309/](./tracks/add_dasel_config_merging_20260309/)*
+
