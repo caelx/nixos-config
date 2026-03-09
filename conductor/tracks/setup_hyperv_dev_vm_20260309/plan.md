@@ -9,7 +9,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: NixOS Host Configuration' (Protocol in workflow.md)
 
 ## Phase 2: Hyper-V Resource Provisioning
-- [ ] Task: Create the Hyper-V Virtual Machine
+- [x] Task: Create the Hyper-V Virtual Machine [cba3cbb]
     - [ ] Verify if VM name 'armored-armadillo-dev' already exists
     - [ ] Create VM with 8GB RAM, 4 vCPUs, and Generation 2 settings
     - [ ] Create 64GB VHDX and attach to VM
