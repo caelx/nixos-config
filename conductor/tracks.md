@@ -12,7 +12,3 @@ This file tracks all major tracks for the project. Each track has its own detail
 - [x] **Track: Add Playwright MCP for Gemini CLI on NixOS**
 *Link: [./tracks/playwright_mcp_20260302/](./tracks/playwright_mcp_20260302/)*
 
----
-
-- [ ] **Track: Gemini Skill Manager**
-*Link: [./tracks/gemini_skill_manager_20260304/](./tracks/gemini_skill_manager_20260304/)*
