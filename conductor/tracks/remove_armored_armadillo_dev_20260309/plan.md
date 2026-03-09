@@ -2,7 +2,7 @@
 
 ## Phase 1: Removal of Development Host
 - [x] Task: Delete the `hosts/armored-armadillo-dev/` directory d5b2b09
-- [ ] Task: Remove `armored-armadillo-dev` entry from `flake.nix`
+- [x] Task: Remove `armored-armadillo-dev` entry from `flake.nix` 1e18331
 - [ ] Task: Conductor - User Manual Verification 'Removal of Development Host' (Protocol in workflow.md)
 
 ## Phase 2: Cleanup Main Host Configuration
