@@ -8,7 +8,7 @@ description: Core system directives for Gemini CLI including memory management, 
 
 ## Core Directives
 * **Memory & Persistence**:
-    * ALWAYS use the project-level `GEMINI.md` as the primary memory and persistent fact store for the current workspace.
+    * DEFAULT to using the project-level `GEMINI.md` as the primary memory and persistent fact store for the current workspace.
     * Do NOT use global memory via `save_memory` for project-specific information unless it's a cross-project user preference.
 * **Continuous Learning**:
     * If you make a mistake, identify a bug in your logic, or discover a non-obvious project convention/trick, you MUST immediately update the `GEMINI.md` file in the project root.
