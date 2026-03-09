@@ -70,11 +70,28 @@ let
     ${pkgs.age}/bin/age-keygen -y "${ageKeyPath}"
   '';
 
+  secrets-list-keys = pkgs.writeShellScriptBin "secrets-list-keys" ''
+    REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
+    SOPS_CONFIG="$REPO_ROOT/.sops.yaml"
+
+    if [ ! -f "$SOPS_CONFIG" ]; then
+      echo "Error: .sops.yaml not found at $SOPS_CONFIG"
+      exit 1
+    fi
+
+    echo "Public keys and associated systems in .sops.yaml:"
+    echo "--------------------------------------------------"
+    # Extract age keys and comments, handling cases with and without comments
+    grep "age1" "$SOPS_CONFIG" | sed -E 's/^[[:space:]]*- ([^[:space:]#]+)([[:space:]]*#[[:space:]]*)?(.*)$/\1 \3/' | while read -r key system; do
+      printf "%-60s | %s\n" "$key" "''${system:-Unknown}"
+    done
+  '';
+
   secrets-reencrypt = pkgs.writeShellScriptBin "secrets-reencrypt" ''
     export SOPS_AGE_KEY_FILE="${ageKeyPath}"
     REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
     TARGET_FILE="''${1:-secrets.yaml}"
-    
+
     # If file exists locally, use it. Otherwise try repo root.
     if [ -f "$TARGET_FILE" ]; then
       FILE_PATH="$TARGET_FILE"
@@ -96,11 +113,12 @@ let
     SOPS_CONFIG="$REPO_ROOT/.sops.yaml"
 
     if [ -z "''${1:-}" ]; then
-      echo "Usage: secrets-add-key <public_age_key>"
+      echo "Usage: secrets-add-key <public_age_key> [system_name]"
       exit 1
     fi
 
     NEW_KEY="$1"
+    SYSTEM_NAME="''${2:-}"
 
     if [ ! -f "$SOPS_CONFIG" ]; then
       echo "Error: .sops.yaml not found at $SOPS_CONFIG"
@@ -114,10 +132,16 @@ let
     fi
 
     echo "Adding key $NEW_KEY to $SOPS_CONFIG..."
-    # Using yq to add the key to the first creation rule's age list
+    # Add the key using yq
     ${pkgs.yq-go}/bin/yq -i ".creation_rules[0].key_groups[0].age += [\"$NEW_KEY\"]" "$SOPS_CONFIG"
+
+    # If system name provided, append the comment to the line with the new key
+    if [ -n "$SYSTEM_NAME" ]; then
+      sed -i "s|$NEW_KEY|$NEW_KEY # $SYSTEM_NAME|" "$SOPS_CONFIG"
+    fi
     echo "Key added. Don't forget to run secrets-reencrypt."
   '';
+
 
   secrets-remove-key = pkgs.writeShellScriptBin "secrets-remove-key" ''
     REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
@@ -155,6 +179,7 @@ in
     secrets-reencrypt
     secrets-add-key
     secrets-remove-key
+    secrets-list-keys
   ];
 
   sops = {

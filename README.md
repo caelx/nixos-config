@@ -58,11 +58,32 @@ nh clean all --keep 5
 ```
 
 ### Manage Secrets
-To edit encrypted secrets (requires appropriate keys):
-```bash
-# Using the helper alias if defined, or sops directly
-sops secrets.yaml
-```
+The configuration includes several helper scripts for managing secrets via `sops-nix`:
+
+- **List public keys**: Show all public keys and their associated systems defined in `.sops.yaml`:
+  ```bash
+  secrets-list-keys
+  ```
+- **Edit secrets**: Decrypt and edit the secrets file:
+  ```bash
+  secrets-edit secrets.yaml
+  ```
+- **Add a new key**: Add a new age public key and optionally associate it with a system:
+  ```bash
+  secrets-add-key <age1...> [system-name]
+  ```
+- **Re-encrypt**: After adding/removing keys, re-encrypt the secrets file to apply the new access list:
+  ```bash
+  secrets-reencrypt
+  ```
+- **Generate age key**: Create a new age key pair if one doesn't exist:
+  ```bash
+  generate-age-key
+  ```
+- **Get public key**: Show the public key derived from the local age key:
+  ```bash
+  secrets-get-public-key
+  ```
 
 ### Notifications
 Standard Linux notification commands are automatically forwarded to Windows:
