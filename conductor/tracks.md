@@ -22,3 +22,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 - [~] **Track: Setup Hyper-V Dev VM (armored-armadillo-dev)**
 *Link: [./tracks/setup_hyperv_dev_vm_20260309/](./tracks/setup_hyperv_dev_vm_20260309/)*
 
+---
+
+- [ ] **Track: Remove all dev configuration for armored-armadillo.**
+*Link: [./tracks/remove_armored_armadillo_dev_20260309/](./tracks/remove_armored_armadillo_dev_20260309/)*
+
