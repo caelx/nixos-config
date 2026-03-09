@@ -50,20 +50,9 @@
 
   # Gemini Expert Skills
   home.file = {
-    ".gemini/skills/nixos-expert/SKILL.md".text = builtins.readFile ./config/skills/nixos-expert.md;
-    ".gemini/skills/nixos-expert/metadata.json".text = builtins.toJSON {
-      name = "nixos-expert";
-      description = "NixOS Expert for development, management, and automated workflows.";
-      tags = [ "nixos" "fish" "flakes" "expert" "development" "automation" "tdd" ];
-    };
-
-    ".gemini/skills/python-expert/SKILL.md".text = builtins.readFile ./config/skills/python-expert.md;
-    ".gemini/skills/python-expert/metadata.json".text = builtins.toJSON {
-      name = "python-expert";
-      description = "Python Expert using uv, ruff, Pylance, and src layout.";
-      tags = [ "python" "uv" "ruff" "pylance" "expert" "development" ];
-    };
-
-    # Add more skills here
+    ".gemini/skills/nixos/SKILL.md".text = builtins.readFile ./config/skills/nixos.md;
+    ".gemini/skills/python/SKILL.md".text = builtins.readFile ./config/skills/python.md;
+    ".gemini/skills/hyper-v/SKILL.md".text = builtins.readFile ./config/skills/hyper-v.md;
+    ".gemini/skills/hyper-v/scripts/console.ps1".text = builtins.readFile ./config/skills/scripts/hyper-v-console.ps1;
   };
 }
