@@ -10,3 +10,4 @@ This file serves as the primary memory and persistent fact store for Gemini CLI 
 
 - **Skill Refactor**: The `nixos` skill has been renamed to `system` and set as a default skill in `modules/common/gemini.nix`.
 - **Memory Policy**: Gemini is now instructed to use this `GEMINI.md` file for project-specific persistence instead of global memory.
+- **Automated Maintenance**: Automated daily garbage collection and generation cleanup (keeping 7 days) is configured in `modules/common/default.nix`. Use `nh clean all --keep X` for manual pruning.

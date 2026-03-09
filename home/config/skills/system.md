@@ -31,13 +31,23 @@ description: Core system directives for Gemini CLI including memory management, 
     * NEVER run interactive commands (e.g., `vim`, `less`, `top`, or any command requiring user input) unless explicitly requested.
     * ALWAYS prefer non-interactive flags (e.g., `--yes`, `-y`, `--no-pager`) or environment variables (e.g., `CI=true`, `PAGER=cat`) to ensure commands terminate.
 * **Documentation Mandate**:
-    * ALWAYS generate and maintain a **`README.md`** and a **`CHANGELOG.md`**.
+    * **CRITICAL**: You are responsible for the lifecycle of project documentation.
+    * ALWAYS create (if missing) and maintain a **`README.md`**, a **`CHANGELOG.md`**, and a **`VERSION`** file.
     * Keep these files up to date with every new feature, bug fix, or significant change.
+    * Every session involving code modifications MUST end with an update to these files.
+* **Versioning & Conductor**:
+    * **Auto-Initialization**: If the `VERSION` file does not exist, create it with the content `0.1.0`.
+    * **Autoincrement**: When completing a Conductor **Phase** or **Track** (as defined in `workflow.md`):
+        * Increment the **Patch** version (e.g., `0.1.0` -> `0.1.1`) for standard task completions.
+        * Increment the **Minor** version (e.g., `0.1.1` -> `0.2.0`) for Phase completions.
+        * Update the `VERSION` file immediately before creating the checkpoint or final commit.
+        * Ensure the new version is reflected in the `CHANGELOG.md` under a new version heading.
 
 ## Command Reference Matrix
 | Action | Command | Tool/Logic |
 | :--- | :--- | :--- |
 | **Dev Environment** | `nix develop` / `direnv allow` | Nix Flakes / direnv |
+| **Test Config** | `nh os build` | nh |
 | **Apply Config** | `nh os switch` | nh |
 | **Search Pkgs** | `nh search <query>` | nh |
 | **Run Once** | `, <command>` | comma |

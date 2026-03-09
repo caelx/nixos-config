@@ -39,9 +39,22 @@ To create an identical state across personal workstations, servers, and embedded
 ## 📖 Usage
 
 ### Apply Configuration
-To rebuild the system and switch to the latest configuration:
+To rebuild the system and switch to the latest configuration using `nh` (Nix Helper):
+```bash
+nh os switch .
+```
+Alternatively, for traditional `nixos-rebuild`:
 ```bash
 sudo nixos-rebuild switch --flake .#launch-octopus
+```
+
+### Maintenance & Cleanup
+The system is configured for automated daily maintenance:
+- **Garbage Collection**: Unused store paths are automatically deleted daily.
+- **Generation Cleanup**: System generations older than 7 days are automatically purged to optimize disk space.
+- **Manual Cleanup**: To manually trigger a cleanup and keep only the last 5 generations:
+```bash
+nh clean all --keep 5
 ```
 
 ### Manage Secrets
