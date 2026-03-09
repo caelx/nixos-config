@@ -3,6 +3,7 @@
 {
   imports = [
     ./automation.nix
+    ./gemini.nix
     ./user-nixos.nix
     ./users.nix
   ];
