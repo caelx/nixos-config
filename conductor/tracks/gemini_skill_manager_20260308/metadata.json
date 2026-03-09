@@ -1,8 +1,0 @@
-{
-  "track_id": "gemini_skill_manager_20260308",
-  "type": "feature",
-  "status": "new",
-  "created_at": "2026-03-08T14:30:00Z",
-  "updated_at": "2026-03-08T14:30:00Z",
-  "description": "I want to add a skill for gemini to be able to seach, install, and manage skills from https://github.com/sickn33/antigravity-awesome-skills ."
-}

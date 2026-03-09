@@ -1,7 +1,7 @@
 # Implementation Plan: Build User Skill Library
 
 ## Phase 1: Foundation and Initialization
-- [ ] Task: Create the user's skill directory at `~/.gemini/skills/`.
+- [~] Task: Create the user's skill directory at `~/.gemini/skills/`.
 - [ ] Task: Verify directory permissions and accessibility.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Foundation and Initialization' (Protocol in workflow.md)
 

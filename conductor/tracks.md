@@ -14,5 +14,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Build User Skill Library**
+- [~] **Track: Build User Skill Library**
 *Link: [./tracks/build_user_skill_library_20260308/](./tracks/build_user_skill_library_20260308/)*
