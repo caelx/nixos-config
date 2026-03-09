@@ -32,3 +32,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 - [ ] **Track: Add Host storm-eagle (Mac Studio Asahi Linux)**
 *Link: [./tracks/storm_eagle_host_20260309/](./tracks/storm_eagle_host_20260309/)*
 
+
+---
+
+- [ ] **Track: Setup armored-armadillo Emulation Host**
+*Link: [./tracks/setup_armored_armadillo_20260309/](./tracks/setup_armored_armadillo_20260309/)*
