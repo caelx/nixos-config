@@ -45,6 +45,7 @@ To create a robust, modular, and reproducible NixOS configuration repository tha
 - **Home Manager Integration**: Deeply integrate user-level configurations into the system-wide Nix modules.
 - **Secrets Management**: Implement a secure solution (e.g., sops-nix or agenix) for managing sensitive data like API keys and passwords.
 - **AI & Browser Automation**: Integration of Model Context Protocol (MCP) servers (e.g., Playwright) to enable advanced AI-driven research and automation workflows.
+- **Gemini Expert Skill Library**: A declarative collection of expert personas (e.g., NixOS, Python) integrated via Home Manager to enhance AI-driven development.
 
 ## Architecture & Constraints
 - **Modular Architecture**: Maintain a strict separation between hardware-specific logic, shared system modules, and user configurations.
