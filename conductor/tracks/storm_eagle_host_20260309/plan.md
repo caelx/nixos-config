@@ -10,6 +10,7 @@ Establish the base host configuration and common tools.
     - [ ] Create placeholder `hosts/storm-eagle/hardware-configuration.nix`.
     - [ ] Add `storm-eagle` to `flake.nix` outputs.
 - [ ] **Task: Define Static UID/GID Mapping and Shared Group**
+    - [ ] **Register all service users and groups in the 'Fleet ID Registry' in `conductor/product-guidelines.md`.**
     - [ ] Create a central mapping for all service users in a new module or within `modules/common/users.nix`.
     - [ ] Create the `media-data` shared group.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Foundation' (Protocol in workflow.md)
