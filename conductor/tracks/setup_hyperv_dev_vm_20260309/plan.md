@@ -26,3 +26,15 @@
     - [ ] Confirm basic network connectivity within the VM
     - [ ] Update project documentation with new host details
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Initial Bootstrap & Connectivity' (Protocol in workflow.md)
+
+## Phase 4: NixOS Installation
+- [ ] Task: Prepare Partitions
+    - [ ] Partition the disk (GPT, EFI, Root)
+    - [ ] Format partitions (FAT32 for EFI, Ext4 for Root)
+    - [ ] Mount partitions to `/mnt`
+- [ ] Task: Perform Installation
+    - [ ] Execute `nixos-install --flake .#armored-armadillo-dev` from the installer environment
+- [ ] Task: Post-Installation Reboot
+    - [ ] Unmount and reboot the VM
+    - [ ] Confirm the VM boots into the installed system
+- [ ] Task: Conductor - User Manual Verification 'Phase 4: NixOS Installation' (Protocol in workflow.md)
