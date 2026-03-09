@@ -29,11 +29,6 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [x] **Track: Static UID/GID Assignment and Anti-Overlap Policy**
-*Link: [./tracks/static_uid_gid_policy_20260309/](./tracks/static_uid_gid_policy_20260309/)*
-
----
-
 - [ ] **Track: Add Host storm-eagle (Mac Studio Asahi Linux)**
 *Link: [./tracks/storm_eagle_host_20260309/](./tracks/storm_eagle_host_20260309/)*
 
