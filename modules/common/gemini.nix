@@ -53,6 +53,9 @@ in
         respectGitIgnore = false;
       };
     };
+    skills = {
+      default = [ "system" ];
+    };
     hooks = {
       AfterAgent = [
         {

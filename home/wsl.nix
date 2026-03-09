@@ -50,7 +50,7 @@
 
   # Gemini Expert Skills
   home.file = {
-    ".gemini/skills/development/SKILL.md".text = builtins.readFile ./config/skills/development.md;
+    ".gemini/skills/system/SKILL.md".text = builtins.readFile ./config/skills/system.md;
     ".gemini/skills/python/SKILL.md".text = builtins.readFile ./config/skills/python.md;
     ".gemini/skills/hyper-v/SKILL.md".text = builtins.readFile ./config/skills/hyper-v.md;
     ".gemini/skills/hyper-v/scripts/console.ps1".text = builtins.readFile ./config/skills/scripts/hyper-v-console.ps1;
