@@ -67,23 +67,6 @@
           }
         ];
       };
-      # Armored Armadillo Dev (Hyper-V Testing)
-      armored-armadillo-dev = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs self; };
-        modules = [
-          ./hosts/armored-armadillo-dev/default.nix
-          
-          home-manager.nixosModules.home-manager
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users.nixos = ./home/nixos.nix;
-            home-manager.sharedModules = [
-              nix-index-database.homeModules.nix-index
-            ];
-          }
-        ];
-      };
     };
   };
 }
