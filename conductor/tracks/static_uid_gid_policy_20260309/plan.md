@@ -1,7 +1,7 @@
 # Implementation Plan: Static UID/GID Assignment and Anti-Overlap Policy
 
 ## Phase 1: Policy and Guideline Update
-- [x] Task: Update `conductor/product-guidelines.md` to define static UID/GID ranges and overlap prevention rules. f4d7014
+- [x] Task: Update `conductor/product-guidelines.md` to define static UID/GID ranges and overlap prevention rules. 6a7bb65
 - [ ] Task: Conductor - User Manual Verification 'Policy and Guideline Update' (Protocol in workflow.md)
 
 ## Phase 2: Verification of Existing Configuration
