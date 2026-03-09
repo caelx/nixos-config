@@ -1,7 +1,7 @@
 # Implementation Plan: Setup Hyper-V Dev VM (armored-armadillo-dev)
 
 ## Phase 1: NixOS Host Configuration
-- [ ] Task: Create host configuration directory `hosts/armored-armadillo-dev`
+- [x] Task: Create host configuration directory `hosts/armored-armadillo-dev` [6c38dd6]
     - [ ] Initialize `default.nix` by adapting from `hosts/armored-armadillo/default.nix`
     - [ ] Create `hardware-configuration.nix` with Hyper-V specific modules (`hyperv-guest`)
 - [ ] Task: Define the host in `flake.nix`
