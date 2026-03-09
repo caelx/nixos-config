@@ -32,3 +32,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 - [ ] **Track: Add dasel to common apps and implement a system configuration merging strategy for unmanaged configs.**
 *Link: [./tracks/add_dasel_config_merging_20260309/](./tracks/add_dasel_config_merging_20260309/)*
 
+---
+
+- [ ] **Track: Add Host storm-eagle (Mac Studio Asahi Linux)**
+*Link: [./tracks/storm_eagle_host_20260309/](./tracks/storm_eagle_host_20260309/)*
+
