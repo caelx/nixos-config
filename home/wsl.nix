@@ -53,8 +53,8 @@
     ".gemini/skills/nixos-expert/SKILL.md".text = builtins.readFile ./config/skills/nixos-expert.md;
     ".gemini/skills/nixos-expert/metadata.json".text = builtins.toJSON {
       name = "nixos-expert";
-      description = "NixOS Expert for local and remote development and management using Fish and Flakes.";
-      tags = [ "nixos" "fish" "flakes" "expert" "development" ];
+      description = "NixOS Expert for development, management, and automated workflows.";
+      tags = [ "nixos" "fish" "flakes" "expert" "development" "automation" "tdd" ];
     };
 
     ".gemini/skills/python-expert/SKILL.md".text = builtins.readFile ./config/skills/python-expert.md;
@@ -62,13 +62,6 @@
       name = "python-expert";
       description = "Python Expert using uv, ruff, Pylance, and src layout.";
       tags = [ "python" "uv" "ruff" "pylance" "expert" "development" ];
-    };
-
-    ".gemini/skills/general-dev/SKILL.md".text = builtins.readFile ./config/skills/general-dev.md;
-    ".gemini/skills/general-dev/metadata.json".text = builtins.toJSON {
-      name = "general-dev";
-      description = "General development workflow expert with automation and TDD focus.";
-      tags = [ "workflow" "tdd" "automation" "expert" "development" ];
     };
 
     # Add more skills here
