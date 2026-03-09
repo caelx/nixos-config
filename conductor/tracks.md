@@ -29,7 +29,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Static UID/GID Assignment and Anti-Overlap Policy**
+- [x] **Track: Static UID/GID Assignment and Anti-Overlap Policy**
 *Link: [./tracks/static_uid_gid_policy_20260309/](./tracks/static_uid_gid_policy_20260309/)*
 
 ---
