@@ -36,6 +36,11 @@ To create an identical state across personal workstations, servers, and embedded
 ### Security
 - **Secrets Management**: Encrypted `secrets.yaml` integrated directly into NixOS modules via `sops-nix`.
 
+### Configuration Merging (Structured Merge-on-Apply)
+- **dasel Integration**: Automatically merge Nix-managed settings into unmanaged configuration files (JSON, YAML, TOML, XML, INI, CONF) using `dasel`.
+- **Preservation**: Overwrites only specified keys while preserving the rest of the file's content.
+- **Activation**: Merges are applied automatically during every `nixos-rebuild switch` via a NixOS activation script.
+
 ## 📖 Usage
 
 ### Apply Configuration
@@ -47,6 +52,17 @@ Alternatively, for traditional `nixos-rebuild`:
 ```bash
 sudo nixos-rebuild switch --flake .#launch-octopus
 ```
+
+### Advanced Configuration Merging
+For files not fully managed by NixOS (e.g., application-generated configs), you can use `myOptions.configMerge` to enforce specific settings while preserving the rest of the file:
+
+```nix
+myOptions.configMerge."/var/lib/myapp/settings.json" = {
+  "server.port" = 8080;
+  "features.experimental" = true;
+};
+```
+The merge happens automatically during every `nixos-rebuild switch`.
 
 ### Maintenance & Cleanup
 The system is configured for automated daily maintenance:
