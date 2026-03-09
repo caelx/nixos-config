@@ -57,6 +57,13 @@
       tags = [ "nixos" "fish" "flakes" "expert" "development" ];
     };
 
+    ".gemini/skills/python-expert/SKILL.md".text = builtins.readFile ./config/skills/python-expert.md;
+    ".gemini/skills/python-expert/metadata.json".text = builtins.toJSON {
+      name = "python-expert";
+      description = "Python Expert using uv, ruff, Pylance, and src layout.";
+      tags = [ "python" "uv" "ruff" "pylance" "expert" "development" ];
+    };
+
     # Add more skills here
   };
 }
