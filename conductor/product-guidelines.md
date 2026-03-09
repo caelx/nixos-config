@@ -36,6 +36,12 @@
         - `1000 - 1999`: Primary human users (e.g., `nixos`).
         - `2000 - 2999`: Specialized development or administrative users.
         - `3000 - 4999`: OCI container / Self-hosted service users.
+    - **Fleet ID Registry**: 
+        - All static assignments MUST be registered below before implementation to prevent collisions.
+        - **Registry Table**:
+            | User/Group Name | UID | GID | Purpose | Allocation Range |
+            | :--- | :--- | :--- | :--- | :--- |
+            | `nixos` | 1000 | 1000 | Primary human user | Primary human users |
     - Usernames MUST be consistently lowercase (e.g., `nixos`).
 - **Networking Standard**: 
     - Use `systemd-networkd` as the default networking manager ONLY for hardware hosts (e.g., Mac Studio).
