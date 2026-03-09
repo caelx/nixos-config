@@ -1,7 +1,7 @@
 # Implementation Plan: Add `dasel` and Configuration Merging Strategy
 
 ## Phase 1: Dependency Integration
-- [ ] Task: Add `dasel` to `environment.systemPackages` in `modules/common/default.nix`.
+- [x] Task: Add `dasel` to `environment.systemPackages` in `modules/common/default.nix`. 517e7d5
 - [ ] Task: Conductor - User Manual Verification 'Dependency Integration' (Protocol in workflow.md)
 
 ## Phase 2: Design and Implement Merging Mechanism
