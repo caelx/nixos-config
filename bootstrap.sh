@@ -26,13 +26,15 @@ mkdir -p "$HOST_DIR"
 
 # 3. Generate Hardware Configuration
 HW_CONFIG_OUT="$HOME/hardware-configuration.nix"
-echo "Generating hardware configuration..."
+echo "Generating hardware configuration (may require sudo)..."
 if command -v nixos-generate-config >/dev/null; then
-  nixos-generate-config --no-filesystems --show-hardware-config > "$HW_CONFIG_OUT"
+  sudo nixos-generate-config --no-filesystems --show-hardware-config > "$HW_CONFIG_OUT"
 else
   # Try to run via nix-shell if not installed
-  nix-shell -p nixos-install-tools --run "nixos-generate-config --no-filesystems --show-hardware-config" > "$HW_CONFIG_OUT"
+  sudo nix-shell -p nixos-install-tools --run "nixos-generate-config --no-filesystems --show-hardware-config" > "$HW_CONFIG_OUT"
 fi
+# Ensure the user owns the generated file
+sudo chown "$(id -u):$(id -g)" "$HW_CONFIG_OUT"
 echo "Hardware configuration saved to: $HW_CONFIG_OUT"
 
 # 4. Create basic default.nix for the host
