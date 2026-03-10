@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # 0. Find Repo Root
-REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "$(cd "$(dirname "''${BASH_SOURCE[0]}")" && pwd)")
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)")
 if [ ! -d "$REPO_ROOT" ]; then
   echo "Error: Could not find repository root."
   exit 1
@@ -22,8 +22,8 @@ if [ $# -lt 1 ]; then
   exit 1
 fi
 
-# Ensure we have a clean hostname string
-NEW_HOSTNAME="''${1//\'/}"
+# Ensure we have a clean hostname string (remove any single quotes if the user accidentally passed them)
+NEW_HOSTNAME="${1//\'/}"
 if [ -z "$NEW_HOSTNAME" ]; then
   echo "Error: Hostname cannot be empty."
   exit 1
