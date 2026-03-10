@@ -132,10 +132,6 @@ The configuration includes several helper scripts for managing secrets via `sops
   ```bash
   secrets-get-public-key
   ```
-- **Bootstrap Host**: Interactively set up a new host (hardware config, SOPS key, and directory structure):
-  ```bash
-  bootstrap-host [NEW_HOSTNAME]
-  ```
 
 ### Notifications
 Standard Linux notification commands are automatically forwarded to Windows:
