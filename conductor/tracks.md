@@ -39,6 +39,3 @@ This file tracks all major tracks for the project. Each track has its own detail
 *Link: [./tracks/setup_boomer_kuwanger_20260309/](./tracks/setup_boomer_kuwanger_20260309/)*
 
 ---
-
-- [x] **Track: rename armored-armadillo to boomer-kuwanger across all tracks and all hosts and configs**
-*Link: [./tracks/rename_host_20260310/](./tracks/rename_host_20260310/)*
