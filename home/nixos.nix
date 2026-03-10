@@ -40,7 +40,7 @@
   # plain files is through 'home.file'.
   home.file = {
     ".nix-profile" = {
-      source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.local/state/nix/profiles/home-manager";
+      source = config.lib.file.mkOutOfStoreSymlink "/etc/profiles/per-user/${config.home.username}";
     };
     ".config/inshellisense/config.json" = {
       text = builtins.toJSON {
