@@ -39,3 +39,6 @@ This file tracks all major tracks for the project. Each track has its own detail
 *Link: [./tracks/setup_boomer_kuwanger_20260309/](./tracks/setup_boomer_kuwanger_20260309/)*
 
 ---
+
+- [ ] **Track: Add armored-armadillo host**
+*Link: [./tracks/armored_armadillo_20260310/](./tracks/armored_armadillo_20260310/)*
