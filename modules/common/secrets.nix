@@ -170,6 +170,44 @@ in
     inputs.sops-nix.nixosModules.sops
   ];
 
+  system.activationScripts.sopsBootstrap = {
+    supportsDryActivation = true;
+    text = ''
+      # Check if age key exists
+      TARGET_FILE="${ageKeyPath}"
+      if [ ! -f "$TARGET_FILE" ]; then
+        echo "--------------------------------------------------------------------------------"
+        echo "WARNING: SOPS Age key not found at $TARGET_FILE"
+        echo "Generating a new key for this host..."
+        mkdir -p "$(dirname "$TARGET_FILE")"
+        # Since this runs as root during activation, we need to ensure the user owns it
+        ${pkgs.age}/bin/age-keygen -o "$TARGET_FILE"
+        # Ensure user 'nixos' and group 'users' exist before chown
+        if id "nixos" >/dev/null 2>&1; then
+          chown nixos:users "$TARGET_FILE"
+        fi
+        chmod 600 "$TARGET_FILE"
+        
+        PUBLIC_KEY=$(${pkgs.age}/bin/age-keygen -y "$TARGET_FILE")
+        
+        echo ""
+        echo "New Public Key for $(hostname): $PUBLIC_KEY"
+        echo ""
+        echo "Please follow these steps to enable secrets on this host:"
+        echo "1. Add this public key to '.sops.yaml' in the repository."
+        echo "2. Run 'secrets-reencrypt' to update the secrets file."
+        echo "3. Commit and push the changes."
+        echo "4. Pull the changes on this host and run 'nixos-rebuild switch' again."
+        echo "--------------------------------------------------------------------------------"
+        
+        # Exit with error to halt activation if we are NOT in a dry run
+        if [ -z "''${NIXOS_ACTION:-}" ] || [ "''${NIXOS_ACTION}" != "dry-activate" ]; then
+          exit 1
+        fi
+      fi
+    '';
+  };
+
   environment.systemPackages = [ 
     generate-age-key 
     secrets-edit
