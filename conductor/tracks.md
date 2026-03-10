@@ -43,4 +43,4 @@ This file tracks all major tracks for the project. Each track has its own detail
 ---
 
 - [x] **Track: Bootstrap SOPS Key Generation for New Hosts**
-*Link: [./tracks/bootstrap_sops_key_20260310/](./tracks/bootstrap_sops_key_20260310/)*
+*Link: [./archive/bootstrap_sops_key_20260310/](./archive/bootstrap_sops_key_20260310/)*
