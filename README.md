@@ -67,7 +67,7 @@ When setting up a brand-new machine, follow these steps to integrate it into the
 3. **Generate Hardware Configuration**:
    Generate a base hardware configuration for the new host:
    ```bash
-   nix-shell -p nixos-install-tools --run "nixos-generate-config --no-fstab --show-hardware-config" > hosts/NEW_HOSTNAME/hardware-configuration.nix
+   nix-shell -p nixos-install-tools --run "nixos-generate-config --no-filesystems --show-hardware-config" > hosts/NEW_HOSTNAME/hardware-configuration.nix
    ```
 4. **Initialize SOPS Key**:
    Generate the required age key for secret decryption:

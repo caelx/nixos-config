@@ -68,7 +68,7 @@ let
 
     # 3. Generate Hardware Configuration
     echo "Generating hardware configuration for $NEW_HOSTNAME..."
-    ${pkgs.nixos-install-tools}/bin/nixos-generate-config --no-fstab --show-hardware-config > "$HOST_DIR/hardware-configuration.nix"
+    ${pkgs.nixos-install-tools}/bin/nixos-generate-config --no-filesystems --show-hardware-config > "$HOST_DIR/hardware-configuration.nix"
     echo "Hardware configuration saved to: $HOST_DIR/hardware-configuration.nix"
 
     # 4. Create basic default.nix for the host
@@ -154,7 +154,7 @@ in
           # 3. Hardware Configuration Generation
           echo "Generating hardware configuration..."
           TEMP_HW_CONFIG=$(mktemp --suffix=.nix)
-          ${pkgs.nixos-install-tools}/bin/nixos-generate-config --no-fstab --show-hardware-config > "$TEMP_HW_CONFIG"
+          ${pkgs.nixos-install-tools}/bin/nixos-generate-config --no-filesystems --show-hardware-config > "$TEMP_HW_CONFIG"
           
           echo ""
           echo "New Public Key: $PUBLIC_KEY"
