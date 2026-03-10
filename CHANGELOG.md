@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] - 2026-03-10
+
+### Added
+- **Automated Host Bootstrap**: Implemented an automated bootstrap process in `modules/common/bootstrap.nix` that triggers during the first `nixos-rebuild switch`.
+- **SOPS Key Generation**: Automatic generation of SOPS age keys for new hosts during activation.
+- **Hardware Config Generation**: Automatic generation of a temporary `hardware-configuration.nix` during initial activation.
+- **Bootstrap Utility**: Added `bootstrap-host` CLI tool for manual/interactive host initialization.
+- **Documentation**: Added comprehensive "Bootstrap a New Host" section to `README.md`.
+
+### Changed
+- **Secrets Module Cleanup**: Refactored `modules/common/secrets.nix` to remove bootstrap-related logic, delegating it to the new `bootstrap.nix` module.
+
 ## [0.1.1] - 2026-03-09
 
 ### Added

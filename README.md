@@ -53,6 +53,41 @@ Alternatively, for traditional `nixos-rebuild`:
 sudo nixos-rebuild switch --flake .#launch-octopus
 ```
 
+### 🆕 Bootstrap a New Host
+When setting up a brand-new machine, follow these steps to integrate it into the fleet:
+
+1. **Boot into NixOS**: Start the system from a NixOS installer (ISO) or a minimal existing installation.
+2. **Prepare the Repository**:
+   Enter a temporary shell with `git` and clone this configuration:
+   ```bash
+   nix-shell -p git
+   git clone https://github.com/jpetrucciani/nixos-config.git ~/nixos-config
+   cd ~/nixos-config
+   ```
+3. **Generate Hardware Configuration**:
+   Generate a base hardware configuration for the new host:
+   ```bash
+   nix-shell -p nixos-install-tools --run "nixos-generate-config --no-fstab --show-hardware-config" > hosts/NEW_HOSTNAME/hardware-configuration.nix
+   ```
+4. **Initialize SOPS Key**:
+   Generate the required age key for secret decryption:
+   ```bash
+   mkdir -p ~/.local/state/sops-nix
+   nix-shell -p age --run "age-keygen -o ~/.local/state/sops-nix/sops-age.key"
+   chmod 600 ~/.local/state/sops-nix/sops-age.key
+   # Display the public key
+   nix-shell -p age --run "age-keygen -y ~/.local/state/sops-nix/sops-age.key"
+   ```
+5. **Register the Host**:
+   - Add the public key to `.sops.yaml` (see [Manage Secrets](#manage-secrets)).
+   - Re-encrypt the secrets: `secrets-reencrypt`.
+   - Create `hosts/NEW_HOSTNAME/default.nix` (refer to existing hosts).
+   - Add the host to `flake.nix` under `nixosConfigurations`.
+6. **Install/Apply**:
+   ```bash
+   sudo nixos-rebuild switch --flake .#NEW_HOSTNAME
+   ```
+
 ### Advanced Configuration Merging
 For files not fully managed by NixOS (e.g., application-generated configs), you can use `myOptions.configMerge` to enforce specific settings while preserving the rest of the file:
 
@@ -99,6 +134,10 @@ The configuration includes several helper scripts for managing secrets via `sops
 - **Get public key**: Show the public key derived from the local age key:
   ```bash
   secrets-get-public-key
+  ```
+- **Bootstrap Host**: Interactively set up a new host (hardware config, SOPS key, and directory structure):
+  ```bash
+  bootstrap-host [NEW_HOSTNAME]
   ```
 
 ### Notifications
