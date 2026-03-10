@@ -172,6 +172,7 @@ in
 
   system.activationScripts.sopsBootstrap = {
     supportsDryActivation = true;
+    deps = [ "hostname" ];
     text = ''
       # Check if age key exists
       TARGET_FILE="${ageKeyPath}"
