@@ -10,22 +10,22 @@ This file tracks all major tracks for the project. Each track has its own detail
 ---
 
 - [x] **Track: Add Playwright MCP for Gemini CLI on NixOS**
-*Link: [./tracks/playwright_mcp_20260302/](./tracks/playwright_mcp_20260302/)*
+*Link: [./archive/playwright_mcp_20260302/](./archive/playwright_mcp_20260302/)*
 
 ---
 
 - [x] **Track: Build User Skill Library**
-*Link: [./tracks/build_user_skill_library_20260308/](./tracks/build_user_skill_library_20260308/)*
+*Link: [./archive/build_user_skill_library_20260308/](./archive/build_user_skill_library_20260308/)*
 
 ---
 
 - [x] **Track: Setup Hyper-V Dev VM (armored-armadillo-dev)**
-*Link: [./tracks/setup_hyperv_dev_vm_20260309/](./tracks/setup_hyperv_dev_vm_20260309/)*
+*Link: [./archive/setup_hyperv_dev_vm_20260309/](./archive/setup_hyperv_dev_vm_20260309/)*
 
 ---
 
 - [x] **Track: Remove all dev configuration for armored-armadillo.**
-*Link: [./tracks/remove_armored_armadillo_dev_20260309/](./tracks/remove_armored_armadillo_dev_20260309/)*
+*Link: [./archive/remove_armored_armadillo_dev_20260309/](./archive/remove_armored_armadillo_dev_20260309/)*
 
 ---
 
