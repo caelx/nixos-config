@@ -8,11 +8,24 @@ if [ ! -d "$REPO_ROOT" ]; then
   exit 1
 fi
 
-# 1. Get hostname
-NEW_HOSTNAME="''${1:-}"
-if [ -z "$NEW_HOSTNAME" ]; then
+# 1. Check for root (should NOT be run as root directly, but will use sudo when needed)
+if [ "$(id -u)" -eq 0 ]; then
+  echo "Error: This script should be run as a normal user, not root."
+  echo "It will use 'sudo' internally when necessary."
+  exit 1
+fi
+
+# 2. Get hostname
+if [ $# -lt 1 ]; then
   echo "Usage: $0 <hostname>"
-  echo "Error: Hostname is required."
+  echo "Error: Hostname argument is required."
+  exit 1
+fi
+
+# Ensure we have a clean hostname string
+NEW_HOSTNAME="''${1//\'/}"
+if [ -z "$NEW_HOSTNAME" ]; then
+  echo "Error: Hostname cannot be empty."
   exit 1
 fi
 
@@ -20,24 +33,24 @@ echo "--------------------------------------------------------------------------
 echo "BOOTSTRAP: Initializing $NEW_HOSTNAME"
 echo "--------------------------------------------------------------------------------"
 
-# 2. Create host directory
+# 3. Create host directory
 HOST_DIR="$REPO_ROOT/hosts/$NEW_HOSTNAME"
 mkdir -p "$HOST_DIR"
 
-# 3. Generate Hardware Configuration
+# 4. Generate Hardware Configuration
 HW_CONFIG_OUT="$HOME/hardware-configuration.nix"
 echo "Generating hardware configuration (may require sudo)..."
 if command -v nixos-generate-config >/dev/null; then
-  sudo nixos-generate-config --no-filesystems --show-hardware-config > "$HW_CONFIG_OUT"
+  sudo nixos-generate-config --no-filesystems --show-hardware-config > "$HW_CONFIG_OUT" || true
 else
   # Try to run via nix-shell if not installed
-  sudo nix-shell -p nixos-install-tools --run "nixos-generate-config --no-filesystems --show-hardware-config" > "$HW_CONFIG_OUT"
+  sudo nix-shell -p nixos-install-tools --run "nixos-generate-config --no-filesystems --show-hardware-config" > "$HW_CONFIG_OUT" || true
 fi
 # Ensure the user owns the generated file
 sudo chown "$(id -u):$(id -g)" "$HW_CONFIG_OUT"
 echo "Hardware configuration saved to: $HW_CONFIG_OUT"
 
-# 4. Create basic default.nix for the host
+# 5. Create basic default.nix for the host
 if [ ! -f "$HOST_DIR/default.nix" ]; then
   echo "Creating basic default.nix for $NEW_HOSTNAME..."
   cat > "$HOST_DIR/default.nix" <<EOF
@@ -53,7 +66,7 @@ if [ ! -f "$HOST_DIR/default.nix" ]; then
 EOF
 fi
 
-# 5. SOPS Age Key Generation
+# 6. SOPS Age Key Generation
 TARGET_FILE="$HOME/.local/state/sops-nix/sops-age.key"
 if [ -f "$TARGET_FILE" ]; then
   echo "SOPS Age key already exists at $TARGET_FILE"
