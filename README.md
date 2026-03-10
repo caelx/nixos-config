@@ -68,12 +68,22 @@ When setting up a brand-new machine, follow these steps to integrate it into the
    ```bash
    bash ./bootstrap.sh NEW_HOSTNAME
    ```
-4. **Finalize Setup**:
-   Follow the instructions printed by the bootstrap script:
-   - Add the public key to `.sops.yaml`.
-   - Update secrets access list: `nix-shell -p sops --run "sops updatekeys secrets.yaml"`.
-   - Register the host in `flake.nix`.
-   - Apply the configuration: `sudo nixos-rebuild switch --flake .#NEW_HOSTNAME`.
+4. **Register the Host**:
+   - The bootstrap script will output a JSON block. Copy it.
+   - On your management machine (with this repo), run:
+     ```bash
+     register-host
+     ```
+   - Paste the JSON block and press `Ctrl+D`.
+   - This will automatically:
+     - Add the public key to `.sops.yaml`.
+     - Update secrets access list.
+     - Create `hosts/NEW_HOSTNAME/hardware-configuration.nix`.
+     - Re-encrypt `secrets.yaml`.
+5. **Finalize Setup**:
+   - Add `NEW_HOSTNAME` to `flake.nix` under `nixosConfigurations`.
+   - Commit and push the changes.
+   - On the new host, apply the configuration: `sudo nixos-rebuild switch --flake .#NEW_HOSTNAME`.
 
 ### Advanced Configuration Merging
 For files not fully managed by NixOS (e.g., application-generated configs), you can use `myOptions.configMerge` to enforce specific settings while preserving the rest of the file:

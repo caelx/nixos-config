@@ -164,6 +164,75 @@ let
     ${pkgs.yq-go}/bin/yq -i ".creation_rules[0].key_groups[0].age -= [\"$KEY_TO_REMOVE\"]" "$SOPS_CONFIG"
     echo "Key removed. Don't forget to run secrets-reencrypt."
   '';
+
+  register-host = pkgs.writeShellScriptBin "register-host" ''
+    set -euo pipefail
+    REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo ".")
+    
+    echo "Paste the JSON bootstrap data and press Ctrl+D:"
+    DATA=$(cat)
+    
+    # Check if data is valid JSON
+    if ! echo "$DATA" | ${pkgs.jq}/bin/jq . >/dev/null 2>&1; then
+      echo "Error: Invalid JSON input."
+      exit 1
+    fi
+
+    HOSTNAME=$(echo "$DATA" | ${pkgs.jq}/bin/jq -r '.hostname')
+    PUBLIC_KEY=$(echo "$DATA" | ${pkgs.jq}/bin/jq -r '.public_key')
+    HW_CONFIG=$(echo "$DATA" | ${pkgs.jq}/bin/jq -r '.hardware_config')
+    
+    if [ -z "$HOSTNAME" ] || [ "$HOSTNAME" == "null" ]; then
+      echo "Error: Could not parse hostname from input."
+      exit 1
+    fi
+    
+    echo "Registering host: $HOSTNAME"
+    echo "Public Key: $PUBLIC_KEY"
+    
+    # 1. Update .sops.yaml
+    echo "Updating .sops.yaml..."
+    # Fallback to direct yq and sed if helper not available
+    ${pkgs.yq-go}/bin/yq -i ".creation_rules[0].key_groups[0].age += [\"$PUBLIC_KEY\"]" "$REPO_ROOT/.sops.yaml"
+    sed -i "s|$PUBLIC_KEY|$PUBLIC_KEY # $HOSTNAME|" "$REPO_ROOT/.sops.yaml"
+    
+    # 2. Create host directory and files
+    HOST_DIR="$REPO_ROOT/hosts/$HOSTNAME"
+    mkdir -p "$HOST_DIR"
+    
+    echo "Updating $HOST_DIR/hardware-configuration.nix..."
+    echo "$HW_CONFIG" > "$HOST_DIR/hardware-configuration.nix"
+    
+    if [ ! -f "$HOST_DIR/default.nix" ]; then
+      echo "Creating basic $HOST_DIR/default.nix..."
+      cat > "$HOST_DIR/default.nix" <<EOF
+{ ... }:
+
+{
+  imports = [
+    ./hardware-configuration.nix
+  ];
+
+  networking.hostName = "$HOSTNAME";
+}
+EOF
+    fi
+    
+    # 3. Re-encrypt secrets
+    echo "Re-encrypting secrets..."
+    export SOPS_AGE_KEY_FILE="${ageKeyPath}"
+    ${pkgs.sops}/bin/sops updatekeys "$REPO_ROOT/secrets.yaml"
+    
+    echo ""
+    echo "--------------------------------------------------------------------------------"
+    echo "Host $HOSTNAME has been registered successfully!"
+    echo "Next Steps:"
+    echo "1. Verify .sops.yaml changes."
+    echo "2. Add '$HOSTNAME' to 'flake.nix' in the 'nixosConfigurations' section."
+    echo "3. Commit and push the changes."
+    echo "4. On the new host, run: sudo nixos-rebuild switch --flake .#$HOSTNAME"
+    echo "--------------------------------------------------------------------------------"
+  '';
 in
 {
   imports = [
@@ -180,6 +249,7 @@ in
     secrets-add-key
     secrets-remove-key
     secrets-list-keys
+    register-host
   ];
 
   sops = {

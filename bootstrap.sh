@@ -22,83 +22,53 @@ if [ $# -lt 1 ]; then
   exit 1
 fi
 
-# Ensure we have a clean hostname string (remove any single quotes if the user accidentally passed them)
+# Ensure we have a clean hostname string
 NEW_HOSTNAME="${1//\'/}"
 if [ -z "$NEW_HOSTNAME" ]; then
   echo "Error: Hostname cannot be empty."
   exit 1
 fi
 
+# Use nix-shell to ensure we have jq and age available for the rest of the script
+if [[ "$*" != *"--nix-shell-internal"* ]]; then
+  exec nix-shell -p jq age nixos-install-tools --run "bash $0 $NEW_HOSTNAME --nix-shell-internal"
+fi
+
 echo "--------------------------------------------------------------------------------"
 echo "BOOTSTRAP: Initializing $NEW_HOSTNAME"
 echo "--------------------------------------------------------------------------------"
 
-# 3. Create host directory
-HOST_DIR="$REPO_ROOT/hosts/$NEW_HOSTNAME"
-mkdir -p "$HOST_DIR"
-
-# 4. Generate Hardware Configuration
-HW_CONFIG_OUT="$HOME/hardware-configuration.nix"
+# 3. Generate Hardware Configuration
 echo "Generating hardware configuration (may require sudo)..."
-if command -v nixos-generate-config >/dev/null; then
-  sudo nixos-generate-config --no-filesystems --show-hardware-config > "$HW_CONFIG_OUT" || true
-else
-  # Try to run via nix-shell if not installed
-  sudo nix-shell -p nixos-install-tools --run "nixos-generate-config --no-filesystems --show-hardware-config" > "$HW_CONFIG_OUT" || true
-fi
-# Ensure the user owns the generated file
-sudo chown "$(id -u):$(id -g)" "$HW_CONFIG_OUT"
-echo "Hardware configuration saved to: $HW_CONFIG_OUT"
+HW_CONFIG_CONTENT=$(sudo nixos-generate-config --no-filesystems --show-hardware-config 2>/dev/null || echo "{ ... }: { }")
 
-# 5. Create basic default.nix for the host
-if [ ! -f "$HOST_DIR/default.nix" ]; then
-  echo "Creating basic default.nix for $NEW_HOSTNAME..."
-  cat > "$HOST_DIR/default.nix" <<EOF
-{ ... }:
-
-{
-  imports = [
-    ./hardware-configuration.nix
-  ];
-
-  networking.hostName = "$NEW_HOSTNAME";
-}
-EOF
-fi
-
-# 6. SOPS Age Key Generation
+# 4. SOPS Age Key Generation
 TARGET_FILE="$HOME/.local/state/sops-nix/sops-age.key"
-if [ -f "$TARGET_FILE" ]; then
-  echo "SOPS Age key already exists at $TARGET_FILE"
-  if command -v age-keygen >/dev/null; then
-    PUBLIC_KEY=$(age-keygen -y "$TARGET_FILE")
-  else
-    PUBLIC_KEY=$(nix-shell -p age --run "age-keygen -y $TARGET_FILE")
-  fi
-else
+if [ ! -f "$TARGET_FILE" ]; then
   echo "Generating a new SOPS Age key..."
   mkdir -p "$(dirname "$TARGET_FILE")"
-  if command -v age-keygen >/dev/null; then
-    age-keygen -o "$TARGET_FILE"
-    chmod 600 "$TARGET_FILE"
-    PUBLIC_KEY=$(age-keygen -y "$TARGET_FILE")
-  else
-    nix-shell -p age --run "age-keygen -o $TARGET_FILE"
-    chmod 600 "$TARGET_FILE"
-    PUBLIC_KEY=$(nix-shell -p age --run "age-keygen -y $TARGET_FILE")
-  fi
+  age-keygen -o "$TARGET_FILE"
+  chmod 600 "$TARGET_FILE"
   echo "New SOPS Age key generated at $TARGET_FILE"
+else
+  echo "SOPS Age key already exists at $TARGET_FILE"
 fi
+PUBLIC_KEY=$(age-keygen -y "$TARGET_FILE")
 
 echo ""
-echo "Public Key for $NEW_HOSTNAME:"
-echo "$PUBLIC_KEY # $NEW_HOSTNAME"
+echo "--------------------------------------------------------------------------------"
+echo "MACHINE READABLE DATA (Copy the block below including braces)"
+echo "--------------------------------------------------------------------------------"
+jq -n \
+  --arg hostname "$NEW_HOSTNAME" \
+  --arg public_key "$PUBLIC_KEY" \
+  --arg hw_config "$HW_CONFIG_CONTENT" \
+  '{hostname: $hostname, public_key: $public_key, hardware_config: $hw_config}'
+echo "--------------------------------------------------------------------------------"
 echo ""
+
 echo "Next Steps:"
-echo "1. Copy the hardware config: cp $HW_CONFIG_OUT hosts/$NEW_HOSTNAME/"
-echo "2. Add the public key line above to '.sops.yaml' in the repository root."
-echo "3. Run 'secrets-reencrypt' (or nix-shell -p sops --run 'sops updatekeys secrets.yaml') to update secrets."
-echo "4. Add '$NEW_HOSTNAME' to 'flake.nix' in the 'nixosConfigurations' section."
-echo "5. Commit the new files in 'hosts/$NEW_HOSTNAME'."
-echo "6. Run 'sudo nixos-rebuild switch --flake $REPO_ROOT#$NEW_HOSTNAME' to apply."
+echo "1. Copy the JSON block above."
+echo "2. On your management machine, run: register-host"
+echo "3. Paste the JSON when prompted."
 echo "--------------------------------------------------------------------------------"
