@@ -64,9 +64,9 @@ When setting up a brand-new machine, follow these steps to integrate it into the
    cd ~/nixos-config
    ```
 3. **Run the Bootstrap Script**:
-   This standalone script will generate your hardware configuration and SOPS age key automatically:
+   This standalone script will generate your hardware configuration and SOPS age key automatically. A hostname is required:
    ```bash
-   bash ./bootstrap.sh [NEW_HOSTNAME]
+   bash ./bootstrap.sh NEW_HOSTNAME
    ```
 4. **Finalize Setup**:
    Follow the instructions printed by the bootstrap script:

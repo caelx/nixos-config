@@ -7,7 +7,6 @@
     ./user-nixos.nix
     ./users.nix
     ./config-merge.nix
-    ./bootstrap.nix
   ];
 
   # Core Nix Settings

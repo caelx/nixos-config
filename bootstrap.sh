@@ -11,11 +11,8 @@ fi
 # 1. Get hostname
 NEW_HOSTNAME="''${1:-}"
 if [ -z "$NEW_HOSTNAME" ]; then
-  printf "Enter the new hostname for this system: "
-  read -r NEW_HOSTNAME
-fi
-if [ -z "$NEW_HOSTNAME" ]; then
-  echo "Error: Hostname cannot be empty."
+  echo "Usage: $0 <hostname>"
+  echo "Error: Hostname is required."
   exit 1
 fi
 
@@ -28,16 +25,15 @@ HOST_DIR="$REPO_ROOT/hosts/$NEW_HOSTNAME"
 mkdir -p "$HOST_DIR"
 
 # 3. Generate Hardware Configuration
-if [ ! -f "$HOST_DIR/hardware-configuration.nix" ]; then
-  echo "Generating hardware configuration..."
-  if command -v nixos-generate-config >/dev/null; then
-    nixos-generate-config --no-filesystems --show-hardware-config > "$HOST_DIR/hardware-configuration.nix"
-  else
-    # Try to run via nix-shell if not installed
-    nix-shell -p nixos-install-tools --run "nixos-generate-config --no-filesystems --show-hardware-config" > "$HOST_DIR/hardware-configuration.nix"
-  fi
-  echo "Hardware configuration saved to: $HOST_DIR/hardware-configuration.nix"
+HW_CONFIG_OUT="$HOME/hardware-configuration.nix"
+echo "Generating hardware configuration..."
+if command -v nixos-generate-config >/dev/null; then
+  nixos-generate-config --no-filesystems --show-hardware-config > "$HW_CONFIG_OUT"
+else
+  # Try to run via nix-shell if not installed
+  nix-shell -p nixos-install-tools --run "nixos-generate-config --no-filesystems --show-hardware-config" > "$HW_CONFIG_OUT"
 fi
+echo "Hardware configuration saved to: $HW_CONFIG_OUT"
 
 # 4. Create basic default.nix for the host
 if [ ! -f "$HOST_DIR/default.nix" ]; then
@@ -80,12 +76,14 @@ else
 fi
 
 echo ""
-echo "Public Key: $PUBLIC_KEY"
+echo "Public Key for $NEW_HOSTNAME:"
+echo "$PUBLIC_KEY # $NEW_HOSTNAME"
 echo ""
 echo "Next Steps:"
-echo "1. Add the public key to '.sops.yaml' in the repository root."
-echo "2. Run 'secrets-reencrypt' (or nix-shell -p sops --run 'sops updatekeys secrets.yaml') to update secrets."
-echo "3. Add '$NEW_HOSTNAME' to 'flake.nix' in the 'nixosConfigurations' section."
-echo "4. Commit the new files in 'hosts/$NEW_HOSTNAME'."
-echo "5. Run 'sudo nixos-rebuild switch --flake $REPO_ROOT#$NEW_HOSTNAME' to apply."
+echo "1. Copy the hardware config: cp $HW_CONFIG_OUT hosts/$NEW_HOSTNAME/"
+echo "2. Add the public key line above to '.sops.yaml' in the repository root."
+echo "3. Run 'secrets-reencrypt' (or nix-shell -p sops --run 'sops updatekeys secrets.yaml') to update secrets."
+echo "4. Add '$NEW_HOSTNAME' to 'flake.nix' in the 'nixosConfigurations' section."
+echo "5. Commit the new files in 'hosts/$NEW_HOSTNAME'."
+echo "6. Run 'sudo nixos-rebuild switch --flake $REPO_ROOT#$NEW_HOSTNAME' to apply."
 echo "--------------------------------------------------------------------------------"
