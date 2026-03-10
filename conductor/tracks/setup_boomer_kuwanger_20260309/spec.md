@@ -1,10 +1,10 @@
-# Specification: Setup 'armored-armadillo' Emulation Host
+# Specification: Setup 'boomer-kuwanger' Emulation Host
 
 ## 1. Overview
-Configure `armored-armadillo` (Minisforum HX100G) as a high-performance kiosk emulation PC using `cage`, `gamescope` (with FSR), and ES-DE on Wayland.
+Configure `boomer-kuwanger` (Minisforum HX100G) as a high-performance kiosk emulation PC using `cage`, `gamescope` (with FSR), and ES-DE on Wayland.
 
 ## 2. Target Environment
-- **Host:** `armored-armadillo` (Ryzen 7 7840HS / Radeon 6650M).
+- **Host:** `boomer-kuwanger` (Ryzen 7 7840HS / Radeon 6650M).
 - **User:** Dedicated `kiosk` user (UID/GID 1001).
 - **Display Server:** `cage` launching `gamescope -f -e --fsr-upscaling 2 -- emulationstation`.
 

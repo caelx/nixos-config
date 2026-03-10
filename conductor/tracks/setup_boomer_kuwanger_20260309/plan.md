@@ -1,4 +1,4 @@
-# Implementation Plan: Setup 'armored-armadillo' Emulation Host
+# Implementation Plan: Setup 'boomer-kuwanger' Emulation Host
 
 ## Phase 1: System Foundation
 - [ ] Task: Create `kiosk` user (UID 1001) and groups.

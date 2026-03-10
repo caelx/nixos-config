@@ -8,7 +8,7 @@
   ];
 
   # Hostname
-  networking.hostName = "armored-armadillo";
+  networking.hostName = "boomer-kuwanger";
 
   # Enable Hyprland
   programs.hyprland = {

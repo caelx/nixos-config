@@ -1,10 +1,10 @@
-# Specification: Add armored-armadillo Host
+# Specification: Add boomer-kuwanger Host
 
 ## Overview
-Add a new non-WSL2 host configuration named `armored-armadillo`. This host is intended for use as a dedicated emulator PC, initially supporting Wayland (Hyprland) and Mesa, with conditional hardware logic to support both a production AMD setup and a development Hyper-V (Gallium) environment.
+Add a new non-WSL2 host configuration named `boomer-kuwanger`. This host is intended for use as a dedicated emulator PC, initially supporting Wayland (Hyprland) and Mesa, with conditional hardware logic to support both a production AMD setup and a development Hyper-V (Gallium) environment.
 
 ## Functional Requirements
-- **Host Structure**: Create `hosts/armored-armadillo/` with `default.nix` and `hardware-configuration.nix`.
+- **Host Structure**: Create `hosts/boomer-kuwanger/` with `default.nix` and `hardware-configuration.nix`.
 - **System Configuration**:
     - Enable Wayland with **Hyprland** and **XWayland** support.
     - Configure **Mesa** for graphics acceleration.
@@ -22,8 +22,8 @@ Add a new non-WSL2 host configuration named `armored-armadillo`. This host is in
 - **Reproducibility**: Ensure the host configuration is fully declarative and reproducible.
 
 ## Acceptance Criteria
-1. The `armored-armadillo` host is correctly defined in `hosts/` and registered in `flake.nix`.
-2. The configuration can be evaluated and built using Nix (e.g., `nix build .#nixosConfigurations.armored-armadillo.config.system.build.toplevel`).
+1. The `boomer-kuwanger` host is correctly defined in `hosts/` and registered in `flake.nix`.
+2. The configuration can be evaluated and built using Nix (e.g., `nix build .#nixosConfigurations.boomer-kuwanger.config.system.build.toplevel`).
 3. Hyprland and XWayland are enabled in the resulting configuration.
 4. Mesa drivers are correctly configured for both AMD and Gallium targets via a toggle or conditional check.
 

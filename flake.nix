@@ -47,14 +47,14 @@
           }
         ];
       };
-      # Armored Armadillo (Emulator PC)
-      armored-armadillo = nixpkgs.lib.nixosSystem {
+      # Boomer Kuwanger (Emulator PC)
+      boomer-kuwanger = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs self; };
         modules = [
           inputs.nixos-hardware.nixosModules.common-cpu-amd
           inputs.nixos-hardware.nixosModules.common-gpu-amd
           inputs.nixos-hardware.nixosModules.common-pc-ssd
-          ./hosts/armored-armadillo/default.nix
+          ./hosts/boomer-kuwanger/default.nix
           
           home-manager.nixosModules.home-manager
           {

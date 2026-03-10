@@ -19,13 +19,13 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [x] **Track: Setup Hyper-V Dev VM (armored-armadillo-dev)**
+- [x] **Track: Setup Hyper-V Dev VM (boomer-kuwanger-dev)**
 *Link: [./archive/setup_hyperv_dev_vm_20260309/](./archive/setup_hyperv_dev_vm_20260309/)*
 
 ---
 
-- [x] **Track: Remove all dev configuration for armored-armadillo.**
-*Link: [./archive/remove_armored_armadillo_dev_20260309/](./archive/remove_armored_armadillo_dev_20260309/)*
+- [x] **Track: Remove all dev configuration for boomer-kuwanger.**
+*Link: [./archive/remove_boomer_kuwanger_dev_20260309/](./archive/remove_boomer_kuwanger_dev_20260309/)*
 
 ---
 
@@ -35,10 +35,10 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Setup armored-armadillo Emulation Host**
-*Link: [./tracks/setup_armored_armadillo_20260309/](./tracks/setup_armored_armadillo_20260309/)*
+- [ ] **Track: Setup boomer-kuwanger Emulation Host**
+*Link: [./tracks/setup_boomer_kuwanger_20260309/](./tracks/setup_boomer_kuwanger_20260309/)*
 
 ---
 
-- [ ] **Track: rename armored-armadillo to boomer-kuwanger across all tracks and all hosts and configs**
+- [~] **Track: rename armored-armadillo to boomer-kuwanger across all tracks and all hosts and configs**
 *Link: [./tracks/rename_host_20260310/](./tracks/rename_host_20260310/)*

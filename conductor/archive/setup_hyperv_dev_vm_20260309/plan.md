@@ -1,16 +1,16 @@
-# Implementation Plan: Setup Hyper-V Dev VM (armored-armadillo-dev)
+# Implementation Plan: Setup Hyper-V Dev VM (boomer-kuwanger-dev)
 
 ## Phase 1: NixOS Host Configuration [checkpoint: 06cea5c]
-- [x] Task: Create host configuration directory `hosts/armored-armadillo-dev` [6c38dd6]
-    - [ ] Initialize `default.nix` by adapting from `hosts/armored-armadillo/default.nix`
+- [x] Task: Create host configuration directory `hosts/boomer-kuwanger-dev` [6c38dd6]
+    - [ ] Initialize `default.nix` by adapting from `hosts/boomer-kuwanger/default.nix`
     - [ ] Create `hardware-configuration.nix` with Hyper-V specific modules (`hyperv-guest`)
 - [x] Task: Define the host in `flake.nix` [41e2467]
-    - [ ] Add `armored-armadillo-dev` to `nixosConfigurations`
+    - [ ] Add `boomer-kuwanger-dev` to `nixosConfigurations`
 - [x] Task: Conductor - User Manual Verification 'Phase 1: NixOS Host Configuration' (Protocol in workflow.md)
 
 ## Phase 2: Hyper-V Resource Provisioning
 - [x] Task: Create the Hyper-V Virtual Machine [cba3cbb]
-    - [ ] Verify if VM name 'armored-armadillo-dev' already exists
+    - [ ] Verify if VM name 'boomer-kuwanger-dev' already exists
     - [ ] Create VM with 8GB RAM, 4 vCPUs, and Generation 2 settings
     - [ ] Create 64GB VHDX and attach to VM
 - [~] Task: Configure Boot Media
@@ -33,7 +33,7 @@
     - [ ] Format partitions (FAT32 for EFI, Ext4 for Root)
     - [ ] Mount partitions to `/mnt`
 - [ ] Task: Perform Installation
-    - [ ] Execute `nixos-install --flake .#armored-armadillo-dev` from the installer environment
+    - [ ] Execute `nixos-install --flake .#boomer-kuwanger-dev` from the installer environment
 - [ ] Task: Post-Installation Reboot
     - [ ] Unmount and reboot the VM
     - [ ] Confirm the VM boots into the installed system

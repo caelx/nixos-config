@@ -1,11 +1,11 @@
-# Specification: Rename `armored-armadillo` to `boomer-kuwanger`
+# Specification: Rename `boomer-kuwanger` to `boomer-kuwanger`
 
 ## Overview
-This track involves a project-wide rename of the `armored-armadillo` host and all its associated references to `boomer-kuwanger`. This includes updating directory names, file contents, and hostnames in the NixOS configuration and Conductor track history.
+This track involves a project-wide rename of the `boomer-kuwanger` host and all its associated references to `boomer-kuwanger`. This includes updating directory names, file contents, and hostnames in the NixOS configuration and Conductor track history.
 
 ## Functional Requirements
-- **Directory Renaming**: Rename `hosts/armored-armadillo` to `hosts/boomer-kuwanger`.
-- **String Replacement**: Perform a global search and replace of `armored-armadillo` with `boomer-kuwanger` in all text files (`.nix`, `.md`, `.json`, `.toml`, etc.).
+- **Directory Renaming**: Rename `hosts/boomer-kuwanger` to `hosts/boomer-kuwanger`.
+- **String Replacement**: Perform a global search and replace of `boomer-kuwanger` with `boomer-kuwanger` in all text files (`.nix`, `.md`, `.json`, `.toml`, etc.).
 - **Conductor Updates**:
     - Update the `conductor/tracks.md` registry.
     - Rename active track directories in `conductor/tracks/` if they contain the old name.
@@ -18,8 +18,8 @@ This track involves a project-wide rename of the `armored-armadillo` host and al
 - **Git Integrity**: Use `git mv` where possible to preserve file history.
 
 ## Acceptance Criteria
-- [ ] No occurrences of the string `armored-armadillo` remain in the repository (excluding `.git`, binary files, and secrets).
-- [ ] No directories named `armored-armadillo` or containing that string exist.
+- [ ] No occurrences of the string `boomer-kuwanger` remain in the repository (excluding `.git`, binary files, and secrets).
+- [ ] No directories named `boomer-kuwanger` or containing that string exist.
 - [ ] `nix flake check` passes with the new host name.
 - [ ] The Conductor registry (`conductor/tracks.md`) links correctly to the renamed tracks.
 

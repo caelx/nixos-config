@@ -15,7 +15,7 @@ To create a robust, modular, and reproducible NixOS configuration repository tha
 
 ## System Profiles
 
-### armored-armadillo
+### boomer-kuwanger
 - **Purpose**: Dedicated emulation-focused NixOS PC.
 - **Hardware**: Minisforum Neptune HX100G.
     - **CPU**: AMD Ryzen 7 7840HS (8 Cores/16 Threads, up to 5.1 GHz, 4nm).
