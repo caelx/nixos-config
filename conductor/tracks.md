@@ -40,5 +40,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Add armored-armadillo host**
+- [~] **Track: Add armored-armadillo host**
 *Link: [./tracks/armored_armadillo_20260310/](./tracks/armored_armadillo_20260310/)*

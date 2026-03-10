@@ -1,7 +1,7 @@
 # Implementation Plan: armored_armadillo_20260310
 
 ## Phase 1: Host Scaffolding
-- [ ] Task: Create host configuration directory for `armored-armadillo`
+- [~] Task: Create host configuration directory for `armored-armadillo`
     - [ ] Create directory `hosts/armored-armadillo/`
 - [ ] Task: Initialize host configuration `hosts/armored-armadillo/default.nix`
     - [ ] Copy and adapt from `hosts/launch-octopus/default.nix`

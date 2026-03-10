@@ -1,8 +1,0 @@
-{
-  "track_id": "rename_host_20260310",
-  "type": "chore",
-  "status": "new",
-  "created_at": "2026-03-10T19:46:00Z",
-  "updated_at": "2026-03-10T19:46:00Z",
-  "description": "rename armored-armadillo to boomer-kuwanger across all tracks and all hosts and configs"
-}
