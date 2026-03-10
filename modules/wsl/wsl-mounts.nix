@@ -12,22 +12,22 @@ let
         # Create mount point if it doesn't exist
         if [ ! -d "/mnt/z" ]; then
             echo "Creating /mnt/z..."
-            sudo mkdir -p /mnt/z
+            ${pkgs.coreutils}/bin/mkdir -p /mnt/z
         fi
 
         # Check if already mounted
-        if mountpoint -q /mnt/z; then
+        if ${pkgs.util-linux}/bin/mountpoint -q /mnt/z; then
             echo "/mnt/z is already mounted."
         else
             # Get credentials from sops
-            SMB_USER=$(cat ${config.sops.secrets.smb-user.path})
-            SMB_PASS=$(cat ${config.sops.secrets.smb-pass.path})
-            SMB_SERVER=$(cat ${config.sops.secrets.smb-server.path})
-            SMB_SHARE=$(cat ${config.sops.secrets.smb-share.path})
+            SMB_USER=$(${pkgs.coreutils}/bin/cat ${config.sops.secrets.smb-user.path})
+            SMB_PASS=$(${pkgs.coreutils}/bin/cat ${config.sops.secrets.smb-pass.path})
+            SMB_SERVER=$(${pkgs.coreutils}/bin/cat ${config.sops.secrets.smb-server.path})
+            SMB_SHARE=$(${pkgs.coreutils}/bin/cat ${config.sops.secrets.smb-share.path})
 
             echo "Mounting //''${SMB_SERVER}/''${SMB_SHARE} to /mnt/z..."
-            if sudo ${pkgs.cifs-utils}/bin/mount -t cifs "//''${SMB_SERVER}/''${SMB_SHARE}" /mnt/z 
-                -o "username=''${SMB_USER},password=''${SMB_PASS},uid=$(id -u),gid=$(id -g),vers=3.0,iocharset=utf8,rsize=1048576,wsize=1048576,actimeo=60"; then
+            if ${pkgs.cifs-utils}/bin/mount.cifs "//''${SMB_SERVER}/''${SMB_SHARE}" /mnt/z \
+                -o "username=''${SMB_USER},password=''${SMB_PASS},uid=$(${pkgs.coreutils}/bin/id -u nixos),gid=$(${pkgs.coreutils}/bin/id -g nixos),vers=3.0,iocharset=utf8,rsize=1048576,wsize=1048576,actimeo=60"; then
                 echo "Mount successful."
             else
                 echo "Mount failed."
