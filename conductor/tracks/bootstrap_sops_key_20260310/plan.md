@@ -5,6 +5,7 @@
 - [x] Task: Implement the check for the age key and the generation logic. 7ca3562
 - [x] Task: Implement the terminal output with the public key and instructional guidance. 7ca3562
 - [x] Task: Implement the non-zero exit to halt the activation process. 7ca3562
+- [x] Task: Ensure hostname is set before key generation. 1eaa80a
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Implementation' (Protocol in workflow.md)
 
 ## Phase 2: Verification
@@ -12,3 +13,8 @@
 - [ ] Task: Verify that the public key is correctly displayed and the build halts as expected.
 - [ ] Task: Verify that after restoring the key (or adding the new one) and re-applying, the build completes successfully.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Verification' (Protocol in workflow.md)
+
+## Phase 3: Documentation
+- [ ] Task: Document the bootstrap setup flow in README.md.
+- [ ] Task: Update CHANGELOG.md with the new bootstrap feature.
+- [ ] Task: Conductor - User Manual Verification 'Phase 3: Documentation' (Protocol in workflow.md)
