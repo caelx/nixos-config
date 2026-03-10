@@ -34,6 +34,10 @@ To create a robust, modular, and reproducible NixOS configuration repository tha
 - **Purpose**: Primary WSL2 development environment on Windows 11.
 - **Integration**: Deep WSL2-to-Windows integration (notifications, file sharing).
 
+### armored-armadillo
+- **Purpose**: Desktop WSL2 development environment on Windows 11.
+- **Integration**: Full WSL2-to-Windows integration, functionally identical to launch-octopus.
+
 ## Primary Objectives
 - **Absolute Reproducibility**: Ensure that any system can be rebuilt from scratch to an identical state using the configuration.
 - **Comprehensive Dotfile Management**: Use Home Manager to manage user environments, shell configurations, and application settings declaratively.
