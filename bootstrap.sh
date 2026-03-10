@@ -40,7 +40,21 @@ echo "--------------------------------------------------------------------------
 
 # 3. Generate Hardware Configuration
 echo "Generating hardware configuration (may require sudo)..."
-HW_CONFIG_CONTENT=$(sudo nixos-generate-config --no-filesystems --show-hardware-config 2>/dev/null || echo "{ ... }: { }")
+TMP_HW_CONFIG=$(mktemp)
+# Trap to ensure cleanup even if something fails
+trap 'rm -f "$TMP_HW_CONFIG"' EXIT
+
+# Redirect stderr to /dev/null to hide sudo password prompt if it fails to get sudo access,
+# though sudo should usually be allowed to run.
+if sudo nixos-generate-config --no-filesystems --show-hardware-config > "$TMP_HW_CONFIG" 2>/dev/null; then
+    HW_CONFIG_CONTENT=$(cat "$TMP_HW_CONFIG")
+else
+    echo "Warning: Could not generate hardware configuration automatically."
+    HW_CONFIG_CONTENT="{ ... }: { }"
+fi
+rm -f "$TMP_HW_CONFIG"
+# Clear trap as we've manually cleaned up or reached a point where it's no longer needed
+trap - EXIT
 
 # 4. SOPS Age Key Generation
 TARGET_FILE="$HOME/.local/state/sops-nix/sops-age.key"
