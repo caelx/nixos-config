@@ -22,6 +22,11 @@ let
       npx -y @google/gemini-cli skills install ${./../../home/config/skills/wsl2/wsl2.skill} --scope user --consent
     fi
 
+    # Ensure python skill is installed
+    if [ ! -d "$HOME/.gemini/skills/python" ]; then
+      npx -y @google/gemini-cli skills install ${./../../home/config/skills/python/python.skill} --scope user --consent
+    fi
+
     # Ensure oh-my-gemini extension is installed
     if [ ! -d "$HOME/.gemini/extensions/oh-my-gemini" ]; then
       npx -y @google/gemini-cli extensions install https://github.com/richardcb/oh-my-gemini --auto-update --consent
