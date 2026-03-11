@@ -3,8 +3,8 @@
 ## Phase 1: Foundation and Global Configuration
 Establish the base host configuration and common tools.
 
-- [ ] **Task: Add `dasel` to common system packages**
-    - [ ] Update `modules/common/default.nix` to include `dasel`.
+- [x] **Task: Add `dasel` to common system packages**
+    - [x] Update `modules/common/default.nix` to include `dasel`.
 - [ ] **Task: Initialize `storm-eagle` host configuration**
     - [ ] Create `hosts/storm-eagle/default.nix` with Asahi Linux basics and headless settings.
     - [ ] Create placeholder `hosts/storm-eagle/hardware-configuration.nix`.

@@ -27,11 +27,6 @@ let
       npx -y @google/gemini-cli skills install ${./../../home/config/skills/python/python.skill} --scope user --consent
     fi
 
-    # Ensure oh-my-gemini extension is installed
-    if [ ! -d "$HOME/.gemini/extensions/oh-my-gemini" ]; then
-      npx -y @google/gemini-cli extensions install https://github.com/richardcb/oh-my-gemini --auto-update --consent
-    fi
-
     npx -y @google/gemini-cli "$@"
   '';
 
@@ -120,9 +115,9 @@ in
       };
       browser-use = {
         command = "uvx";
-        args = [ "mcp-browser-use" ];
+        args = [ "--from" "browser-use[cli]" "browser-use" "--mcp" ];
         env = {
-          SSH_AUTH_SOCK = "/run/user/1000/ssh-agent";
+          BROWSER_USE_HEADLESS = "true";
         };
       };
     };
