@@ -5,7 +5,6 @@
     ./automation.nix
     ./user-nixos.nix
     ./users.nix
-    ./config-merge.nix
   ];
 
   # Core Nix Settings

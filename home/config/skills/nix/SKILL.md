@@ -46,6 +46,29 @@ Gemini MUST always validate Nix/NixOS configurations before suggesting or applyi
 - **Safety**: `nixpkgs.config.allowUnfree = true` (only when necessary) and `NIXPKGS_ALLOW_ALIASES = "0"`.
 - **Ephemeral Run**: Use `, <command>` (comma) for one-off utility execution without permanent installation.
 
+### 6. Surgical Configuration Manipulation (Dasel)
+When a service doesn't support structured configuration directories (like `.d/`) and its config is partially managed by the app itself, use `dasel` in activation scripts to surgically inject Nix-managed settings.
+- **Why**: Ensures a "Source of Truth" from Nix is applied while preserving app-managed state (e.g., sessions, dynamic preferences) that would be lost if Nix managed the whole file.
+- **Availability**: `dasel` is included in `modules/common/default.nix` and is available system-wide.
+- **Pattern**: Use `system.activationScripts` (NixOS) or `home.activation` (Home Manager) to run `dasel put` commands.
+- **Example Usage**:
+  ```nix
+  system.activationScripts.myAppConfig = {
+    supportsDryActivation = true;
+    text = let
+      dasel = "${pkgs.dasel}/bin/dasel";
+      config = "/var/lib/myapp/config.yaml";
+    in ''
+      if [ -f "${config}" ]; then
+        ${dasel} put -f ${config} -r yaml -s 'server.port' -t int -v '8080'
+        ${dasel} put -f ${config} -r yaml -s 'ui.theme' -t string -v 'dark'
+      fi
+    '';
+  };
+  ```
+- **Supported Formats**: `json`, `yaml`, `toml`, `xml`, `ini`, `conf`.
+- **Dasel Syntax**: See `dasel --help` for selector syntax. Common selectors use dot notation (e.g., `key.subkey`).
+
 ## Workflow References
 
 - **Flakes**: See [flake-patterns.md](references/flake-patterns.md) for boilerplate.
