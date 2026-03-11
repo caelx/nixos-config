@@ -5,7 +5,7 @@
     ./hardware-configuration.nix
     ../../modules/common/default.nix
     ../../modules/common/secrets.nix
-    ../../modules/wsl/default.nix
+    ../../modules/develop/default.nix
   ];
 
   # Hostname
