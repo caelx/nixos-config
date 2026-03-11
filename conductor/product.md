@@ -30,6 +30,18 @@ To create a robust, modular, and reproducible NixOS configuration repository tha
     - **Bluetooth Tuning**: The AMD RZ616 (MT7922) requires careful power management on Linux. Disable USB autosuspend for `btusb` and consider disabling ASPM for `mt7921e` if connection drops occur.
     - Support production hardware (AMD) with native optimizations.
 
+### chill-penguin
+- **Purpose**: High-performance headless server for media, home automation, and 3D utilities.
+- **Hardware**: Mac Studio (M1/M2 Max/Ultra).
+    - **Architecture**: aarch64 (16k page size).
+    - **Storage**: 4TB NVMe SSD.
+    - **Networking**: 10GbE, WiFi 6E/BT 5.3.
+- **Migration Strategy**: Migrating from Fedora Asahi Remix to NixOS.
+    - Use NixOS-native service modules (where available) or OCI containers.
+    - Leverage Btrfs subvolumes for data isolation and snapshots.
+    - Ensure 16k page size compatibility for all binaries and kernel modules.
+    - Declaratively manage all application configurations and secrets.
+
 ### launch-octopus
 - **Purpose**: Primary WSL2 development environment on Windows 11.
 - **Integration**: Deep WSL2-to-Windows integration (notifications, file sharing).

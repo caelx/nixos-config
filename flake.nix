@@ -25,9 +25,14 @@
       url = "github:Mic92/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    apple-silicon = {
+      url = "github:tpwrules/nixos-apple-silicon";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, nixos-wsl, nix-index-database, ... }@inputs: {
+  outputs = { self, nixpkgs, home-manager, nixos-wsl, nix-index-database, apple-silicon, ... }@inputs: {
     nixosConfigurations = {
       # Primary host
       launch-octopus = nixpkgs.lib.nixosSystem {
@@ -47,6 +52,7 @@
           }
         ];
       };
+
       # Armored Armadillo (Desktop WSL2)
       armored-armadillo = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs self; };
@@ -65,6 +71,7 @@
           }
         ];
       };
+
       # Boomer Kuwanger (Emulator PC)
       boomer-kuwanger = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs self; };
@@ -79,6 +86,25 @@
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.users.nixos = ./home/nixos.nix;
+            home-manager.sharedModules = [
+              nix-index-database.homeModules.nix-index
+            ];
+          }
+        ];
+      };
+
+      # Chill Penguin (Mac Studio Apple Silicon)
+      chill-penguin = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit inputs self; };
+        modules = [
+          apple-silicon.nixosModules.default
+          ./hosts/chill-penguin/default.nix
+          
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users.cael = ./home/nixos.nix; # Assuming cael uses the same home config
             home-manager.sharedModules = [
               nix-index-database.homeModules.nix-index
             ];

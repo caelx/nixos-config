@@ -4,8 +4,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Add Host storm-eagle (Mac Studio Asahi Linux)**
-*Link: [./tracks/storm_eagle_host_20260309/](./tracks/storm_eagle_host_20260309/)*
+- [ ] **Track: Add Host chill-penguin (Mac Studio Asahi Linux)**
+*Link: [./tracks/chill_penguin_host_20260309/](./tracks/chill_penguin_host_20260309/)*
 
 
 ---
