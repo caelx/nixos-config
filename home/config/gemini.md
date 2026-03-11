@@ -30,12 +30,6 @@
 - **Layout**: Use the **`src/` layout** and a unified **`pyproject.toml`**.
 - **Testing**: Use **`pytest`**.
 
-### Hyper-V Management (WSL2 Bridge)
-- **PowerShell Bridge**: Prefix Hyper-V commands with the full path to `powershell.exe` with `-NoProfile -ExecutionPolicy Bypass`.
-- **Path Translation**: ALWAYS use `wslpath -w` to translate WSL paths to Windows paths before passing them to PowerShell.
-- **Output**: Pipe PowerShell output through `tr -d '\r'` to handle Windows line endings.
-- **VM Generation**: Default to **Generation 2** for modern OS targets (e.g., NixOS).
-
 ## Command Reference Matrix
 
 | Action | Command | Tool/Logic |
@@ -47,7 +41,6 @@
 | **Run Once** | `, <command>` | comma |
 | **File Inspection** | `read_file <path>` | Internal Tool |
 | **Testing** | `<test-runner> <args>` | Autonomously verify code |
-| **VM Management** | `powershell.exe -Command "..."` | Hyper-V via Bridge |
 
 ## Interaction Protocol
 - **Proactive Validation**: Run tests or verification steps autonomously after implementation.
