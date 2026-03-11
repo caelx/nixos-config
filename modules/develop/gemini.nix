@@ -52,6 +52,10 @@ in
       defaultApprovalMode = "default";
       enablePromptCompletion = true;
     };
+    experimental = {
+      modelSteering = true;
+      plan = false;
+    };
     security = {
       auth = {
         selectedType = "oauth-personal";
@@ -64,9 +68,25 @@ in
       };
     };
     skills = {
-      default = [ "nix" "wsl2" ];
+      enabled = true;
+      default = [ ];
+    };
+    hooksConfig = {
+      enabled = true;
     };
     hooks = {
+      Notification = [
+        {
+          matcher = "ToolPermission";
+          hooks = [
+            {
+              name = "user-input-notifier";
+              type = "command";
+              command = "notify-send \"Gemini\" \"Tool requires approval...\" -u critical";
+            }
+          ];
+        }
+      ];
       AfterAgent = [
         {
           matcher = "*";
