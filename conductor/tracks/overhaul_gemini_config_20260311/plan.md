@@ -3,7 +3,7 @@
 ## Phase 1: Module Refactoring
 - [x] Task: Rename `modules/wsl/` to `modules/develop/` [1a203fb]
 - [x] Task: Move `modules/common/gemini.nix` to `modules/develop/gemini.nix` [9a98383]
-- [ ] Task: Update `flake.nix` and host imports to reflect the new `develop` path
+- [x] Task: Update `flake.nix` and host imports to reflect the new `develop` path [f6d1e44]
 - [ ] Task: Conductor - User Manual Verification 'Module Refactoring' (Protocol in workflow.md)
 
 ## Phase 2: Gemini Instruction Overhaul
