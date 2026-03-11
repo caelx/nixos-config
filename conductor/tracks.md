@@ -14,8 +14,3 @@ This file tracks all major tracks for the project. Each track has its own detail
 *Link: [./tracks/setup_boomer_kuwanger_20260309/](./tracks/setup_boomer_kuwanger_20260309/)*
 
 ---
-
----
-
-- [x] **Track: Overhaul Gemini CLI & Module Refactor**
-*Link: [./tracks/overhaul_gemini_config_20260311/](./tracks/overhaul_gemini_config_20260311/)*
