@@ -12,13 +12,24 @@ This guide outlines the steps to migrate the `chill-penguin` Mac Studio from a f
 ## 2. Create the Custom NixOS Installer
 Standard NixOS ISOs do not support Apple Silicon boot. You must build a custom one using the `nixos-apple-silicon` flake.
 
-From a machine with Nix installed:
-```bash
-nix build github:tpwrules/nixos-apple-silicon#installer-iso
-# The result will be in ./result/iso/nixos-*.iso
-# Flash to USB (replace /dev/sdX with your USB device):
-sudo dd if=result/iso/nixos-*.iso of=/dev/sdX bs=4M status=progress conv=fsync
-```
+### If building from NixOS in WSL2:
+1.  **Build the ISO**:
+    ```bash
+    nix build github:tpwrules/nixos-apple-silicon#installer-iso
+    ```
+2.  **Copy to Windows**:
+    The result is a symlink (`./result`). Copy the actual file to your Windows Downloads folder:
+    ```bash
+    cp $(readlink -f result/iso/nixos-*.iso) /mnt/c/Users/$USER/Downloads/nixos-apple-silicon.iso
+    ```
+    *(Replace `$USER` with your Windows username if it differs from your WSL2 username).*
+
+3.  **Flash with Rufus**:
+    *   Open **Rufus** on Windows.
+    *   Select your USB drive.
+    *   Select the `nixos-apple-silicon.iso` from your Downloads folder.
+    *   Ensure the Partition scheme is **GPT** and Target system is **UEFI (non CSM)**.
+    *   Click **START** to flash.
 
 ## 3. Clear the SSD (Recovery Environment)
 Since the drive is locked, a standard `rm` won't work. We need to reset the partition table.
