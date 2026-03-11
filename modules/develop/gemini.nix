@@ -22,6 +22,11 @@ let
       npx -y @google/gemini-cli skills install ${./../../home/config/skills/wsl2/wsl2.skill} --scope user --consent
     fi
 
+    # Ensure oh-my-gemini extension is installed
+    if [ ! -d "$HOME/.gemini/extensions/oh-my-gemini" ]; then
+      npx -y @google/gemini-cli extensions install https://github.com/richardcb/oh-my-gemini --auto-update --consent
+    fi
+
     npx -y @google/gemini-cli "$@"
   '';
 
@@ -31,7 +36,7 @@ let
     nativeBuildInputs = [ pkgs.makeWrapper ];
     postBuild = ''
       wrapProgram $out/bin/gemini-base \
-        --prefix PATH : ${pkgs.lib.makeBinPath [ pkgs.nodejs ]} \
+        --prefix PATH : ${pkgs.lib.makeBinPath [ pkgs.nodejs pkgs.uv pkgs.playwright-driver.browsers pkgs.openssh ]} \
         --set NODE_NO_WARNINGS 1
       mv $out/bin/gemini-base $out/bin/gemini
     '';
@@ -54,7 +59,7 @@ in
     };
     experimental = {
       modelSteering = true;
-      plan = false;
+      plan = true;
     };
     security = {
       auth = {
@@ -101,11 +106,18 @@ in
       ];
     };
     mcpServers = {
-      playwright = {
-        command = "mcp-server-playwright";
-        args = [ ];
+      ssh = {
+        command = "npx";
+        args = [ "-y" "@aiondadotcom/mcp-ssh" ];
         env = {
-          PLAYWRIGHT_HEADLESS = "true";
+          SSH_AUTH_SOCK = "/run/user/1000/ssh-agent";
+        };
+      };
+      browser-use = {
+        command = "uvx";
+        args = [ "mcp-browser-use" ];
+        env = {
+          SSH_AUTH_SOCK = "/run/user/1000/ssh-agent";
         };
       };
     };

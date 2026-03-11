@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4] - 2026-03-11
+
+### Added
+- **SSH MCP**: Added `mcp-ssh` for remote task execution via `@aiondadotcom/mcp-ssh`.
+- **Browser Automation**: Switched from `playwright` to `browser-use` MCP using `mcp-browser-use`.
+- **Gemini Extension**: Installed `richardcb/oh-my-gemini` for advanced workflow orchestration.
+- **System Packages**: Added `uv` to common system packages for MCP runners.
+
+## [0.1.3] - 2026-03-11
+
+### Changed
+- **Gemini Config**: Enabled the experimental `plan` mode in `modules/develop/gemini.nix`.
+
 ## [0.1.2] - 2026-03-10
 
 ### Added

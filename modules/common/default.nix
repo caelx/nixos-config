@@ -47,6 +47,7 @@
     htop
     jq
     dasel
+    uv
 
     # Standard Utilities
     _7zz
