@@ -64,7 +64,7 @@ in
       };
     };
     skills = {
-      default = [ "system" "nix" "wsl2" ];
+      default = [ "nix" "wsl2" ];
     };
     hooks = {
       AfterAgent = [
