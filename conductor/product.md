@@ -28,7 +28,7 @@ To create a robust, modular, and reproducible NixOS configuration repository tha
 - **Optimization Strategy**: 
     - Configuration should be optimized for emulation (e.g., low-latency input, optimized Vulkan/OpenGL performance).
     - **Bluetooth Tuning**: The AMD RZ616 (MT7922) requires careful power management on Linux. Disable USB autosuspend for `btusb` and consider disabling ASPM for `mt7921e` if connection drops occur.
-    - Support both production hardware (AMD) and development environments (Hyper-V/Gallium) using conditional logic or specialisations.
+    - Support production hardware (AMD) with native optimizations.
 
 ### launch-octopus
 - **Purpose**: Primary WSL2 development environment on Windows 11.
@@ -49,7 +49,7 @@ To create a robust, modular, and reproducible NixOS configuration repository tha
 - **Home Manager Integration**: Deeply integrate user-level configurations into the system-wide Nix modules.
 - **Secrets Management**: Implement a secure solution (e.g., sops-nix or agenix) for managing sensitive data like API keys and passwords.
 - **AI & Browser Automation**: Integration of Model Context Protocol (MCP) servers (e.g., Playwright) to enable advanced AI-driven research and automation workflows.
-- **Gemini Expert Skill Library**: A declarative collection of expert personas (e.g., NixOS, Python) integrated via Home Manager to enhance AI-driven development.
+- **Gemini Global Instructions**: A centralized, distilled collection of expert personas and system-native workflows managed via Home Manager to enhance AI-driven development.
 
 ## Architecture & Constraints
 - **Modular Architecture**: Maintain a strict separation between hardware-specific logic, shared system modules, and user configurations.

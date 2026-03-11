@@ -26,4 +26,4 @@
 ## AI & Automation
 - **Gemini CLI**: Local AI agent interface with custom Nix packaging and Home Manager configuration.
 - **Playwright MCP**: Model Context Protocol server for browser automation, integrated with Nix-native browser binaries.
-- **Gemini Skills**: Declarative expert system definitions and personas managed via Home Manager.
+- **Gemini Global Instructions**: Distilled expert system definitions and personas managed via a global `gemini.md` in Home Manager.
