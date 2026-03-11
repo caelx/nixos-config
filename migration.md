@@ -15,7 +15,7 @@ Standard NixOS ISOs do not support Apple Silicon boot. You must build a custom o
 ### If building from NixOS in WSL2:
 1.  **Build the ISO**:
     ```bash
-    nix build github:tpwrules/nixos-apple-silicon#installer-iso
+    nix build github:tpwrules/nixos-apple-silicon#installer-bootstrap
     ```
 2.  **Copy to Windows**:
     The result is a symlink (`./result`). Copy the actual file to your Windows Downloads folder:
