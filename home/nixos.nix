@@ -49,6 +49,9 @@
         completionMode = "shell";
       };
     };
+    ".gemini/gemini.md" = {
+      source = ./config/gemini.md;
+    };
   };
 
   # You can also manage environment variables through 'home.sessionVariables'.
