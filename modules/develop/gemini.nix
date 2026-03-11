@@ -27,30 +27,24 @@ let
       npx -y @google/gemini-cli extensions install https://github.com/gemini-cli-extensions/security --auto-update --consent
     fi
 
-    # Ensure nix skill is installed
-    if [ ! -d "$HOME/.gemini/skills/nix" ]; then
-      npx -y @google/gemini-cli skills install ${skills.nix} --scope user --consent
-    fi
+    # Helper function to install or update a skill
+    sync_skill() {
+      local name=$1
+      local src=$2
+      local marker="$HOME/.gemini/skills/$name/.nix-store-path"
 
-    # Ensure wsl2 skill is installed
-    if [ ! -d "$HOME/.gemini/skills/wsl2" ]; then
-      npx -y @google/gemini-cli skills install ${skills.wsl2} --scope user --consent
-    fi
+      if [ ! -f "$marker" ] || [ "$(cat "$marker")" != "$src" ]; then
+        echo "Syncing skill: $name..."
+        npx -y @google/gemini-cli skills install "$src" --scope user --consent
+        echo "$src" > "$marker"
+      fi
+    }
 
-    # Ensure python skill is installed
-    if [ ! -d "$HOME/.gemini/skills/python" ]; then
-      npx -y @google/gemini-cli skills install ${skills.python} --scope user --consent
-    fi
-
-    # Ensure browser-use skill is installed
-    if [ ! -d "$HOME/.gemini/skills/browser-use" ]; then
-      npx -y @google/gemini-cli skills install ${skills.browser-use} --scope user --consent
-    fi
-
-    # Ensure build123d skill is installed
-    if [ ! -d "$HOME/.gemini/skills/build123d" ]; then
-      npx -y @google/gemini-cli skills install ${skills.build123d} --scope user --consent
-    fi
+    sync_skill "nix" "${skills.nix}"
+    sync_skill "wsl2" "${skills.wsl2}"
+    sync_skill "python" "${skills.python}"
+    sync_skill "browser-use" "${skills.browser-use}"
+    sync_skill "build123d" "${skills.build123d}"
 
     npx -y @google/gemini-cli "$@"
   '';
