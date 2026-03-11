@@ -51,11 +51,11 @@
     ".gemini/gemini.md" = {
       source = ./config/gemini.md;
     };
-    ".gemini/skills/nix".source = ./config/skills/nix;
-    ".gemini/skills/wsl2".source = ./config/skills/wsl2;
-    ".gemini/skills/python".source = ./config/skills/python;
-    ".gemini/skills/browser-use".source = ./config/skills/browser-use;
-    ".gemini/skills/build123d".source = ./config/skills/build123d;
+    ".gemini/skills/nix" = { source = ./config/skills/nix; force = true; };
+    ".gemini/skills/wsl2" = { source = ./config/skills/wsl2; force = true; };
+    ".gemini/skills/python" = { source = ./config/skills/python; force = true; };
+    ".gemini/skills/browser-use" = { source = ./config/skills/browser-use; force = true; };
+    ".gemini/skills/build123d" = { source = ./config/skills/build123d; force = true; };
   };
 
   # You can also manage environment variables through 'home.sessionVariables'.
