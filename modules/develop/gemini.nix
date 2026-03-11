@@ -17,6 +17,11 @@ let
       npx -y @google/gemini-cli skills install ${./../../home/config/skills/nix/nix.skill} --scope user --consent
     fi
 
+    # Ensure wsl2 skill is installed
+    if [ ! -d "$HOME/.gemini/skills/wsl2" ]; then
+      npx -y @google/gemini-cli skills install ${./../../home/config/skills/wsl2/wsl2.skill} --scope user --consent
+    fi
+
     npx -y @google/gemini-cli "$@"
   '';
 
