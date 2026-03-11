@@ -2,7 +2,7 @@
 
 ## Phase 1: Module Refactoring
 - [x] Task: Rename `modules/wsl/` to `modules/develop/` [1a203fb]
-- [ ] Task: Move `modules/common/gemini.nix` to `modules/develop/gemini.nix`
+- [x] Task: Move `modules/common/gemini.nix` to `modules/develop/gemini.nix` [9a98383]
 - [ ] Task: Update `flake.nix` and host imports to reflect the new `develop` path
 - [ ] Task: Conductor - User Manual Verification 'Module Refactoring' (Protocol in workflow.md)
 
@@ -10,7 +10,7 @@
 - [ ] Task: Distill instructions from `home/config/skills/system.md` into a new global `gemini.md`
 - [ ] Task: Integrate `gemini.md` into Home Manager (`home.file` in `home/nixos.nix`)
 - [ ] Task: Remove `system` skill from `modules/develop/gemini.nix` (`settings.json`)
-- [ ] Task: Delete the `home/config/skills/system.md` file
+- [ ] Task: Delete the `home/config/skills/system.md`, `python.md`, and `hyper-v.md` files
 - [ ] Task: Conductor - User Manual Verification 'Gemini Instruction Overhaul' (Protocol in workflow.md)
 
 ## Phase 3: Final Verification and Cleanup
