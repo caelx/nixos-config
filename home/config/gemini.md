@@ -17,6 +17,7 @@
 ### 3. Engineering Standards
 - **File Inspection**: NEVER use `cat` to read files. Always use the `read_file` tool for surgical or full-file inspection.
 - **Testing (TDD)**: Prioritize unit tests. Attempt to run tests autonomously using project-specific runners.
+- **Conductor Validation**: In the Conductor workflow, ALWAYS attempt to execute "Manual Verification Steps" autonomously if they involve non-interactive shell commands. Validation is the only path to finality.
 - **Non-Interactive Execution**: Always use non-interactive flags (e.g., `-y`, `--yes`, `--no-pager`) and environment variables (e.g., `CI=true`, `PAGER=cat`) to ensure commands terminate.
 - **Documentation**: Maintain `README.md`, `CHANGELOG.md`, and `VERSION` files. Update them with every significant change.
 - **Versioning**: Increment the **Patch** version for tasks, and **Minor** version for Phase/Track completions in the `VERSION` file.
@@ -28,25 +29,6 @@
 - **Linting/Formatting**: Use **`ruff`** for linting and formatting (`ruff check --fix`, `ruff format`).
 - **Layout**: Use the **`src/` layout** and a unified **`pyproject.toml`**.
 - **Testing**: Use **`pytest`**.
-
-### Hyper-V Management (WSL2 Bridge)
-- **PowerShell Bridge**: Prefix Hyper-V commands with the full path to `powershell.exe` with `-NoProfile -ExecutionPolicy Bypass`.
-- **Path Translation**: ALWAYS use `wslpath -w` to translate WSL paths to Windows paths before passing them to PowerShell.
-- **Output**: Pipe PowerShell output through `tr -d '\r'` to handle Windows line endings.
-- **VM Generation**: Default to **Generation 2** for modern OS targets (e.g., NixOS).
-
-## Command Reference Matrix
-
-| Action | Command | Tool/Logic |
-| :--- | :--- | :--- |
-| **Dev Environment** | `nix develop` / `direnv allow` | Nix Flakes / direnv |
-| **Build Config** | `nh os build` | nh |
-| **Apply Config** | `nh os switch` | nh |
-| **Search Pkgs** | `nh search <query>` | nh |
-| **Run Once** | `, <command>` | comma |
-| **File Inspection** | `read_file <path>` | Internal Tool |
-| **Testing** | `<test-runner> <args>` | Autonomously verify code |
-| **VM Management** | `powershell.exe -Command "..."` | Hyper-V via Bridge |
 
 ## Interaction Protocol
 - **Proactive Validation**: Run tests or verification steps autonomously after implementation.
