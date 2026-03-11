@@ -1,131 +1,142 @@
 # Migration Guide: `chill-penguin` (Mac Studio)
 
-This guide outlines the steps to migrate the `chill-penguin` Mac Studio from a failing Fedora Asahi Remix installation to a fresh, native NixOS configuration using this repository.
+This guide provides the complete, step-by-step process for migrating your Mac Studio from its failing Asahi Linux installation to a fresh NixOS setup using this repository. It follows the official "UEFI Standalone" installation method.
 
-> **CRITICAL**: The internal SSD is currently reporting hardware I/O errors and is in Read-Only mode. This process involves a full drive wipe which is the only way to attempt a reset of the NVMe controller lock.
+---
 
 ## 1. Prerequisites & Backups
-- [x] **Data Secured**: 23.95GB of databases, configs, and metadata have been pulled to the `old/chill-penguin/` directory.
-- [ ] **Installer USB**: A 16GB+ USB drive.
-- [ ] **Network**: Ethernet connection is highly recommended for the initial install.
+- [x] **Data Secured**: 23.95GB of databases, configs, and metadata pulled to `old/chill-penguin/`.
+- [ ] **USB Drive**: Minimum 512MB (16GB+ recommended).
+- [ ] **Internet**: Wi-Fi or Ethernet.
 
-## 2. Create the Custom NixOS Installer
-Standard NixOS ISOs do not support Apple Silicon boot. You must build a custom one using the `nixos-apple-silicon` flake.
+---
 
-### If building from NixOS in WSL2:
+## 2. Software Preparation (Build Installer)
+Standard NixOS ISOs won't boot on Apple Silicon. You must build a custom bootstrap image.
+
+### Build via NixOS in WSL2:
 1.  **Build the ISO**:
     ```bash
     nix build github:tpwrules/nixos-apple-silicon#installer-bootstrap
     ```
 2.  **Copy to Windows**:
-    The result is a symlink (`./result`). Copy the actual file to your Windows Downloads folder:
     ```bash
     cp $(readlink -f result/iso/nixos-*.iso) /mnt/c/Users/$USER/Downloads/nixos-apple-silicon.iso
     ```
-    *(Replace `$USER` with your Windows username if it differs from your WSL2 username).*
-
 3.  **Flash with Rufus**:
-    *   Open **Rufus** on Windows.
-    *   Select your USB drive.
-    *   Select the `nixos-apple-silicon.iso` from your Downloads folder.
-    *   Ensure the Partition scheme is **GPT** and Target system is **UEFI (non CSM)**.
-    *   Click **START** to flash.
+    *   **Device**: Your USB drive.
+    *   **Boot selection**: Select the `.iso` file.
+    *   **Partition scheme**: GPT.
+    *   **Target system**: UEFI (non CSM).
+    *   **START** to flash.
 
-## 3. Clear the SSD (Recovery Environment)
-Since the drive is locked, a standard `rm` won't work. We need to reset the partition table.
+---
 
-1.  Boot into the **macOS Recovery Environment** (Hold Power button on startup).
-2.  Open **Terminal**.
-3.  Identify the NixOS/Asahi partitions: `diskutil list`.
-4.  Wipe the Linux partitions or the entire non-macOS free space. 
-    *   *Note: Since macOS is already wiped in this scenario, use `diskutil eraseDisk` or `gpt destroy` on the internal NVMe to create a completely blank slate.*
+## 3. UEFI Preparation (The Asahi Script)
+Even for a reinstall, you must run the Asahi script from macOS to ensure the boot environment and peripheral firmware are correctly staged.
+
+1.  Boot into **macOS** (if possible) or **macOS Recovery** (Hold Power button).
+2.  Open Terminal and run:
+    ```bash
+    curl https://alx.sh | sh
+    ```
+3.  **Follow the Prompts**:
+    *   **Resize**: Allocate the entire free space (or desired amount) for NixOS.
+    *   **Install OS**: Select **"UEFI environment only"**.
+    *   **Name**: Set the OS name to "NixOS".
+4.  **Security Mode**: After the script finishes, shut down. Hold the Power button to enter the startup picker, select "NixOS", and follow the prompts to enter **Permissive Security** mode. This is required for m1n1 to boot custom kernels.
+
+---
 
 ## 4. Boot the Installer & Connect
-1.  Plug in the custom NixOS USB.
-2.  Boot the Mac Studio and select the USB boot option.
-3.  **Connect to Wi-Fi** (using `iwd`):
+1.  Plug in your custom USB.
+2.  Power on and select the USB drive in the U-Boot menu (if it doesn't auto-boot, use the `bootmenu` command).
+3.  **Connect to Wi-Fi**:
     ```bash
     iwctl
     # Inside iwctl prompt:
-    device list                # Identify your device (usually wlan0)
-    station wlan0 scan         # Scan for networks
-    station wlan0 get-networks # List available networks
+    device list
+    station wlan0 scan
+    station wlan0 get-networks
     station wlan0 connect "YOUR_SSID"
-    # Enter your password when prompted
-    exit
+    # Enter password and 'exit'
     ```
-4.  **Verify Connectivity**: `ping google.com`
+4.  **Verify**: `ping google.com`
 
-## 5. Partition and Format
-*(Moved from previous step)*
-1.  **Manual Partitioning**:
+---
+
+## 5. Partitioning & Formatting (Manual)
+> **WARNING**: Do NOT use automated partitioners. Do not touch partitions like `iBootSystemContainer` or `RecoveryOSContainer`.
+
+1.  **Identify Partitions**: `lsblk` or `sgdisk -p /dev/nvme0n1`.
+2.  **Create Root Partition**:
+    Find the free space created by the Asahi script. 
     ```bash
-    # Create a new GPT table if not done in step 3
-    sgdisk -Z /dev/nvme0n1
-    
-    # 1. EFI Partition (512MB - 1GB)
-    sgdisk -n 1:0:+1G -t 1:ef00 -c 1:"boot" /dev/nvme0n1
-    
-    # 2. Main NixOS Partition (Remaining space)
-    sgdisk -n 2:0:0 -t 2:8300 -c 2:"nixos" /dev/nvme0n1
+    # Create partition (Type 8300 - Linux Filesystem)
+    sgdisk -n 0:0:0 -t 0:8300 -c 0:"nixos" /dev/nvme0n1
     ```
-
-4.  **Format and Mount**:
+3.  **Format Btrfs**:
     ```bash
-    # Format EFI
-    mkfs.vfat -F 32 -n boot /dev/nvme0n1p1
-    
-    # Format Btrfs
-    mkfs.btrfs -L nixos /dev/nvme0n1p2
-    mount /dev/nvme0n1p2 /mnt
-    
-    # Create Subvolumes
+    mkfs.btrfs -L nixos /dev/nvme0n1pX  # Replace pX with your new partition number
+    ```
+4.  **Create Subvolumes**:
+    ```bash
+    mount /dev/disk/by-label/nixos /mnt
     btrfs subvolume create /mnt/root
     btrfs subvolume create /mnt/home
     btrfs subvolume create /mnt/var
     umount /mnt
-    
-    # Mount for Installation
-    mount -o subvol=root,compress=zstd,noatime /dev/nvme0n1p2 /mnt
-    mkdir -p /mnt/{boot,home,var}
-    mount /dev/nvme0n1p1 /mnt/boot
-    mount -o subvol=home,compress=zstd,noatime /dev/nvme0n1p2 /mnt/home
-    mount -o subvol=var,compress=zstd,noatime /dev/nvme0n1p2 /mnt/var
     ```
 
-## 5. Bootstrap and Install
-1.  **Clone this Repo**:
+---
+
+## 6. Mount & Install
+1.  **Mount Hierarchy**:
+    ```bash
+    # Mount Root
+    mount -o subvol=root,compress=zstd,noatime /dev/disk/by-label/nixos /mnt
+    
+    # Mount Subvolumes
+    mkdir -p /mnt/{boot,home,var}
+    mount -o subvol=home,compress=zstd,noatime /dev/disk/by-label/nixos /mnt/home
+    mount -o subvol=var,compress=zstd,noatime /dev/disk/by-label/nixos /mnt/var
+    
+    # Mount EFI (Crucial: Use the partition UUID from the device tree)
+    mount /dev/disk/by-partuuid/$(cat /proc/device-tree/chosen/asahi,efi-system-partition) /mnt/boot
+    ```
+
+2.  **Clone Repo**:
     ```bash
     mkdir -p /mnt/etc/nixos
-    git clone https://github.com/youruser/nixos-config.git /mnt/etc/nixos
+    git clone https://github.com/caelx/nixos-config.git /mnt/etc/nixos
     cd /mnt/etc/nixos
     ```
 
-2.  **Run Bootstrap**:
+3.  **Bootstrap**:
     ```bash
     ./bootstrap.sh chill-penguin
     ```
-    *   This will generate a new Age key for SOPS and output a JSON block.
-    *   **Action**: Copy that JSON block and save it elsewhere. We will use it to update the repository later.
+    *   **Action**: Note the Age public key and hardware config output.
 
-3.  **Initial Install**:
+4.  **Perform Installation**:
     ```bash
     nixos-install --flake .#chill-penguin
     ```
 
-4.  **Reboot**:
+5.  **Finish**:
     ```bash
     umount -R /mnt
     reboot
     ```
 
-## 6. Post-Installation (Data Restore)
-Once `chill-penguin` is back online and accessible via SSH:
+---
 
-1.  **Inject Secrets**: Use the Age key from step 5.2 to decrypt and update `secrets.yaml`.
-2.  **Restore Data**:
-    *   Move the 23GB from `old/chill-penguin/remote_tmp/` to `/srv/apps/config/`.
-    *   Extract tarballs: `for f in *.tar; do tar -xf $f -C /srv/apps/config/plex/...; done`
-    *   Restore SQLite databases to their respective service folders.
-    *   Ensure permissions: `chown -R 1000:1001 /srv/apps/config`.
-3.  **Final Build**: Run `nh os switch .` on the host to ensure all Nix-managed configs (Plex Preferences, *Arr XMLs) are correctly merged via `dasel`.
+## 7. Post-Migration (Restore)
+Once booted into the new system:
+1.  **Copy Data**: Transfer the 23GB backup to `/srv/apps/config`.
+2.  **Restore DBs**: Replace service `.db` files with the backed-up versions.
+3.  **Unpack Metadata**: 
+    ```bash
+    tar -xf plex_metadata.tar -C "/var/lib/plex/Library/Application Support/Plex Media Server"
+    ```
+4.  **Switch Config**: Run `nh os switch .` to finalize the system state.
