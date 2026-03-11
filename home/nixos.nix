@@ -167,6 +167,14 @@
       $DRY_RUN_CMD mkdir -p $VERBOSE_ARG $HOME/.ssh/conf.d
       $DRY_RUN_CMD chmod $VERBOSE_ARG 0700 $HOME/.ssh/conf.d
     '';
+    removeExistingGeminiSkills = lib.hm.dag.entryBefore [ "checkLinkTargets" ] ''
+      for skill in nix wsl2 python browser-use build123d; do
+        path="$HOME/.gemini/skills/$skill"
+        if [ -d "$path" ] && [ ! -L "$path" ]; then
+          $DRY_RUN_CMD rm -rf $VERBOSE_ARG "$path"
+        fi
+      done
+    '';
   };
 
   # SSH Client Configuration
