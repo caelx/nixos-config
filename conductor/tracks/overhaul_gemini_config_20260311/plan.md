@@ -7,9 +7,9 @@
 - [x] Task: Conductor - User Manual Verification 'Module Refactoring' (Protocol in workflow.md) [54fd4bd]
 
 ## Phase 2: Gemini Instruction Overhaul
-- [~] Task: Distill instructions from `home/config/skills/system.md` into a new global `gemini.md`
-- [ ] Task: Integrate `gemini.md` into Home Manager (`home.file` in `home/nixos.nix`)
-- [ ] Task: Remove `system` skill from `modules/develop/gemini.nix` (`settings.json`)
+- [x] Task: Distill instructions from `home/config/skills/system.md` into a new global `gemini.md` [2146b7a]
+- [x] Task: Integrate `gemini.md` into Home Manager (`home.file` in `home/nixos.nix`) [9e19b9a]
+- [~] Task: Remove `system` skill from `modules/develop/gemini.nix` (`settings.json`)
 - [ ] Task: Delete the `home/config/skills/system.md`, `python.md`, and `hyper-v.md` files
 - [ ] Task: Conductor - User Manual Verification 'Gemini Instruction Overhaul' (Protocol in workflow.md)
 
