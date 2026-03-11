@@ -48,6 +48,7 @@
     jq
     dasel
     uv
+    zip
 
     # Standard Utilities
     _7zz

@@ -15,4 +15,8 @@ This file serves as the primary memory and persistent fact store for Gemini CLI 
 - **SSH MCP & Agent**: `mcp-ssh` is configured to use the SSH agent at `/run/user/1000/ssh-agent`. Users must ensure their keys (especially password-protected ones) are loaded into the agent before using remote tasks.
 - **MCP Runners**: `uv` and `nodejs` (for `npx`) are required for the current MCP server configurations (`browser-use` and `mcp-ssh`).
 - **Python Skill Added**: A new `python` skill for modern development using `uv`, Nix flakes, and comprehensive testing/linting has been added to `home/config/skills/python/`.
+- **Browser-use Skill Added**: A new `browser-use` skill emphasizing visual inspection via screenshots has been added to `home/config/skills/browser-use/`.
+- **System Packages**: `zip` has been added to the common system packages in `modules/common/default.nix`.
+- **Build123d Skill Added**: A new `build123d` skill for Python-based CAD modeling with an emphasis on multi-perspective screenshot validation has been added.
+- **Dynamic Skill Building**: The Nix configuration now dynamically zips skills from `home/config/skills/` during the build process, removing the need for manual `.skill` file check-ins.
 

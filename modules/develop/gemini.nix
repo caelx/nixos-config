@@ -1,6 +1,21 @@
 { pkgs, lib, ... }:
 
 let
+  mkSkill = name: src: pkgs.runCommand "${name}.skill" {
+    nativeBuildInputs = [ pkgs.zip ];
+  } ''
+    cd ${src}
+    zip -r $out .
+  '';
+
+  skills = {
+    nix = mkSkill "nix" ./../../home/config/skills/nix;
+    wsl2 = mkSkill "wsl2" ./../../home/config/skills/wsl2;
+    python = mkSkill "python" ./../../home/config/skills/python;
+    browser-use = mkSkill "browser-use" ./../../home/config/skills/browser-use;
+    build123d = mkSkill "build123d" ./../../home/config/skills/build123d;
+  };
+
   base-gemini = pkgs.writeShellScriptBin "gemini-base" ''
     # Ensure conductor extension is installed
     if [ ! -d "$HOME/.gemini/extensions/conductor" ]; then
@@ -14,17 +29,27 @@ let
 
     # Ensure nix skill is installed
     if [ ! -d "$HOME/.gemini/skills/nix" ]; then
-      npx -y @google/gemini-cli skills install ${./../../home/config/skills/nix/nix.skill} --scope user --consent
+      npx -y @google/gemini-cli skills install ${skills.nix} --scope user --consent
     fi
 
     # Ensure wsl2 skill is installed
     if [ ! -d "$HOME/.gemini/skills/wsl2" ]; then
-      npx -y @google/gemini-cli skills install ${./../../home/config/skills/wsl2/wsl2.skill} --scope user --consent
+      npx -y @google/gemini-cli skills install ${skills.wsl2} --scope user --consent
     fi
 
     # Ensure python skill is installed
     if [ ! -d "$HOME/.gemini/skills/python" ]; then
-      npx -y @google/gemini-cli skills install ${./../../home/config/skills/python/python.skill} --scope user --consent
+      npx -y @google/gemini-cli skills install ${skills.python} --scope user --consent
+    fi
+
+    # Ensure browser-use skill is installed
+    if [ ! -d "$HOME/.gemini/skills/browser-use" ]; then
+      npx -y @google/gemini-cli skills install ${skills.browser-use} --scope user --consent
+    fi
+
+    # Ensure build123d skill is installed
+    if [ ! -d "$HOME/.gemini/skills/build123d" ]; then
+      npx -y @google/gemini-cli skills install ${skills.build123d} --scope user --consent
     fi
 
     npx -y @google/gemini-cli "$@"
