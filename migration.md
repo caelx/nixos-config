@@ -40,10 +40,25 @@ Since the drive is locked, a standard `rm` won't work. We need to reset the part
 4.  Wipe the Linux partitions or the entire non-macOS free space. 
     *   *Note: Since macOS is already wiped in this scenario, use `diskutil eraseDisk` or `gpt destroy` on the internal NVMe to create a completely blank slate.*
 
-## 4. Boot the Installer & Partition
+## 4. Boot the Installer & Connect
 1.  Plug in the custom NixOS USB.
-2.  Boot the Mac Studio and select the USB boot option (handled via m1n1/U-Boot).
-3.  **Manual Partitioning** (Standard Asahi UEFI layout):
+2.  Boot the Mac Studio and select the USB boot option.
+3.  **Connect to Wi-Fi** (using `iwd`):
+    ```bash
+    iwctl
+    # Inside iwctl prompt:
+    device list                # Identify your device (usually wlan0)
+    station wlan0 scan         # Scan for networks
+    station wlan0 get-networks # List available networks
+    station wlan0 connect "YOUR_SSID"
+    # Enter your password when prompted
+    exit
+    ```
+4.  **Verify Connectivity**: `ping google.com`
+
+## 5. Partition and Format
+*(Moved from previous step)*
+1.  **Manual Partitioning**:
     ```bash
     # Create a new GPT table if not done in step 3
     sgdisk -Z /dev/nvme0n1
