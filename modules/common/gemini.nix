@@ -12,6 +12,11 @@ let
       npx -y @google/gemini-cli extensions install https://github.com/gemini-cli-extensions/security --auto-update --consent
     fi
 
+    # Ensure nix skill is installed
+    if [ ! -d "$HOME/.gemini/skills/nix" ]; then
+      npx -y @google/gemini-cli skills install ${./../../home/config/skills/nix/nix.skill} --scope user --consent
+    fi
+
     npx -y @google/gemini-cli "$@"
   '';
 
@@ -54,7 +59,7 @@ in
       };
     };
     skills = {
-      default = [ "system" ];
+      default = [ "system" "nix" ];
     };
     hooks = {
       AfterAgent = [
