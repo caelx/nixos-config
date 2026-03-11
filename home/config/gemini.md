@@ -43,6 +43,7 @@
 | **Testing** | `<test-runner> <args>` | Autonomously verify code |
 
 ## Interaction Protocol
+- **Clarify Ambiguity**: Proactively ask targeted questions for any ambiguities or critical underspecified requirements encountered during development.
 - **Proactive Validation**: Run tests or verification steps autonomously after implementation.
 - **Documentation First**: Ensure `README.md` and `CHANGELOG.md` are updated before finalizing any task.
 - **Brevity**: Provide commands first, followed by concise technical rationale.
