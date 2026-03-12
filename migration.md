@@ -17,7 +17,7 @@ Standard NixOS ISOs won't boot on Apple Silicon. You must build a custom bootstr
 ### Build via NixOS in WSL2:
 1.  **Build the ISO**:
     ```bash
-    nix build github:tpwrules/nixos-apple-silicon#installer-bootstrap
+    nix build github:tpwrules/nixos-apple-silicon#packages.x86_64-linux.installer-bootstrap
     ```
 2.  **Copy to Windows**:
     ```bash
