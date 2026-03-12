@@ -11,27 +11,18 @@ This guide provides the complete, step-by-step process for migrating your Mac St
 
 ---
 
-## 2. Software Preparation (Build Installer)
-Standard NixOS ISOs won't boot on Apple Silicon. You must build a custom bootstrap image.
+## 2. Software Preparation (Download Installer)
+Standard NixOS ISOs won't boot on Apple Silicon. Download the latest pre-built bootstrap image:
 
-### Build via NixOS in WSL2:
-1.  **Build the ISO** (using binary cache to avoid a massive cross-compile):
-    ```bash
-    nix build github:tpwrules/nixos-apple-silicon#packages.x86_64-linux.installer-bootstrap \
-      --extra-substituters https://nixos-apple-silicon.cachix.org \
-      --extra-trusted-public-keys "nixos-apple-silicon.cachix.org-1:99u9ab+GY9ST64WcjF0QMnqKSCDasA/6bGuD6uQB9vY="
-    ```
-    *Note: If this still crashes, you can download a pre-built ISO from the [Releases page](https://github.com/nix-community/nixos-apple-silicon/releases).*
-2.  **Copy to Windows**:
-    ```bash
-    cp $(readlink -f result/iso/nixos-*.iso) /mnt/c/Users/$USER/Downloads/nixos-apple-silicon.iso
-    ```
-3.  **Flash with Rufus**:
+1.  **Download the ISO**: [nixos-apple-silicon-release-2025-11-18.iso](https://github.com/nix-community/nixos-apple-silicon/releases/download/release-2025-11-18/nixos-25.11.20251112.c5ae371-apple-silicon-release-2025-11-18.iso)
+2.  **Flash with Rufus (on Windows)**:
     *   **Device**: Your USB drive.
-    *   **Boot selection**: Select the `.iso` file.
+    *   **Boot selection**: Select the `.iso` file you just downloaded.
     *   **Partition scheme**: GPT.
     *   **Target system**: UEFI (non CSM).
     *   **START** to flash.
+
+*(Note: Building from source via Nix is no longer recommended due to high resource requirements for cross-compilation).*
 
 ---
 
