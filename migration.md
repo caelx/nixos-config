@@ -15,10 +15,13 @@ This guide provides the complete, step-by-step process for migrating your Mac St
 Standard NixOS ISOs won't boot on Apple Silicon. You must build a custom bootstrap image.
 
 ### Build via NixOS in WSL2:
-1.  **Build the ISO**:
+1.  **Build the ISO** (using binary cache to avoid a massive cross-compile):
     ```bash
-    nix build github:tpwrules/nixos-apple-silicon#packages.x86_64-linux.installer-bootstrap
+    nix build github:tpwrules/nixos-apple-silicon#packages.x86_64-linux.installer-bootstrap \
+      --extra-substituters https://nixos-apple-silicon.cachix.org \
+      --extra-trusted-public-keys "nixos-apple-silicon.cachix.org-1:99u9ab+GY9ST64WcjF0QMnqKSCDasA/6bGuD6uQB9vY="
     ```
+    *Note: If this still crashes, you can download a pre-built ISO from the [Releases page](https://github.com/nix-community/nixos-apple-silicon/releases).*
 2.  **Copy to Windows**:
     ```bash
     cp $(readlink -f result/iso/nixos-*.iso) /mnt/c/Users/$USER/Downloads/nixos-apple-silicon.iso
