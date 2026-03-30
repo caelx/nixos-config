@@ -25,6 +25,10 @@ in
 {
   virtualisation.oci-containers.containers."hermes" = {
     image = "ghcr.io/caelx/ghostship-hermes:latest";
+    pull = "always";
+    labels = {
+      "io.containers.autoupdate" = "registry";
+    };
     entrypoint = "/bin/sh";
     cmd = [ "/hermes-startup.sh" ];
     extraOptions = [
