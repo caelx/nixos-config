@@ -231,13 +231,13 @@ in
     labels = {
       "io.containers.autoupdate" = "registry";
     };
-    user = "0:3000";
+    user = "0:65536";
     extraOptions = [
       "--network=ghostship_net"
     ];
     environment = {
       PUID = "3000";
-      PGID = "3000";
+      PGID = "65536";
       TZ = "UTC";
     };
     volumes = [
@@ -289,7 +289,7 @@ in
           Plex.color=literal:"#ebaf00"
           Plex.enabled=literal:"true"
           NZBGet.name=literal:"NZBGet"
-          NZBGet.url=literal:"https://nzbget.ghostship.io"
+          NZBGet.url=literal:"http://nzbget:5001"
           NZBGet.scale=literal:1
           NZBGet.icon=literal:"fa-download"
           NZBGet.color=literal:"#4ad946"

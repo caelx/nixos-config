@@ -10,13 +10,13 @@ in
     labels = {
       "io.containers.autoupdate" = "registry";
     };
-    user = "3000:3000";
+    user = "3000:65536";
     extraOptions = [
       "--network=ghostship_net"
     ];
     environment = {
       PUID = "3000";
-      PGID = "3000";
+      PGID = "65536";
       TZ = "UTC";
     };
     volumes = [
@@ -58,7 +58,7 @@ in
         )
 
         ${pkgs.ghostship-config}/bin/ghostship-config set "$CONFIG_FILE" "''${sonarr_args[@]}"
-        chown 3000:3000 "$CONFIG_FILE"
+        chown 3000:65536 "$CONFIG_FILE"
       fi
     '';
   };

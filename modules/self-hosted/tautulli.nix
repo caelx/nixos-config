@@ -11,7 +11,7 @@ in
     labels = {
       "io.containers.autoupdate" = "registry";
     };
-    user = "3000:3000";
+    user = "3000:65536";
     extraOptions = [
       "--network=ghostship_net"
       "--health-cmd=wget -q --spider --tries=1 --timeout=5 http://127.0.0.1:8181/ || exit 1"
@@ -24,7 +24,7 @@ in
     environment = {
       TZ = "UTC";
       PUID = "3000";
-      PGID = "3000";
+      PGID = "65536";
     };
     volumes = [
       "/srv/apps/tautulli:/config"

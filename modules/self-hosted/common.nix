@@ -68,7 +68,8 @@ in
   # Shared configuration for all self-hosted services
   # (Podman is used by default in NixOS)
 
-  # Service user for self-hosted apps
+  # Service user for self-hosted apps. Keep the app UID at 3000 while aligning
+  # the app group with Synology's existing share group GID 65536.
   users.users.apps = {
     isSystemUser = true;
     uid = 3000;
@@ -76,7 +77,7 @@ in
     description = "Service user for self-hosted apps";
     shell = "/run/current-system/sw/bin/nologin";
   };
-  users.groups.apps.gid = 3000;
+  users.groups.apps.gid = 65536;
 
   # Common network for all ghostship services and shared Podman update/auth hooks
   systemd.services = lib.mkMerge (

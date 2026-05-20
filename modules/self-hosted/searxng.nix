@@ -464,7 +464,7 @@ in
     labels = {
       "io.containers.autoupdate" = "registry";
     };
-    user = "3000:3000";
+    user = "3000:65536";
     extraOptions = [
       "--network=ghostship_net"
       "--health-cmd=wget -q --spider --tries=1 --timeout=5 http://127.0.0.1:8080/config || exit 1"
@@ -545,7 +545,7 @@ PYEOF
 ${searxng-limiter-toml}
 EOF
 
-    chown 3000:3000 "$SETTINGS_FILE" "$LIMITER_FILE"
+    chown 3000:65536 "$SETTINGS_FILE" "$LIMITER_FILE"
     chmod 0640 "$SETTINGS_FILE" "$LIMITER_FILE"
   '';
 }

@@ -1,0 +1,135 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+mode="dry-run"
+group="share"
+roots=()
+
+usage() {
+  cat <<'USAGE'
+Usage: repair-synology-share-permissions [--apply] [--group GROUP] [ROOT...]
+
+Audits or repairs Synology shared-folder POSIX group permissions for app-
+managed data roots. Dry-run is the default. Run with --apply from a root-capable
+Synology shell after changing the NFS export away from "map all users to admin".
+
+Defaults:
+  GROUP: share
+  ROOTS: /volume1/share/Downloads /volume1/share/Library
+
+Repair behavior:
+  - preserve file owners
+  - set group to GROUP
+  - make files group-readable/group-writable
+  - make directories group-readable/group-writable/group-searchable
+  - set setgid on directories so new children inherit GROUP
+  - skip Synology metadata/recycle/snapshot directories
+USAGE
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --apply)
+      mode="apply"
+      ;;
+    --dry-run)
+      mode="dry-run"
+      ;;
+    --group)
+      shift
+      if [ "$#" -eq 0 ]; then
+        echo "Missing value for --group" >&2
+        exit 2
+      fi
+      group="$1"
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    --)
+      shift
+      while [ "$#" -gt 0 ]; do
+        roots+=("$1")
+        shift
+      done
+      break
+      ;;
+    -*)
+      echo "Unknown option: $1" >&2
+      usage >&2
+      exit 2
+      ;;
+    *)
+      roots+=("$1")
+      ;;
+  esac
+  shift
+done
+
+if [ "${#roots[@]}" -eq 0 ]; then
+  roots=(/volume1/share/Downloads /volume1/share/Library)
+fi
+
+if ! grep -q "^${group}:" /etc/group 2>/dev/null; then
+  echo "Group '${group}' was not found in /etc/group" >&2
+  exit 1
+fi
+
+if [ "$mode" = "apply" ] && [ "$(id -u)" -ne 0 ]; then
+  echo "--apply must run as root so ownership and modes can be repaired" >&2
+  exit 1
+fi
+
+find_shared() {
+  find "$1" \
+    \( -name '@eaDir' -o -name '#recycle' -o -name '@Recycle' -o -name '.snapshot' \) -prune \
+    -o -print
+}
+
+find_dirs() {
+  find "$1" \
+    \( -name '@eaDir' -o -name '#recycle' -o -name '@Recycle' -o -name '.snapshot' \) -prune \
+    -o -type d -print
+}
+
+find_files() {
+  find "$1" \
+    \( -name '@eaDir' -o -name '#recycle' -o -name '@Recycle' -o -name '.snapshot' \) -prune \
+    -o -type f -print
+}
+
+for root in "${roots[@]}"; do
+  if [ ! -d "$root" ]; then
+    echo "Skipping missing root: $root" >&2
+    continue
+  fi
+
+  echo "== $root =="
+  total_count="$(find_shared "$root" | wc -l | tr -d ' ')"
+  group_mismatch_count="$(find_shared "$root" ! -group "$group" | wc -l | tr -d ' ')"
+  dir_no_setgid_count="$(find_dirs "$root" ! -perm -2000 | wc -l | tr -d ' ')"
+  dir_no_group_write_count="$(find_dirs "$root" ! -perm -0020 | wc -l | tr -d ' ')"
+  file_no_group_write_count="$(find_files "$root" ! -perm -0020 | wc -l | tr -d ' ')"
+
+  echo "entries: $total_count"
+  echo "not group '$group': $group_mismatch_count"
+  echo "directories without setgid: $dir_no_setgid_count"
+  echo "directories without group write: $dir_no_group_write_count"
+  echo "files without group write: $file_no_group_write_count"
+
+  if [ "$mode" = "dry-run" ]; then
+    echo "sample entries needing repair:"
+    set +o pipefail
+    find_shared "$root" \( ! -group "$group" -o ! -perm -0020 \) -print | head -20
+    set -o pipefail
+    echo
+    continue
+  fi
+
+  find_shared "$root" -exec chgrp -h "$group" {} +
+  find_dirs "$root" -exec chmod g+rwx,g+s {} +
+  find_files "$root" -exec chmod g+rw {} +
+  echo "repaired"
+  echo
+done

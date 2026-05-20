@@ -21,7 +21,7 @@ in
     ];
     environment = {
       PUID = "3000";
-      PGID = "3000";
+      PGID = "65536";
       TZ = "UTC";
     };
     environmentFiles = [
@@ -68,7 +68,7 @@ in
     )
 
     ${pkgs.ghostship-config}/bin/ghostship-config set "$ENV_FILE" "''${bookstack_args[@]}"
-    chown 3000:3000 "$ENV_FILE"
+    chown 3000:65536 "$ENV_FILE"
     chmod 600 "$ENV_FILE"
   '';
 }

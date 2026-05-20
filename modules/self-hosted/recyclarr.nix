@@ -11,7 +11,7 @@ in
     labels = {
       "io.containers.autoupdate" = "registry";
     };
-    user = "3000:3000";
+    user = "3000:65536";
     extraOptions = [
       "--network=ghostship_net"
     ];
@@ -64,7 +64,7 @@ in
         )
 
         ${pkgs.ghostship-config}/bin/ghostship-config set "$CONFIG_FILE" "''${recyclarr_args[@]}"
-        chown 3000:3000 "$CONFIG_FILE"
+        chown 3000:65536 "$CONFIG_FILE"
       fi
     '';
   };

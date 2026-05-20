@@ -19,7 +19,7 @@ let
 
     # 1. Ensure directories exist
     mkdir -p "$CONFIG_DIR/qBittorrent"
-    chown -R 3000:3000 "$CONFIG_DIR"
+    chown -R 3000:65536 "$CONFIG_DIR"
 
     # 2. Remove the legacy manual VueTorrent download state. The supported
     # LSIO Docker mod now supplies the UI inside the container.
@@ -201,7 +201,7 @@ in
     environment = {
       TZ = "UTC";
       PUID = "3000";
-      PGID = "3000";
+      PGID = "65536";
       WEBUI_PORT = "5000";
     };
     volumes = [

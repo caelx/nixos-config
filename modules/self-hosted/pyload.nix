@@ -227,7 +227,7 @@ in
     ];
     environment = {
       PUID = "3000";
-      PGID = "3000";
+      PGID = "65536";
       TZ = "UTC";
     };
     volumes = [
@@ -291,7 +291,7 @@ in
 
         ${pkgs.ghostship-config}/bin/ghostship-config set "$CONFIG_FILE" "''${pyload_args[@]}"
 
-        chown 3000:3000 "$CONFIG_FILE"
+        chown 3000:65536 "$CONFIG_FILE"
       fi
     '';
   };

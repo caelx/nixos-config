@@ -515,7 +515,7 @@ in
     labels = {
       "io.containers.autoupdate" = "registry";
     };
-    user = "0:3000";
+    user = "0:65536";
     extraOptions = [
       "--cap-add=NET_ADMIN"
       "--device=/dev/net/tun:/dev/net/tun"

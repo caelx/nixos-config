@@ -70,6 +70,9 @@ changelog.
 - Managed Synology NFS mounts should use `hard`, not `soft`, on both WSL and
   NixOS clients so transient NAS stalls do not surface as client-side I/O
   errors or integrity failures during copies.
+- Synology share writers should use UID `3000` with the Synology `share` group
+  GID `65536` for app writes; do not use `map all users to admin` for the
+  shared export.
 - Agent Zero on `chill-penguin` is a NixOS-managed Podman service
   (`podman-agent-zero`), not a Docker Compose deployment.
 - WSL hosts keep `wsl.wslConf.interop.appendWindowsPath = true` for desktop
@@ -439,7 +442,7 @@ changelog.
 - Use native `podman auto-update` for labeled containers and fully qualified
   image names when auto-update is enabled.
 - Do not expose container ports on the host except for Plex.
-- When a container can safely run as `3000:3000`, set it explicitly. Keep
+- When a container can safely run as `3000:65536`, set it explicitly. Keep
   exceptions that need root startup behavior as root-run services.
 - `ghostship-config.py` must accept multiple `--secrets-file` inputs.
 - Use `yaml:` writes in `ghostship-config.py` when native YAML scalar types
@@ -533,8 +536,8 @@ changelog.
 - On `chill-penguin`, Muximux intentionally omits Honcho while keeping
   PriceBuddy in the dropdown immediately after Bazarr; Homepage remains the
   place where Honcho stays visible.
-- Muximux does not tolerate `user = "3000:3000"` in the current image; keep it
-  on `0:3000`.
+- Muximux does not tolerate `user = "3000:65536"` in the current image; keep it
+  on `0:65536`.
 - Bazarr's authoritative config is `/srv/apps/bazarr/config/config.yaml`.
 - CloakBrowser consumer images live under `containers/` and are built locally into content-addressed `localhost/...` tags from Nix-managed contexts; `pricebuddy-scraper` and `changedetection` both run embedded local CloakBrowser Playwright sessions with `humanize=True` instead of the manager/CDP path.
 - The standalone `cloakhq/cloakbrowser-manager` service is retired on `chill-penguin`; keep Changedetection, PriceBuddy scraper, Firecrawl Playwright, and Hermes on their embedded or image-owned browser paths only.

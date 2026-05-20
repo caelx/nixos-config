@@ -7,7 +7,7 @@
     labels = {
       "io.containers.autoupdate" = "registry";
     };
-    user = "3000:3000";
+    user = "3000:65536";
     extraOptions = [
       "--network=ghostship_net"
       "--health-cmd=wget -q --spider --tries=1 --timeout=5 http://127.0.0.1:5001/ || exit 1"
@@ -20,7 +20,7 @@
     environment = {
       TZ = "UTC";
       PUID = "3000";
-      PGID = "3000";
+      PGID = "65536";
     };
     volumes = [
       "/srv/apps/nzbget:/config"
@@ -88,7 +88,7 @@
 
         ${pkgs.ghostship-config}/bin/ghostship-config set "$CONFIG_FILE" "''${nzb_args[@]}"
 
-        chown 3000:3000 "$CONFIG_FILE"
+        chown 3000:65536 "$CONFIG_FILE"
         chmod 644 "$CONFIG_FILE"
       fi
     '';

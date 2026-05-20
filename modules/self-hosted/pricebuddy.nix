@@ -69,7 +69,7 @@ MYSQL_ROOT_HOST=127.0.0.1
 EOF
 
     ${pkgs.coreutils}/bin/chmod 600 "$app_env_file" "$db_env_file"
-    ${pkgs.coreutils}/bin/chown 3000:3000 "$app_env_file" "$db_env_file"
+    ${pkgs.coreutils}/bin/chown 3000:65536 "$app_env_file" "$db_env_file"
   '';
   pricebuddy-pre-start = pkgs.writeShellScriptBin "pricebuddy-pre-start" ''
     set -eu
@@ -175,7 +175,7 @@ PRICEBUDDY_API_TOKEN="''${token_id}|''${token}"
 EOF
 
     ${pkgs.coreutils}/bin/chmod 600 "$token_file"
-    ${pkgs.coreutils}/bin/chown 3000:3000 "$token_file"
+    ${pkgs.coreutils}/bin/chown 3000:65536 "$token_file"
   '';
   pricebuddy-runtime-verify = pkgs.writeShellScriptBin "pricebuddy-runtime-verify" ''
     set -eu

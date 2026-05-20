@@ -12,7 +12,7 @@ in
     labels = {
       "io.containers.autoupdate" = "registry";
     };
-    user = "3000:3000";
+    user = "3000:65536";
     extraOptions = [
       "--network=ghostship_net"
       "--health-cmd=wget -q --spider --tries=1 --timeout=5 http://127.0.0.1:8080/ || exit 1"
@@ -70,7 +70,7 @@ in
       )
 
       ${pkgs.ghostship-config}/bin/ghostship-config set "$CONFIG_FILE" "''${romm_cfg_args[@]}"
-      chown 3000:3000 "$CONFIG_FILE"
+      chown 3000:65536 "$CONFIG_FILE"
     fi
 
     echo "Surgically updating RomM env file..."
@@ -100,7 +100,7 @@ in
 
     ${pkgs.ghostship-config}/bin/ghostship-config set "$ENV_FILE" "''${romm_env_args[@]}"
 
-    chown 3000:3000 "$ENV_FILE"
+    chown 3000:65536 "$ENV_FILE"
     chmod 600 "$ENV_FILE"
   '';
 }

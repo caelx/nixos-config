@@ -12,8 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   worktree probes directly through Bash so Bash regex quoting does not fail in
   fish.
 - **NZBGet networking**: Move NZBGet off Gluetun's VPN namespace and onto
-  `ghostship_net`, updating internal Homepage and Hermes URLs to
+  `ghostship_net`, updating internal Homepage, Hermes, and Muximux URLs to
   `http://nzbget:5001`.
+- **Synology NFS ownership strategy**: Align the repo-managed `apps` group with
+  Synology's existing `share` group GID `65536`, keep app writes on UID `3000`,
+  document the no-all-user-squash NAS permission model, and add a dry-run-first
+  NAS permission repair helper for existing shared files. Hermes now mounts the
+  NAS read-only so it does not become an unstandardized writer.
 - **Podman auto-update auth**: Merge Agent Zero's GHCR auth into the shared
   Podman auto-update auth file so the daily registry update pass can check the
   private Agent Zero image without failing the whole run.

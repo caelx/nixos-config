@@ -23,7 +23,7 @@ in
       TZ = "UTC";
       DATABASE_URL = "jdbc:mariadb://grimmory-db:3306/grimmory";
       USER_ID = "3000";
-      GROUP_ID = "3000";
+      GROUP_ID = "65536";
       GRIMMORY_PORT = "6060";
     };
     environmentFiles = [
@@ -65,7 +65,7 @@ in
         )
 
         ${pkgs.ghostship-config}/bin/ghostship-config set "$ENV_FILE" "''${grimmory_args[@]}"
-        chown 3000:3000 "$ENV_FILE"
+        chown 3000:65536 "$ENV_FILE"
         chmod 600 "$ENV_FILE"
       fi
     '';

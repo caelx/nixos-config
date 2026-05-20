@@ -7,7 +7,7 @@
     labels = {
       "io.containers.autoupdate" = "registry";
     };
-    user = "3000:3000";
+    user = "3000:65536";
     extraOptions = [
       "--network=ghostship_net"
       "--health-cmd=valkey-cli ping || exit 1"

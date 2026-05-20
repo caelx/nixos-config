@@ -11,7 +11,7 @@ in
     labels = {
       "io.containers.autoupdate" = "registry";
     };
-    user = "3000:3000";
+    user = "3000:65536";
     extraOptions = [
       "--network=ghostship_net"
       "--health-cmd=wget -q --spider --tries=1 --timeout=5 http://127.0.0.1:6767/ || exit 1"
@@ -24,7 +24,7 @@ in
     environment = {
       TZ = "UTC";
       PUID = "3000";
-      PGID = "3000";
+      PGID = "65536";
     };
     volumes = [
       "/srv/apps/bazarr:/config"
@@ -75,7 +75,7 @@ in
 
         ${pkgs.ghostship-config}/bin/ghostship-config set "$CONFIG_FILE" "''${bazarr_args[@]}"
 
-        chown 3000:3000 "$CONFIG_FILE"
+        chown 3000:65536 "$CONFIG_FILE"
         chmod 644 "$CONFIG_FILE"
 
         if [ -f "$LEGACY_CONFIG_FILE" ]; then

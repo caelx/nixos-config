@@ -221,6 +221,20 @@ Gluetun secret bundle must provide PIA credentials (`PIA_USER`/`PIA_PASS` or
 legacy `OPENVPN_*` names) and `HTTP_CONTROL_SERVER_API_KEY`, and does not
 require any application-specific benchmark credentials.
 
+Synology share permissions should use the existing non-admin `share` group as
+the cross-protocol writer group. Keep the host NFS mount at `/mnt/share`,
+bind-mount the needed subdirectories into Podman containers, and run app writes
+as UID `3000` with GID `65536`, matching Synology's `share` group. The Windows
+SMB `share` user should remain a member of that group. Avoid `map all users to
+admin` and `map all users to guest`; use no all-user squash, with root squashed
+to guest as a guardrail for accidental root writes.
+Use `scripts/repair-synology-share-permissions` from a root-capable Synology
+shell to audit or repair existing NAS group ownership after changing the NFS
+export; it defaults to a dry-run over `/volume1/share/Downloads` and
+`/volume1/share/Library`.
+Hermes keeps a read-only `/mnt/share` mount; file-writing services use the
+standard app UID and Synology `share` group instead.
+
 n8n runs as a single SQLite-backed workflow orchestrator in this repo and is intended to stay behind Cloudflare for browser access while Hermes talks to it over `ghostship_net`. Hermes should read its dedicated projected `N8N_API_KEY` rather than using a browser session. The live Muximux entry still needs a manual reorder on `chill-penguin` after deployment so it sits directly under Bazarr.
 
 Chaptarr now extends the arr stack to books and audiobooks. It should mount the shared downloads root at `/downloads`, manage `/mnt/share/Library/Books` and `/mnt/share/Library/Audiobooks` as separate library roots, and stay visible in Homepage plus the Muximux dropdown immediately before Bazarr. Grimmory is still the primary reading and listening surface, so it also mounts both library roots. Public `chaptarr.ghostship.io` exposure remains part of the external Cloudflare/tunnel workflow rather than repo-managed ingress.

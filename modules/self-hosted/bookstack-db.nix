@@ -10,7 +10,7 @@ in
     labels = {
       "io.containers.autoupdate" = "registry";
     };
-    user = "3000:3000";
+    user = "3000:65536";
     extraOptions = [
       "--network=ghostship_net"
       "--health-cmd=mariadb-admin ping -h 127.0.0.1 || exit 1"
@@ -22,7 +22,7 @@ in
     ];
     environment = {
       PUID = "3000";
-      PGID = "3000";
+      PGID = "65536";
       TZ = "UTC";
       MYSQL_ROOT_HOST = "127.0.0.1";
     };
@@ -62,7 +62,7 @@ in
     )
 
     ${pkgs.ghostship-config}/bin/ghostship-config set "$ENV_FILE" "''${bookstack_db_args[@]}"
-    chown 3000:3000 "$ENV_FILE"
+    chown 3000:65536 "$ENV_FILE"
     chmod 600 "$ENV_FILE"
   '';
 }

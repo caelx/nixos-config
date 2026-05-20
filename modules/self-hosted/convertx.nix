@@ -7,7 +7,7 @@
     labels = {
       "io.containers.autoupdate" = "registry";
     };
-    user = "3000:3000";
+    user = "3000:65536";
     extraOptions = [
       "--network=ghostship_net"
       "--health-cmd=curl -f --connect-timeout 5 http://127.0.0.1:3000/ || exit 1"

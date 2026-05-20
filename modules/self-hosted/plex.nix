@@ -34,7 +34,7 @@ let
       ${pkgs.ghostship-config}/bin/ghostship-config set "$PREFS_FILE" "''${plex_args[@]}"
 
       # Ensure permissions are correct after yq edit
-      chown 3000:3000 "$PREFS_FILE"
+      chown 3000:65536 "$PREFS_FILE"
       chmod 600 "$PREFS_FILE"
       echo "Plex Preferences.xml updated"
     else
@@ -49,7 +49,7 @@ in
     labels = {
       "io.containers.autoupdate" = "registry";
     };
-    user = "3000:3000";
+    user = "3000:65536";
     extraOptions = [
       "--network=ghostship_net"
     ];
@@ -67,7 +67,7 @@ in
     ];
     environment = {
       PUID = "3000";
-      PGID = "3000";
+      PGID = "65536";
       TZ = "UTC";
       VERSION = "latest";
     };
