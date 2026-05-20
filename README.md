@@ -232,8 +232,6 @@ Use `scripts/repair-synology-share-permissions` from a root-capable Synology
 shell to audit or repair existing NAS group ownership after changing the NFS
 export; it defaults to a dry-run over `/volume1/share/Downloads` and
 `/volume1/share/Library`.
-Hermes keeps a read-only `/mnt/share` mount; file-writing services use the
-standard app UID and Synology `share` group instead.
 
 n8n runs as a single SQLite-backed workflow orchestrator in this repo and is intended to stay behind Cloudflare for browser access while Hermes talks to it over `ghostship_net`. Hermes should read its dedicated projected `N8N_API_KEY` rather than using a browser session. The live Muximux entry still needs a manual reorder on `chill-penguin` after deployment so it sits directly under Bazarr.
 

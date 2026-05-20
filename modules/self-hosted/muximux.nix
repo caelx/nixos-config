@@ -289,7 +289,7 @@ in
           Plex.color=literal:"#ebaf00"
           Plex.enabled=literal:"true"
           NZBGet.name=literal:"NZBGet"
-          NZBGet.url=literal:"http://nzbget:5001"
+          NZBGet.url=literal:"https://nzbget.ghostship.io"
           NZBGet.scale=literal:1
           NZBGet.icon=literal:"fa-download"
           NZBGet.color=literal:"#4ad946"
