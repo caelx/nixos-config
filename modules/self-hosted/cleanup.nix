@@ -16,7 +16,11 @@ let
       ];
       containers = [ "hermes" ];
       imageRefs = [ "ghcr.io/caelx/ghostship-hermes:latest" ];
-      imageRepositories = [ "ghcr.io/caelx/ghostship-hermes" ];
+      imageRepositories = [
+        "ghcr.io/caelx/ghostship-hermes"
+        "localhost/ghostship-hermes"
+        "localhost/ghostship-hermes-workstation"
+      ];
       homepageEntries = [ "Hermes" ];
       muximuxSections = [ "Hermes" ];
     }
@@ -40,6 +44,8 @@ let
       imageRefs = [ "ghcr.io/firecrawl/firecrawl:latest" ];
       imageRepositories = [
         "ghcr.io/firecrawl/firecrawl"
+        "ghcr.io/firecrawl/nuq-postgres"
+        "ghcr.io/firecrawl/playwright-service"
         "localhost/ghostship-firecrawl-playwright-cloakbrowser"
         "localhost/ghostship-firecrawl-nuq-postgres"
       ];
