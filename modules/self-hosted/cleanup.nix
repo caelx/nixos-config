@@ -32,7 +32,10 @@ let
       containers = [ "agent-zero" ];
       volumes = [ "agent-zero-nix" ];
       imageRefs = [ "ghcr.io/caelx/ghostship-agent-zero:latest" ];
-      imageRepositories = [ "ghcr.io/caelx/ghostship-agent-zero" ];
+      imageRepositories = [
+        "ghcr.io/caelx/ghostship-agent-zero"
+        "localhost/ghostship-agent-zero"
+      ];
       homepageEntries = [ "Agent Zero" ];
       muximuxSections = [ "Agent Zero" ];
     }
