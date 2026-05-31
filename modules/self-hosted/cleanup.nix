@@ -47,6 +47,7 @@ let
       volumes = [ "agent-zero-nix" ];
       imageRefs = [ "ghcr.io/caelx/ghostship-agent-zero:latest" ];
       imageRepositories = [
+        "docker.io/agent0ai/agent-zero"
         "ghcr.io/caelx/ghostship-agent-zero"
         "localhost/ghostship-agent-zero"
       ];
@@ -120,6 +121,7 @@ let
       imageRefs = [ ];
       imageRepositories = [
         "localhost/ghostship-honcho"
+        "localhost/honcho"
         "ghcr.io/caelx/honcho"
       ];
       homepageEntries = [
