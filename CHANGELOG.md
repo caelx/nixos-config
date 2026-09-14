@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [3.9.1] - 2026-09-14
+
+- Refresh coordinated Nix inputs; evaluate all hosts and run configuration checks.
+
 ## [3.9.0] - 2026-09-08
 
 - Reapply T3's shared Ghostship agent tooling and native browser
