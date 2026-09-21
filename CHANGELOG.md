@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [3.14.7] - 2026-09-21
+
+- Refresh coordinated Nix inputs; evaluate all hosts and run configuration checks.
+
 ## [3.14.6] - 2026-09-21
 
 - Restore the managed Ollama Cloud and OpenRouter API keys to the T3 Code
