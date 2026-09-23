@@ -18,13 +18,18 @@ import (
 const gatewayURL = "https://redroid-gateway:8787"
 const tokenPath = "/home/t3code/.config/redroid/gateway-token"
 const caPath = "/home/t3code/.config/redroid/gateway-ca.crt"
+const usage = "usage: redroidctl status|start|stop|restart|wait|logs|keepalive|factory-reset|adb|shell|install|uninstall|launch|stop-app|screenshot|screenrecord|logcat|pull|push"
 
 func die(e error) { fmt.Fprintln(os.Stderr, "redroidctl:", e); os.Exit(1) }
 func main() {
 	if len(os.Args) < 2 {
-		die(errors.New("usage: redroidctl status|start|stop|restart|wait|logs|keepalive|factory-reset|adb|shell|install|uninstall|launch|stop-app|screenshot|screenrecord|logcat|pull|push ..."))
+		die(errors.New(usage))
 	}
 	cmd := os.Args[1]
+	if cmd == "help" || cmd == "--help" || cmd == "-h" {
+		fmt.Println(usage)
+		return
+	}
 	args := os.Args[2:]
 	if cmd == "adb" {
 		if len(args) == 0 {
