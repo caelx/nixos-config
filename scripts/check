@@ -20,6 +20,9 @@ for system in x86_64-linux aarch64-linux; do
   done
 done
 
+printf 'Compiling the Android guest VSOCK agent source\n'
+python3 scripts/check-android-vsock.py
+
 # Evaluate full system derivations, including module assertions, without building
 # kernels, container images, or firmware that belongs on the target host.
 hosts="$(nix eval --no-write-lock-file --json .#nixosConfigurations --apply builtins.attrNames)"

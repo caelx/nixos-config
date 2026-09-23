@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+- Add a chill-penguin-only ARM64 Android analysis MicroVM with a private T3
+  control path, persistent ReDroid state, and an operational runbook. Runtime
+  readiness remains subject to the documented deployment acceptance checks.
+
 ## [3.15.6] - 2026-09-23
 
 - Repair Claude Code's recursive npm launcher by installing the matching

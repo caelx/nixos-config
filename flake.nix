@@ -35,6 +35,11 @@
       url = "github:nix-community/nixos-apple-silicon/9fe29a63b23005acfcd1324a9e78b6241226cdb1";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    microvm = {
+      url = "github:microvm-nix/microvm.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -46,6 +51,7 @@
       nix-index-database,
       apple-silicon,
       ragenix,
+      microvm,
       ...
     }@inputs:
     let
@@ -88,10 +94,15 @@
         system:
         let
           pkgs = pkgsFor system;
+          redroidLab = pkgs.callPackage ./packages/redroid-lab { };
         in
         {
           ghostship-config = (pkgs.extend (import ./modules/common/ghostship-pkg.nix)).ghostship-config;
           container-browser = pkgs.chromium;
+          redroidctl = redroidLab.redroidCtl;
+          redroid-control = redroidLab.redroidControl;
+          redroid-gateway = redroidLab.redroidGateway;
+          redroid-gateway-image = redroidLab.redroidGatewayImage;
         }
       );
 
@@ -162,7 +173,11 @@
           };
           browser = pkgs.mkShellNoCC {
             inputsFrom = [ default ];
-            packages = [ pkgs.playwright-driver.browsers pkgs.playwright-driver pkgs.librsvg ];
+            packages = [
+              pkgs.playwright-driver.browsers
+              pkgs.playwright-driver
+              pkgs.librsvg
+            ];
             PLAYWRIGHT_BROWSERS_PATH = "${pkgs.playwright-driver.browsers}";
             PLAYWRIGHT_MODULE = "${pkgs.playwright-driver}";
           };
@@ -193,6 +208,15 @@
           inputs.nixos-hardware.nixosModules.common-pc-ssd
           ./hosts/boomer-kuwanger/default.nix
         ];
+
+        android-lab = nixpkgs.lib.nixosSystem {
+          system = "aarch64-linux";
+          specialArgs = { inherit inputs self; };
+          modules = [
+            microvm.nixosModules.microvm
+            ./vms/android-lab/default.nix
+          ];
+        };
       };
     };
 }

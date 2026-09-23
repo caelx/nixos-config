@@ -118,6 +118,10 @@ T3 Code environment, use [container-workflow.md](container-workflow.md).
   config files.
 - For an immediate user-triggered refresh, run `ghostship-agent-maintenance`
   directly instead of trying to start the system unit as an unprivileged user.
+- For Android APK installation, behavioral analysis, or ReDroid lifecycle work
+  on `chill-penguin`, follow the [Android analysis lab runbook](android-lab.md)
+  and its lifecycle/security checks. Use `redroidctl` through the authenticated
+  T3 gateway; do not expose ADB or lifecycle TCP ports on the host LAN.
 - Develop hosts should keep `ssh-agent` on the fixed
   `/run/user/1000/ssh-agent` socket directly; do not parse the `ssh-agent`
   command line in a post-start hook to rediscover the socket.

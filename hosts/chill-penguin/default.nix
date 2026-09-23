@@ -8,6 +8,7 @@ in
   imports = [
     ../../modules/common/default.nix
     ../../modules/self-hosted/default.nix
+    ../../modules/android-lab/host.nix
     ./hardware-configuration.nix
   ];
 
