@@ -32,6 +32,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [3.15.20] - 2026-09-28
+
+- Refresh coordinated Nix inputs; evaluate all hosts and run configuration checks.
+
 ## [3.15.15] - 2026-09-27
 
 - **Route foreign titles without English subtitles to review**: Detect missing
