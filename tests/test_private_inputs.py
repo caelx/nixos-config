@@ -274,6 +274,26 @@ class CommittedLockPolicyTest(unittest.TestCase):
                     if script == "private-inputs.py":
                         self.assertIn("public source policy", result.stderr)
 
+    def test_native_parent_input_paths_remain_valid_and_malformed_paths_are_refused(self):
+        # Nix 2.34 serializes relative-input ancestry as an InputAttrPath list.
+        from source_privacy import validate_lock, PolicyError
+        lock = json.loads(subprocess.check_output(
+            ["git", "show", "HEAD:flake.lock"], cwd=ROOT, text=True))
+        for parent in ([], ["nixpkgs"]):
+            candidate = json.loads(json.dumps(lock))
+            candidate["nodes"][PRIVATE.INPUT]["parent"] = parent
+            with self.subTest(parent=parent):
+                validate_lock(json.dumps(candidate))
+        for parent in (None, "nixpkgs", [17], ["missing-input"], ["nixpkgs", "missing-input"]):
+            candidate = json.loads(json.dumps(lock))
+            candidate["nodes"][PRIVATE.INPUT]["parent"] = parent
+            with self.subTest(invalid=parent), self.assertRaises(PolicyError):
+                validate_lock(json.dumps(candidate))
+        candidate = json.loads(json.dumps(lock))
+        candidate["nodes"][PRIVATE.INPUT]["unreviewed"] = []
+        with self.assertRaises(PolicyError):
+            validate_lock(json.dumps(candidate))
+
     def test_public_sources_and_follows_keep_the_placeholder_usable(self):
         with tempfile.TemporaryDirectory() as directory:
             base = self.build_tree(

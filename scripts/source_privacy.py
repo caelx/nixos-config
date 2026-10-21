@@ -57,13 +57,36 @@ def validate_lock(text, require_placeholder=True, allowed=None):
         raise PolicyError("invalid-flake-lock")
     if allowed is None:
         allowed, _, _ = load_allowlist()
+    def resolve_parent(path, visiting=()):
+        # Nix LockedNode::parentInputAttrPath is an array of input names,
+        # relative to the root; an empty array denotes the root itself.
+        if (not isinstance(path, list) or any(not isinstance(p, str) or not p for p in path)
+                or tuple(path) in visiting):
+            raise PolicyError("invalid-flake-lock")
+        current = nodes[root]
+        for part in path:
+            if not isinstance(current, dict) or not isinstance(current.get("inputs", {}), dict):
+                raise PolicyError("invalid-flake-lock")
+            reference = current.get("inputs", {}).get(part)
+            if isinstance(reference, str):
+                current = nodes.get(reference)
+            elif isinstance(reference, list):
+                current = resolve_parent(reference, visiting + (tuple(path),))
+            else:
+                raise PolicyError("invalid-flake-lock")
+            if not isinstance(current, dict):
+                raise PolicyError("invalid-flake-lock")
+        return current
+
     if require_placeholder and INPUT not in nodes:
         raise PolicyError("private-source-placeholder")
     for name, node in nodes.items():
-        if not isinstance(node, dict) or set(node) - {"locked", "original", "inputs", "flake"}:
+        if not isinstance(node, dict) or set(node) - {"locked", "original", "inputs", "flake", "parent"}:
             raise PolicyError("invalid-flake-lock")
         if "flake" in node and type(node["flake"]) is not bool:
             raise PolicyError("invalid-flake-lock")
+        if "parent" in node:
+            resolve_parent(node["parent"])
         inputs = node.get("inputs", {})
         if not isinstance(inputs, dict):
             raise PolicyError("invalid-flake-lock")
