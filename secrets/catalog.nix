@@ -70,17 +70,20 @@ in
       exports = [
         "PERSONAL_ACCOUNT_EMAIL"
         "AGENT_ACCOUNT_EMAIL"
-        "HEALTH_DOCUMENT_FOLDERS"
+        "GHOSTSHIP_HEALTH_DOCUMENT_FOLDERS"
       ];
     };
     # GitHub account and T3 coordination identifiers for the private
     # engineering coordinator. The repository list names private repositories,
-    # so the whole mapping stays encrypted.
+    # so the whole mapping stays encrypted. The mapping keeps the base branch
+    # for each repository so the rendered configuration keeps the functional
+    # mapping the coordinator expects.
     github-engineering = mkUnit {
       relativeFile = "secrets/files/sources/services/github-engineering.env.age";
       exports = [
         "GITHUB_ALLOWED_USER_IDS"
         "GITHUB_INCIDENT_REPOSITORY"
+        "GITHUB_REPOSITORIES"
         "T3_ENVIRONMENT_ID"
         "T3_REPOSITORIES"
       ];
@@ -123,6 +126,12 @@ in
         "API_KEY"
         "ACCOUNT_ID"
       ];
+    };
+    # The Google identity provider that the Access application trusts. The
+    # client id is a private integration detail of the tunnel provisioner.
+    cloudflare-access = mkUnit {
+      relativeFile = "secrets/files/sources/services/cloudflare-access.env.age";
+      exports = [ "GOOGLE_IDP" ];
     };
 
     cohere = mkUnit {
@@ -491,9 +500,18 @@ in
           [
             "PERSONAL_ACCOUNT_EMAIL"
             "AGENT_ACCOUNT_EMAIL"
-            "HEALTH_DOCUMENT_FOLDERS"
           ]
       );
+    };
+    personal-health = {
+      fileName = "personal-health.env";
+      owner = "root";
+      group = "root";
+      mode = "0400";
+      fields.GHOSTSHIP_HEALTH_DOCUMENT_FOLDERS = {
+        unit = "personal-identity";
+        key = "GHOSTSHIP_HEALTH_DOCUMENT_FOLDERS";
+      };
     };
     github-engineering = {
       fileName = "github-engineering.env";
@@ -512,6 +530,7 @@ in
           [
             "GITHUB_ALLOWED_USER_IDS"
             "GITHUB_INCIDENT_REPOSITORY"
+            "GITHUB_REPOSITORIES"
             "T3_ENVIRONMENT_ID"
             "T3_REPOSITORIES"
           ]
@@ -622,6 +641,10 @@ in
         CLOUDFLARED_API_TOKEN = {
           unit = "cloudflare";
           key = "API_TOKEN";
+        };
+        GOOGLE_IDP = {
+          unit = "cloudflare-access";
+          key = "GOOGLE_IDP";
         };
       };
     };

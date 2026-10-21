@@ -144,7 +144,7 @@ T3 Code environment, use [container-workflow.md](container-workflow.md).
   `wslpath -w /home/nixos/...` returns a `\\wsl.localhost\NixOS\...` UNC path
   for WSL-native files rather than a `C:\...` path.
 - Docker Desktop stores its WSL disk at
-  `C:\Users\james\AppData\Local\Docker\wsl\disk\docker_data.vhdx` on this host.
+  `C:\Users\<windows-user>\AppData\Local\Docker\wsl\disk\docker_data.vhdx` on this host.
 - WSL registry `BasePath` values may be missing or use `\??\` / `\\?\` NT
   prefixes. Guard for that before using them as normal paths.
 - WSL FHS shim changes can require a full WSL distro restart after a
@@ -572,3 +572,24 @@ T3 Code environment, use [container-workflow.md](container-workflow.md).
   it is missing.
 - `references/host-intake/<hostname>/` is temporary staging for Codex-assisted
   host integration. Remove it after Codex finishes integrating the host.
+
+## Public Tree Privacy
+
+- Every repository in this fleet is treated as public. Personal identifiers,
+  account identifiers, and private repository names live in age-encrypted
+  units under `secrets/`, never in tracked source, documentation, tests,
+  fixtures, logs, or pull request text.
+- `scripts/check-privacy.py` fails on anything that reads as a person's
+  identity or a private account, using category detectors that name no
+  private value. It runs in `scripts/check` and in continuous integration.
+  `scripts/privacy-allowlist.txt` records the values that are deliberately
+  public, each with its reason, so a new value is reviewed.
+- A configuration that needs a personal value is rendered at activation time
+  from a secret projection. `modules/self-hosted/render-config.py` substitutes
+  placeholders in a JSON template and fails closed when a value is missing.
+- A private flake source is supplied out of band; see
+  [agent revision pinning](agent-revision-pinning.md). The committed tree
+  names no private repository, revision, or hash.
+- Never relocate a private value into another tracked plaintext file. Put it
+  in an encrypted unit, or leave it in a private specification outside the
+  repository.

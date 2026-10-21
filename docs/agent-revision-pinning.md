@@ -1,38 +1,100 @@
 # Pinning the private agent revision
 
-`ghostship-agent` is a private GitHub repository. It is a flake input of this
-public repository (`ghostship-private-agent`), and a NixOS host can only
-evaluate it with a GitHub credential — a bare public tarball fetch returns
-`404 Not Found`.
+The private agent source is a flake input of this public repository
+(`ghostship-private-agent`). A NixOS host can only evaluate it with a GitHub
+credential — a bare public tarball fetch returns `404 Not Found`.
+
+## The public tree names nothing
+
+This repository is public, and every repository in the fleet is treated as
+public. The committed tree therefore names **no private repository, no
+revision, and no content hash**. `flake.nix` and `flake.lock` carry a
+placeholder:
+
+```nix
+ghostship-private-agent.url = "path:./private-agent-source";
+```
+
+The placeholder is deliberately not resolvable. A checkout that has not been
+supplied with the private source fails to evaluate with a clear error instead
+of silently resolving something.
+
+## The private specification
+
+The pinned source is supplied from a specification that lives outside the
+repository:
+
+| Consumer | Source of the specification |
+|---|---|
+| Continuous integration | the `GHOSTSHIP_PRIVATE_SOURCES` repository secret |
+| A deployment host | a root-only file, for example `/etc/ghostship/private-sources.json` |
+
+The specification is JSON and names one input:
+
+```json
+{
+  "ghostship-private-agent": {
+    "type": "github",
+    "owner": "<owner>",
+    "repo": "<repository>",
+    "rev": "<revision>",
+    "narHash": "sha256-<content hash>",
+    "lastModified": 0
+  }
+}
+```
+
+Never write the specification into a tracked file. A tracked copy would
+publish the repository name, the revision, and the content hash, which is
+exactly the chain needed to find and fetch a private repository.
+
+## Supplying the source
+
+`scripts/private-inputs.py` writes the specification into `flake.nix` and
+`flake.lock` before evaluation:
+
+```sh
+# A host, with the specification at its root-only path.
+python3 scripts/private-inputs.py apply --spec /etc/ghostship/private-sources.json
+
+# Continuous integration, which additionally imports the source with the
+# read-only deploy key and points the lock at the local checkout.
+python3 scripts/private-inputs.py import
+
+# Put the committed placeholders back, for example before publishing a
+# refreshed lock file.
+python3 scripts/private-inputs.py restore
+```
+
+`apply` leaves the lock pointing at the GitHub source, so the host resolves
+it with its own credential. `import` fetches the source with the scoped
+read-only deploy key, verifies the content hash against the specification,
+and rewrites the lock to the local checkout, so the evaluation needs no
+GitHub credential at all.
 
 ## Deploying a new agent revision
 
-1. Merge the change in `caelx/ghostship-agent` and note the merged commit.
-2. Bump `ghostship-private-agent.url` in `flake.nix` to that commit.
-3. Import the pinned source on a machine with repository access, then copy
-   its store path to the host:
+1. Merge the change in the private agent repository and note the merged
+   commit.
+2. Update the specification with the new revision and its content hash. The
+   specification is private, so this is a change to the repository secret and
+   to the host's root-only file, not to a commit here.
+3. If the host does not hold a GitHub credential for the private source,
+   prime the fetcher cache instead:
 
    ```sh
-   nix flake prefetch 'git+file:///path/to/ghostship-agent?rev=<rev>' --json
+   nix flake prefetch 'git+file:///path/to/the-private-checkout?rev=<rev>' --json
    nix copy --to ssh-ng://root@<host> /nix/store/<source>
    ```
 
    Use the returned `storePath`. The pinned source can then resolve from the
    store without putting a GitHub token in shell history, process arguments,
    or the host's Nix configuration.
-4. Set the lock entry's `narHash` so evaluation never needs to resolve the
-   ref. The narHash is the store path hash of the fetched source:
+4. Deploy the host. The specification is applied before evaluation, so the
+   host picks up the new revision without any change to this repository.
 
-   ```sh
-   nix flake prefetch 'git+file:///path/to/ghostship-agent?rev=<rev>' --json
-   ```
-
-   Write the returned `hash` into `flake.lock` under
-   `nodes.ghostship-private-agent.locked.narHash` and the revision into
-   `locked.rev`.
-
-If a future bump is not primed, the host's upgrade fails with the
-`404` archive error described above and the running generation is unaffected.
+If a future bump is not primed, the host's upgrade fails with the `404`
+archive error described above and the running generation is unaffected.
 
 ## Why not a standing token
 

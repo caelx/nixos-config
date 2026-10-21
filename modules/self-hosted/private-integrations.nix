@@ -9,13 +9,16 @@ let
     inherit system;
     mcpIcon = ./private-integrations/ghostship.png;
   };
+  # The expected account identities are personal, so the committed template
+  # carries placeholders and the broker receives a configuration rendered at
+  # activation time from the personal-identity projection.
   brokerConfig = pkgs.writeText "ghostship-keep-broker.json" (builtins.toJSON {
     # Each account names the expected Google identity; the broker verifies the
     # signed-in account on the identity page and resolves its index at session
     # acquisition. No account index is configured or assumed.
     accounts = {
-      User = { identity = "personal"; expected_email = "james.ochmann@gmail.com"; };
-      Agent = { identity = "agent"; expected_email = "ghostship.agent@gmail.com"; };
+      User = { identity = "personal"; expected_email = "{{PERSONAL_ACCOUNT_EMAIL}}"; };
+      Agent = { identity = "agent"; expected_email = "{{AGENT_ACCOUNT_EMAIL}}"; };
     };
     principal = "chatgpt-personal-owner";
     client = "${tools.google-pp-cli}/bin/google-pp-cli";
@@ -191,7 +194,7 @@ let
     kuma = {
       container = "uptime-kuma";
       port = 3001;
-      username = "james";
+      username = "{{KUMA_USERNAME}}";
       env_file = config.ghostship.selfHostedSecrets.projections.monitoring.path;
     };
     cloudflare.env_file = config.ghostship.selfHostedSecrets.projections.cloudflare-management.path;
@@ -205,9 +208,33 @@ let
     };
   });
 
+  # Renders a configuration template from a secret projection. The projection
+  # is refreshed first so the rendered file always matches the current secret.
+  renderConfig =
+    name: template: projection: target: owner: group: mode:
+    pkgs.writeShellScript name ''
+      set -eu
+      umask 0077
+      ${config.ghostship.selfHostedSecrets.render}/bin/ghostship-secret-project ${projection}
+      ${pkgs.python3}/bin/python3 ${./render-config.py} \
+        ${template} \
+        ${config.ghostship.selfHostedSecrets.projections.${projection}.path} \
+        ${target}
+      chown ${owner}:${group} ${target}
+      chmod ${mode} ${target}
+    '';
+  brokerConfigPath = "/run/ghostship-keep/broker.json";
+  hostopsConfigPath = "/run/ghostship-hostops/ops.json";
+  renderBrokerConfig = renderConfig "ghostship-keep-broker-render" brokerConfig
+    "personal-identity" brokerConfigPath "ghostship-personal" "ghostship-mcp" "0640";
+  renderHostopsConfig = renderConfig "ghostship-hostops-config-render" hostopsConfig
+    "monitoring" hostopsConfigPath "root" "ghostship-mcp" "0640";
   render = pkgs.writeShellScript "ghostship-private-relay-render" ''
     set -eu
     ${config.ghostship.selfHostedSecrets.render}/bin/ghostship-secret-project ghostship-relay
+    for projection in personal-identity personal-health; do
+      ${config.ghostship.selfHostedSecrets.render}/bin/ghostship-secret-project "$projection"
+    done
     for projection in ${lib.escapeShellArgs (builtins.attrNames serviceProjections)}; do
       ${config.ghostship.selfHostedSecrets.render}/bin/ghostship-secret-project "$projection"
     done
@@ -257,7 +284,10 @@ in {
       path = [ pkgs.podman pkgs.systemd pkgs.restic pkgs.coreutils ];
       environment.SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
       serviceConfig = {
-        ExecStart = "${tools.hostops-broker}/bin/ghostship-hostops-broker --config ${hostopsConfig}";
+        ExecStart = "${tools.hostops-broker}/bin/ghostship-hostops-broker --config ${hostopsConfigPath}";
+        # The account name is personal, so the configuration is rendered at
+        # activation time from the monitoring projection.
+        ExecStartPre = "+${renderHostopsConfig}";
         RuntimeDirectory = "ghostship-hostops";
         RuntimeDirectoryMode = "0750";
         # The MCP container bind-mounts this directory. Removing it on stop left
@@ -299,7 +329,10 @@ in {
           "AGENT_DESKTOP_SSH_KEY=/run/ghostship-integrations/agent-desktop-key"
           "AGENT_DESKTOP_SSH_KNOWN_HOSTS=/run/ghostship-integrations/agent-desktop-known-hosts"
         ];
-        ExecStart = "${tools.keep-broker}/bin/ghostship-keep-broker --config ${brokerConfig}";
+        ExecStart = "${tools.keep-broker}/bin/ghostship-keep-broker --config ${brokerConfigPath}";
+        # The expected account identities are personal, so the configuration is
+        # rendered at activation time from the personal-identity projection.
+        ExecStartPre = "+${renderBrokerConfig}";
         Restart = "on-failure";
         RestartSec = 3;
         NoNewPrivileges = true;
@@ -417,8 +450,13 @@ in {
       user = "62020:62020";
       environment.GHOSTSHIP_MCP_IMAGE_VERSION = "ghostship-private-integrations:${privateAddons.image.imageTag}";
       # health op query type documents: only these Drive folders (and their subfolders) are read, so other
-      # people's records in the shared Healthcare folder stay out. "James Ochmann" and "HealthConnect".
-      environment.GHOSTSHIP_HEALTH_DOCUMENT_FOLDERS = "1zZTtDHRv09HayWZ0IzNWIOZDxM9rnpB-,1VLTMH9t2oD_texoqmZZCMYf2sCpagBKp";
+      # people's records in the shared Healthcare folder stay out. The owner's own
+      # folder and the HealthConnect folder, named in the personal-identity unit.
+      # The Drive folders the MCP may read are personal, so the list arrives
+      # from the decrypted projection instead of the committed configuration.
+      environmentFiles = [
+        config.ghostship.selfHostedSecrets.projections.personal-health.path
+      ];
       volumes = [
         "/run/ghostship-integrations:/run/ghostship-integrations:ro"
         "/run/ghostship-keep:/run/ghostship-keep:ro"

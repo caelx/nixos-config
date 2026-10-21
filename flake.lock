@@ -138,18 +138,14 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1792595405,
-        "narHash": "sha256-zFzVELpAJsD2+z2m9kHDil6KRilDJz1vis+OIANWH90=",
-        "owner": "caelx",
-        "repo": "ghostship-agent",
-        "rev": "42c0c0623fd8bc8ea328d92a23b34b3ae3a236ef",
-        "type": "github"
+        "lastModified": 0,
+        "narHash": "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+        "path": "./private-agent-source",
+        "type": "path"
       },
       "original": {
-        "owner": "caelx",
-        "repo": "ghostship-agent",
-        "rev": "42c0c0623fd8bc8ea328d92a23b34b3ae3a236ef",
-        "type": "github"
+        "path": "./private-agent-source",
+        "type": "path"
       }
     },
     "home-manager": {

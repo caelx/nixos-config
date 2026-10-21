@@ -91,7 +91,12 @@ let
     install -m0444 ${endpoint} /run/ghostship-integrations/inference-server.json.new
     mv -fT /run/ghostship-integrations/inference-server.json.new /run/ghostship-integrations/inference-server.json
     install -d -m0700 -o3000 -g3000 ${hostHome}/.config/ghostship
-    install -m0600 -o3000 -g3000 ${poolConfig} ${hostHome}/.config/ghostship/free-inference.json.new
+    # The Cloudflare account id is an account identifier, so the pool
+    # configuration is rendered at activation time from the projection.
+    ${pkgs.python3}/bin/python3 ${./render-config.py} ${poolConfig} ${hostProjection} \
+      ${hostHome}/.config/ghostship/free-inference.json.new
+    chown 3000:3000 ${hostHome}/.config/ghostship/free-inference.json.new
+    chmod 0600 ${hostHome}/.config/ghostship/free-inference.json.new
     mv -fT ${hostHome}/.config/ghostship/free-inference.json.new ${hostHome}/.config/ghostship/free-inference.json
     # Seed public toy code only on first setup; preserve an existing Git history.
     if ! test -e ${hostHome}/${fixture}; then
