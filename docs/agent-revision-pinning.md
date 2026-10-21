@@ -15,9 +15,21 @@ placeholder:
 ghostship-private-agent.url = "path:./private-agent-source";
 ```
 
-The placeholder is deliberately not resolvable. A checkout that has not been
-supplied with the private source fails to evaluate with a clear error instead
-of silently resolving something.
+`private-agent-source/flake.nix` is a small committed placeholder. It
+resolves, so the repository evaluates on its own, and it declares the same
+input the private source declares, so the lock keeps one node for it and the
+substitution is a change of the locked source alone.
+
+The consequence is the property the public tree needs. **An evaluation that
+does not need the private source works with no credential at all**: the
+development shells, the browser tests, and any other public check. **An
+evaluation that does need it fails with a message that says the source was
+not supplied**, and names the procedure. Nothing fails with a confusing
+"path does not exist".
+
+A checkout that has not been supplied with the private source therefore
+evaluates the parts of the configuration that are public, and says clearly
+what is missing for the rest.
 
 ## The private specification
 

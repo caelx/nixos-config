@@ -2,8 +2,8 @@
 """Supply the private flake source to flake.nix and flake.lock.
 
 The public repository names no private repository, revision, or content hash.
-The committed tree carries a placeholder, and the pinned source is supplied
-from a private specification:
+The committed tree carries a resolvable placeholder, and the pinned source is
+supplied from a private specification:
 
 * continuous integration reads it from a repository secret, and
 * a deployment host reads it from a root-only file outside the checkout.
@@ -38,9 +38,10 @@ from pathlib import Path
 INPUT = "ghostship-private-agent"
 PLACEHOLDER_URL = "path:./private-agent-source"
 PLACEHOLDER_PATH = "./private-agent-source"
+# The placeholder is a committed flake, so it resolves. An evaluation that
+# needs the private source fails with a message that says the source was not
+# supplied, and an evaluation that does not need it works with no credential.
 LOCKED_PLACEHOLDER = {
-    "lastModified": 0,
-    "narHash": "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
     "path": PLACEHOLDER_PATH,
     "type": "path",
 }

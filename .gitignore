@@ -34,6 +34,9 @@ secrets.dec.yaml
 *.bak
 :Zone.Identifier
 
+# The placeholder for the private source carries no lock of its own.
+private-agent-source/flake.lock
+
 # Python test artifacts
 __pycache__/
 *.pyc

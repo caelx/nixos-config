@@ -98,6 +98,38 @@ class ImporterDurabilityTest(unittest.TestCase):
                 PRIVATE.import_into_store(source, entry)
 
 
+class PublicEvaluationTest(unittest.TestCase):
+    """The public tree must evaluate without the private source.
+
+    A continuous integration job that runs the browser tests, or any other
+    check that does not use the private source, failed because the committed
+    placeholder could not be resolved. The placeholder resolves, so those jobs
+    need no credential at all.
+    """
+
+    def test_the_placeholder_directory_is_committed_and_resolves(self):
+        placeholder = ROOT / "private-agent-source" / "flake.nix"
+        self.assertTrue(placeholder.is_file())
+        result = nix("flake", "metadata", str(ROOT / "private-agent-source"), "--json")
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_a_development_shell_evaluates_without_the_private_source(self):
+        result = nix(
+            "eval", "--no-write-lock-file", "--raw",
+            str(ROOT) + "#devShells.x86_64-linux.ci.drvPath",
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(result.stdout.strip().startswith("/nix/store/"))
+
+    def test_the_evaluation_that_needs_the_private_source_says_so(self):
+        result = nix(
+            "eval", "--no-write-lock-file", "--raw",
+            str(ROOT) + "#nixosConfigurations.chill-penguin.config.system.build.toplevel.drvPath",
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("private agent source was not supplied", result.stderr)
+
+
 class PlaceholderInvariantTest(unittest.TestCase):
     """The published tree must never name a private source."""
 

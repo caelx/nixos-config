@@ -6,6 +6,8 @@
 
 A rendered configuration is published into a directory another account cannot write, through an exclusive temporary file whose final mode and ownership are applied before it is renamed into place, so a planted path cannot capture a privileged write and a published file is never briefly readable with the wrong mode or owner. The private flake importer copies the pinned source into the Nix store and points the lock at the store path, so the evaluation that follows the importer still resolves after the importer has exited, and it refuses to run unless the committed tree carries the placeholder.
 
+The placeholder for the private source is a small committed flake, so it resolves. The repository therefore evaluates on its own: a check that does not use the private source, such as the browser tests, needs no credential at all, and a check that does use it fails with a message that says the source was not supplied and names the procedure, instead of a path that does not exist. The placeholder declares the same input the private source declares, so the lock keeps one node for it and the substituted evaluation is unchanged.
+
 ## [3.17.30] - 2026-10-21
 
 - Flow collector: a released container address keeps its previous owner for 15 minutes (one collection plus margin), not 24 hours. Gluetun's short-lived benchmark containers reused bazarr's, cloudflared's and flaresolverr's old addresses, and their udp/1337 probes were recorded as new edges for those services. After the grace period an unowned address reports as `lan:<ip>`.
