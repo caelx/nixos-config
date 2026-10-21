@@ -34,7 +34,12 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from source_privacy import PolicyError, load_allowlist as read_allowlist, validate_lock
+from source_privacy import (
+    INPUT,
+    PolicyError,
+    load_allowlist as read_allowlist,
+    validate_lock,
+)
 
 ALLOWLIST = Path(__file__).resolve().parent / "privacy-allowlist.txt"
 
@@ -207,6 +212,29 @@ def make_finding(kind, category, file, line):
     return {"kind": kind, "category": category, "file": file, "line": line}
 
 
+def declares_managed_input(text):
+    """Whether this repository declares the managed private input.
+
+    The placeholder is required only where the repository declares that
+    input. A repository that does not declare it has no managed private
+    source, and its lock is validated by the per source rules alone. The
+    per source rules are the real guard: a source that is not a reviewed
+    public source is refused whether or not a placeholder is expected.
+    """
+    try:
+        document = json.loads(text)
+    except (ValueError, TypeError):
+        return True
+    nodes = document.get("nodes")
+    root = document.get("root")
+    if not isinstance(nodes, dict) or not isinstance(root, str) or root not in nodes:
+        return True
+    inputs = nodes[root].get("inputs")
+    if not isinstance(inputs, dict):
+        return True
+    return INPUT in inputs
+
+
 def scan(patterns, files=None, source="committed"):
     """Scan for private data.
 
@@ -250,7 +278,11 @@ def scan(patterns, files=None, source="committed"):
                         make_finding("category-heuristic", category, name, number))
         if Path(name).name == "flake.lock":
             try:
-                validate_lock(text, require_placeholder=(name == "flake.lock"), allowed=allowed)
+                validate_lock(
+                    text,
+                    require_placeholder=declares_managed_input(text),
+                    allowed=allowed,
+                )
             except PolicyError as error:
                 findings.append(make_finding("category-heuristic", str(error), name, 0))
         elif name not in SPEC_EXEMPT_PATHS:

@@ -1,4 +1,5 @@
 import importlib.util
+import json
 import pathlib
 import tempfile
 import unittest
@@ -148,6 +149,70 @@ class PrivacyCheckTest(unittest.TestCase):
             "repo = 'example/private-project'\n",
             patterns=["example/private-project"])
         self.assertIn("proven-private-mapping", self.kinds(findings))
+
+    # --- the managed placeholder invariant ----------------------------------
+
+    def test_a_lock_that_names_an_unreviewed_source_is_refused(self):
+        document = json.dumps({
+            "version": 7,
+            "root": "root",
+            "nodes": {
+                "nixpkgs": {
+                    "locked": {
+                        "lastModified": 1,
+                        "narHash": "sha256-" + "A" * 43 + "=",
+                        "owner": "example",
+                        "repo": "unreviewed-project",
+                        "rev": "0" * 40,
+                        "type": "github",
+                    },
+                    "original": {
+                        "owner": "example",
+                        "repo": "unreviewed-project",
+                        "rev": "0" * 40,
+                        "type": "github",
+                    },
+                },
+                "root": {"inputs": {"nixpkgs": "nixpkgs"}},
+            },
+        })
+        with tempfile.TemporaryDirectory() as directory:
+            path = pathlib.Path(directory) / "flake.lock"
+            path.write_text(document)
+            findings, _ = CHECK.scan([], files=[str(path)], source="working-tree")
+            categories = {entry["category"] for entry in findings}
+            self.assertIn("unapproved-flake-source", categories)
+
+    def test_a_repository_that_does_not_declare_the_input_is_not_asked_for_one(self):
+        document = json.dumps({
+            "version": 7,
+            "root": "root",
+            "nodes": {
+                "nixpkgs": {
+                    "locked": {
+                        "lastModified": 1,
+                        "narHash": "sha256-" + "A" * 43 + "=",
+                        "owner": "NixOS",
+                        "repo": "nixpkgs",
+                        "rev": "0" * 40,
+                        "type": "github",
+                    },
+                    "original": {
+                        "owner": "NixOS",
+                        "ref": "nixos-unstable",
+                        "repo": "nixpkgs",
+                        "type": "github",
+                    },
+                },
+                "root": {"inputs": {"nixpkgs": "nixpkgs"}},
+            },
+        })
+        with tempfile.TemporaryDirectory() as directory:
+            path = pathlib.Path(directory) / "flake.lock"
+            path.write_text(document)
+            findings, _ = CHECK.scan([], files=[str(path)], source="working-tree")
+            categories = {entry["category"] for entry in findings}
+            self.assertNotIn("private-source-placeholder", categories)
 
     # --- coverage -----------------------------------------------------------
 
