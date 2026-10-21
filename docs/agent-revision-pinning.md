@@ -31,6 +31,22 @@ A checkout that has not been supplied with the private source therefore
 evaluates the parts of the configuration that are public, and says clearly
 what is missing for the rest.
 
+## The public source policy
+
+The committed lock may name only reviewed public sources, and the shared
+policy module checks every node of it: the locked source, the original
+declaration, and the input references. Two shapes are accepted and validated
+rather than refused, because they are the lock format's own:
+
+- a **parent input path**, which is how Nix records the ancestry of a relative
+  input. The path is resolved through the input references, and a path that
+  does not resolve, or that cycles, is refused.
+- a **follows list**, which is an input reference rather than a source.
+
+Every other unknown field is still refused, and a source that is not a
+reviewed public source is still refused whether or not a placeholder is
+expected.
+
 ## The private specification
 
 The pinned source is supplied from a specification that lives outside the
