@@ -2,20 +2,33 @@
 """Reject personal or account data that must not reach a public tree.
 
 Every repository in this fleet is treated as public, so this check runs over
-the tracked files and fails on anything that reads as a person's identity or a
-private account. The detectors are category based: they name no private
+the published tree and fails on anything that reads as a person's identity or
+a private account. The detectors are category based: they name no private
 value, so the check itself stays publishable.
+
+Two kinds of finding are reported, and they are not the same claim:
+
+  category-heuristic      the shape of the value looks like personal or
+                          account data. This says the shape is present, not
+                          that the value is private. A reviewer decides.
+  proven-private-mapping  the value is an exact match against a value set the
+                          operator holds privately. That set is never tracked
+                          and never enters the repository.
+
+Nothing this script prints contains a detected value. A finding is reported as
+its category, its path, and its line, so a continuous integration log can
+never become a disclosure channel.
 
 Intentional public identifiers are listed in scripts/privacy-allowlist.txt
 with the reason they are public. A file of exact private values may be
-supplied with --patterns for an exact match pass; that file is never tracked.
+supplied with --patterns for the proven pass; that file is never tracked.
 
 Exit status is 0 when the tree is clean and 1 when a finding is reported.
 """
 
 import argparse
+import json
 import re
-import pathlib
 import subprocess
 import sys
 from pathlib import Path
@@ -49,6 +62,15 @@ ACCOUNT_ID = re.compile(r"\b[0-9a-f]{32}\b")
 # listed so a new one is reviewed.
 CLIENT_ID = re.compile(r"\bAIza[0-9A-Za-z_-]{35}\b")
 
+# The fields of a private source specification. A specification that names a
+# repository, a revision, and a content hash as separate fields is the
+# discovery chain for a private repository, so it is detected wherever it
+# appears outside the committed lock file. A value in angle brackets is a
+# documented placeholder, not a specification.
+SPEC_FIELD = re.compile(r'"(owner|repo|rev|narHash)"\s*:\s*"([^"]*)"')
+SPEC_PLACEHOLDER = re.compile(r"^<[^>]*>$")
+SPEC_FIELDS = {"owner", "repo", "rev", "narHash"}
+
 CATEGORIES = {
     "email": EMAIL,
     "repository-path": REPO_PATH,
@@ -63,6 +85,27 @@ SKIP_PATHS = (
     "scripts/privacy-allowlist.txt",
     "scripts/check-privacy.py",
     "tests/test_privacy_check.py",
+)
+
+# The lock file carries the same field names for public inputs. It has its own
+# invariant, enforced by the placeholder check in the private source script.
+# The importer test carries a synthetic specimen of a specification by design.
+SPEC_EXEMPT_PATHS = (
+    "flake.lock",
+    "tests/test_private_inputs.py",
+    "tests/test_render_config.py",
+)
+
+# The boundaries this check cannot see. They are reported so the claim the
+# check supports stays bounded by measurement.
+BOUNDARIES = (
+    "a value split across lines or tokens, unless the whitespace-collapsed "
+    "form of the file still contains it",
+    "a value inside a file the tool reads as binary",
+    "a value in an untracked file, which is not part of the published tree",
+    "a value written with confusable or homoglyph characters",
+    "a value whose shape matches no category heuristic and is not in the "
+    "operator's private value set",
 )
 
 
@@ -91,9 +134,9 @@ def committed_files():
     """Paths in the published tree."""
     result = subprocess.run(
         ["git", "ls-tree", "-r", "-z", "--name-only", "HEAD"],
-        capture_output=True, text=True, check=True,
+        capture_output=True, check=False,
     )
-    for name in result.stdout.split("\0"):
+    for name in result.stdout.decode("utf-8", errors="replace").split("\0"):
         if name and name not in SKIP_PATHS:
             yield name
 
@@ -109,16 +152,16 @@ def committed_content(path):
 
 def tracked_files():
     result = subprocess.run(
-        ["git", "ls-files", "-z"], capture_output=True, text=True, check=True
+        ["git", "ls-files", "-z"], capture_output=True, check=False
     )
-    for name in result.stdout.split("\0"):
+    for name in result.stdout.decode("utf-8", errors="replace").split("\0"):
         if name and name not in SKIP_PATHS:
             yield name
 
 
 def working_content(path):
     try:
-        return pathlib.Path(path).read_text(errors="replace")
+        return Path(path).read_text(errors="replace")
     except OSError:
         return None
 
@@ -143,6 +186,42 @@ def load_patterns(path):
     return values
 
 
+def exact_pattern(value):
+    """A pattern that matches a whole identifier, not a prefix of one.
+
+    A private repository name is often the start of a longer public
+    identifier, for example an image path that adds a suffix. Matching on the
+    identifier boundary keeps a public value from reading as a private one.
+    """
+    if "/" in value:
+        left = r"(?<![A-Za-z0-9._/-])"
+        right = r"(?![A-Za-z0-9._-])"
+    else:
+        left = r"(?<![A-Za-z0-9._%+-])"
+        right = r"(?![A-Za-z0-9_-])"
+    return re.compile(left + re.escape(value) + right)
+
+
+def exact_occurrences(text, value):
+    """How many times the value appears as a whole identifier."""
+    return len(exact_pattern(value).findall(text))
+
+
+def collapse(text):
+    """The file with all whitespace removed.
+
+    A value written across two lines, or with tokens split by a space, still
+    appears in this form. The check looks for it there as well, so that a
+    simple split does not defeat it.
+    """
+    return re.sub(r"\s+", "", text)
+
+
+def make_finding(kind, category, file, line):
+    """A finding carries no value. Only its category, path, and line."""
+    return {"kind": kind, "category": category, "file": file, "line": line}
+
+
 def scan(patterns, files=None, source="committed"):
     """Scan for private data.
 
@@ -154,14 +233,20 @@ def scan(patterns, files=None, source="committed"):
     allowed, allowed_suffixes, reasons = load_allowlist()
     findings = []
     reader = committed_content if source == "committed" else working_content
+    coverage = {"scanned": 0, "binary": 0, "unreadable": 0}
     for name in (tracked_files() if files is None else files):
         if source == "working-tree":
             path = Path(name)
-            if not path.is_file() or is_binary(name):
+            if not path.is_file():
+                continue
+            if is_binary(name):
+                coverage["binary"] += 1
                 continue
         text = reader(name)
         if text is None:
+            coverage["unreadable"] += 1
             continue
+        coverage["scanned"] += 1
         lines = text.splitlines()
         for number, line in enumerate(lines, 1):
             for category, pattern in CATEGORIES.items():
@@ -176,8 +261,20 @@ def scan(patterns, files=None, source="committed"):
                         continue
                     if any(value.endswith(suffix) for suffix in allowed_suffixes):
                         continue
-                    findings.append((name, number, category, value, reasons.get(value, "")))
-    for value in patterns:
+                    findings.append(
+                        make_finding("category-heuristic", category, name, number))
+        if name not in SPEC_EXEMPT_PATHS:
+            spec_fields = {
+                match.group(1)
+                for match in SPEC_FIELD.finditer(text)
+                if not SPEC_PLACEHOLDER.match(match.group(2))
+            }
+            if len(spec_fields & SPEC_FIELDS) >= 3:
+                findings.append(
+                    make_finding("category-heuristic", "private-source-specification",
+                                 name, 0))
+    if patterns:
+        collapsed_cache = {}
         for name in (tracked_files() if files is None else files):
             if source == "working-tree":
                 path = Path(name)
@@ -186,10 +283,22 @@ def scan(patterns, files=None, source="committed"):
             text = reader(name)
             if text is None:
                 continue
+            if name not in collapsed_cache:
+                collapsed_cache[name] = collapse(text)
+            folded = collapsed_cache[name]
             for number, line in enumerate(text.splitlines(), 1):
-                if value in line:
-                    findings.append((name, number, "exact-private-value", "<redacted>", ""))
-    return findings
+                for value in patterns:
+                    if exact_occurrences(line, value):
+                        findings.append(
+                            make_finding("proven-private-mapping", "exact-value",
+                                         name, number))
+                        break
+            for value in patterns:
+                if value and exact_occurrences(folded, "".join(value.split())):
+                    findings.append(
+                        make_finding("proven-private-mapping", "exact-value",
+                                     name, 0))
+    return findings, coverage
 
 
 def main():
@@ -200,24 +309,34 @@ def main():
                         help="scan the published tree or the working tree")
     args = parser.parse_args()
 
-    findings = scan(load_patterns(args.patterns), source=args.source)
+    findings, coverage = scan(load_patterns(args.patterns), source=args.source)
+    print("Coverage: {0} files scanned, {1} binary, {2} unreadable".format(
+        coverage["scanned"], coverage["binary"], coverage["unreadable"]))
     if not findings:
         print("Privacy check passed")
+        print("Unscannable boundaries:")
+        for boundary in BOUNDARIES:
+            print("  - " + boundary)
         return 0
 
-    by_category = {}
-    for name, number, category, value, reason in findings:
-        by_category.setdefault(category, []).append((name, number, value, reason))
-    print("Privacy findings by category:")
-    for category in sorted(by_category):
-        entries = by_category[category]
-        print("  {0}: {1}".format(category, len(entries)))
-        for name, number, value, reason in sorted(entries)[:40]:
-            print("    {0}:{1}  {2}{3}".format(
-                name, number, value, "  (allowed: {0})".format(reason) if reason else ""))
-        if len(entries) > 40:
-            print("    ... {0} more".format(len(entries) - 40))
+    grouped = {}
+    for finding in findings:
+        key = (finding["kind"], finding["category"])
+        grouped.setdefault(key, []).append(finding)
+    print("Privacy findings:")
+    for kind in ("category-heuristic", "proven-private-mapping"):
+        for (finding_kind, category), entries in sorted(grouped.items()):
+            if finding_kind != kind:
+                continue
+            print("  {0} / {1}: {2}".format(kind, category, len(entries)))
+            for entry in sorted(entries, key=lambda item: (item["file"], item["line"]))[:40]:
+                print("    {0}:{1}".format(entry["file"], entry["line"]))
+            if len(entries) > 40:
+                print("    ... {0} more".format(len(entries) - 40))
     print("Total findings: {0}".format(len(findings)))
+    print("Unscannable boundaries:")
+    for boundary in BOUNDARIES:
+        print("  - " + boundary)
     return 1
 
 

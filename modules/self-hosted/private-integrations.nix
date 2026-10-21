@@ -211,7 +211,9 @@ let
   # Renders a configuration template from a secret projection. The projection
   # is refreshed first so the rendered file always matches the current secret.
   renderConfig =
-    name: template: projection: target: owner: group: mode:
+    # owner carries the numeric uid and gid, because the renderer applies the
+    # final ownership to the temporary file before it is renamed into place.
+    name: template: projection: target: owner: mode:
     pkgs.writeShellScript name ''
       set -eu
       umask 0077
@@ -219,16 +221,21 @@ let
       ${pkgs.python3}/bin/python3 ${./render-config.py} \
         ${template} \
         ${config.ghostship.selfHostedSecrets.projections.${projection}.path} \
-        ${target}
-      chown ${owner}:${group} ${target}
-      chmod ${mode} ${target}
+        ${target} \
+        --owner ${owner} --mode ${mode}
     '';
-  brokerConfigPath = "/run/ghostship-keep/broker.json";
+  # The broker configuration is published in a directory the service account
+  # cannot write, so the root process that renders it cannot be captured by a
+  # symbolic link the service account plants.
+  brokerConfigPath = "/run/ghostship-keep-config/broker.json";
   hostopsConfigPath = "/run/ghostship-hostops/ops.json";
   renderBrokerConfig = renderConfig "ghostship-keep-broker-render" brokerConfig
-    "personal-identity" brokerConfigPath "ghostship-personal" "ghostship-mcp" "0640";
+    "personal-identity" brokerConfigPath
+    "${toString config.users.users.ghostship-personal.uid}:${toString config.users.groups.ghostship-mcp.gid}"
+    "0640";
   renderHostopsConfig = renderConfig "ghostship-hostops-config-render" hostopsConfig
-    "monitoring" hostopsConfigPath "root" "ghostship-mcp" "0640";
+    "monitoring" hostopsConfigPath
+    "0:${toString config.users.groups.ghostship-mcp.gid}" "0640";
   render = pkgs.writeShellScript "ghostship-private-relay-render" ''
     set -eu
     ${config.ghostship.selfHostedSecrets.render}/bin/ghostship-secret-project ghostship-relay
@@ -268,6 +275,10 @@ in {
     ghostship.secretProjections = serviceProjections;
     systemd.tmpfiles.rules = [
       "d ${serviceSecretsDir} 0750 root ghostship-mcp -"
+      # The broker configuration is published here. The directory is root
+      # owned, so the account the broker runs as cannot plant a symbolic link
+      # that captures the render step.
+      "d /run/ghostship-keep-config 0750 root ghostship-mcp -"
       "d /run/ghostship-keep 0750 ghostship-personal ghostship-mcp -"
       "d /run/ghostship-integrations 0750 root ghostship-mcp -"
       "d /srv/apps/ghostship-private-integrations 0700 ghostship-mcp ghostship-mcp -"

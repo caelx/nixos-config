@@ -67,10 +67,26 @@ python3 scripts/private-inputs.py restore
 ```
 
 `apply` leaves the lock pointing at the GitHub source, so the host resolves
-it with its own credential. `import` fetches the source with the scoped
-read-only deploy key, verifies the content hash against the specification,
-and rewrites the lock to the local checkout, so the evaluation needs no
-GitHub credential at all.
+it with its own credential.
+
+`import` fetches the source with the scoped read-only deploy key, verifies
+the content hash against the specification, and **copies the source into the
+Nix store**. The lock then names the store path, not a working directory, so
+the evaluation still resolves after the importer has exited and its working
+directory has been removed. The evaluation that follows the importer
+therefore has a durable source, and a failure cannot leave a lock that names
+a path which no longer exists.
+
+The importer refuses to run unless the **committed** tree carries the
+placeholder. Without that invariant a specification could be committed as a
+structured document, because the guard would be inspecting a tree that
+already contained the answer. The committed lock is exempt from the
+structured specification detector for the same reason: it carries the same
+field names for public inputs, and it has this invariant instead.
+
+The importer reports a failure as a step, never as the command that failed.
+The command carries the repository name, the revision, and the content hash,
+so echoing it into a log would publish the discovery chain.
 
 ## Deploying a new agent revision
 

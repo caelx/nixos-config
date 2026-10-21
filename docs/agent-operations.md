@@ -587,6 +587,22 @@ T3 Code environment, use [container-workflow.md](container-workflow.md).
 - A configuration that needs a personal value is rendered at activation time
   from a secret projection. `modules/self-hosted/render-config.py` substitutes
   placeholders in a JSON template and fails closed when a value is missing.
+- A rendered configuration is published safely. The publication directory must
+  not be writable by another account and must not be a symbolic link. The
+  temporary file is created with exclusive creation under a random name, so a
+  path planted in advance cannot capture the write, and the final mode and
+  ownership are applied while the file is still private, before it is renamed
+  into place. A published file is never briefly readable with the wrong mode
+  or the wrong owner.
+- The privacy check reports a category, a path, and a line. It never reports
+  the value it found, so a continuous integration log cannot become a
+  disclosure channel. It also reports what it cannot see: the boundaries are
+  listed in its own output.
+- The check distinguishes two kinds of finding. A category heuristic says the
+  shape of a value looks like personal or account data, and a reviewer
+  decides. A proven private mapping is an exact match against a value set the
+  operator holds privately, which is never tracked. Neither is a claim that a
+  value is private.
 - A private flake source is supplied out of band; see
   [agent revision pinning](agent-revision-pinning.md). The committed tree
   names no private repository, revision, or hash.
