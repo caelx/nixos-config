@@ -7,12 +7,16 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 RENDER = ROOT / "modules/self-hosted/render-config.py"
 SPEC = importlib.util.spec_from_file_location("check_privacy", ROOT / "scripts/check-privacy.py")
 CHECK = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(CHECK)
+RENDER_SPEC = importlib.util.spec_from_file_location("render_config", RENDER)
+RENDERER = importlib.util.module_from_spec(RENDER_SPEC)
+RENDER_SPEC.loader.exec_module(RENDERER)
 
 
 # The specimen is assembled rather than written out, so this file carries no
@@ -173,18 +177,94 @@ class RenderConfigTest(unittest.TestCase):
             self.assertIn("symbolic link", result.stderr)
 
     def test_the_final_mode_is_applied_at_publication(self):
-        with tempfile.TemporaryDirectory() as directory:
-            base = pathlib.Path(directory)
-            target = base / "config.json"
-            result = self.render({"a": "{{X}}"}, "X=value\n", target, mode="0640")
-            self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertEqual(target.stat().st_mode & 0o777, 0o640)
+        # Broker/hostops use numeric --owner and 0640; the inference account
+        # must receive a read-only file through the same CLI.
+        for mode in ("0640", "0440"):
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory:
+                target = pathlib.Path(directory) / "config.json"
+                result = self.render({"a": "{{X}}"}, "X=value\n", target, mode=mode,
+                                     owner=f"{os.geteuid()}:{os.getegid()}")
+                self.assertEqual(result.returncode, 0, result.stderr)
+                info = target.stat()
+                self.assertEqual(info.st_mode & 0o777, int(mode, 8))
+                self.assertEqual((info.st_uid, info.st_gid), (os.geteuid(), os.getegid()))
+                self.assertEqual(json.loads(target.read_text()), {"a": "value"})
 
     def test_no_temporary_file_is_left_behind(self):
         with tempfile.TemporaryDirectory() as directory:
             base = pathlib.Path(directory)
             self.render({"a": "{{X}}"}, "X=value\n", base / "config.json")
             self.assertEqual(sorted(p.name for p in base.iterdir()), ["config.json"])
+
+
+class PublicationTrustTest(unittest.TestCase):
+    """A privileged writer must not follow an account's directory changes."""
+
+    def test_untrusted_ownership_and_ancestors_are_refused(self):
+        for kind in ("owner", "ancestor-symlink", "ancestor-writable", "parent-traversal"):
+            with self.subTest(kind=kind), tempfile.TemporaryDirectory() as directory:
+                base = pathlib.Path(directory)
+                parent = base / "parent"
+                parent.mkdir()
+                leaf = parent / "leaf"
+                leaf.mkdir()
+                target = leaf / "config.json"
+                if kind == "ancestor-symlink":
+                    alias = base / "alias"
+                    alias.symlink_to(parent)
+                    target = alias / "leaf" / "config.json"
+                elif kind == "ancestor-writable":
+                    parent.chmod(0o777)
+                elif kind == "parent-traversal":
+                    target = parent / ".." / "parent" / "leaf" / "config.json"
+                # Fake only the process identity; directory ownership and all
+                # filesystem operations remain real. No host privilege is used.
+                identity = os.geteuid() + 1 if kind == "owner" else os.geteuid()
+                with mock.patch.object(os, "geteuid", return_value=identity):
+                    with self.assertRaises((ValueError, OSError)):
+                        RENDERER.publish(target, "synthetic", 0o640, "")
+                self.assertFalse((leaf / "config.json").exists())
+
+    def test_directory_replacement_cannot_redirect_metadata_or_publication(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base = pathlib.Path(directory)
+            publication = base / "publication"
+            publication.mkdir()
+            saved = base / "saved"
+            attacker = base / "attacker"
+            attacker.mkdir()
+            victim = attacker / "victim"
+            victim.write_text("original")
+            victim.chmod(0o644)
+            before = victim.stat()
+            real_fsync = os.fsync
+            replaced = False
+
+            def replace_directory(descriptor):
+                nonlocal replaced
+                if not replaced:
+                    replaced = True
+                    temporary, = publication.iterdir()
+                    (attacker / temporary.name).symlink_to(victim)
+                    publication.rename(saved)
+                    publication.symlink_to(attacker)
+                return real_fsync(descriptor)
+
+            with mock.patch.object(os, "fsync", side_effect=replace_directory):
+                RENDERER.publish(publication / "config.json", "synthetic", 0o640,
+                                 f"{os.geteuid()}:{os.getegid()}")
+            self.assertTrue(replaced)
+            after = victim.stat()
+            self.assertEqual((after.st_mode, after.st_uid, after.st_gid),
+                             (before.st_mode, before.st_uid, before.st_gid))
+            self.assertEqual(victim.read_text(), "original")
+            result = saved / "config.json"
+            self.assertFalse(result.is_symlink())
+            self.assertEqual(result.read_text(), "synthetic")
+            self.assertEqual(result.stat().st_mode & 0o777, 0o640)
+            self.assertEqual((result.stat().st_uid, result.stat().st_gid),
+                             (os.geteuid(), os.getegid()))
+            self.assertFalse((attacker / "config.json").exists())
 
 
 class PrivacyOutputTest(unittest.TestCase):

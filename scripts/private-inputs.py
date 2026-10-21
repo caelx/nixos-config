@@ -35,17 +35,13 @@ import tempfile
 import urllib.request
 from pathlib import Path
 
-INPUT = "ghostship-private-agent"
-PLACEHOLDER_URL = "path:./private-agent-source"
-PLACEHOLDER_PATH = "./private-agent-source"
-# The placeholder is a committed flake, so it resolves. An evaluation that
-# needs the private source fails with a message that says the source was not
-# supplied, and an evaluation that does not need it works with no credential.
-LOCKED_PLACEHOLDER = {
-    "path": PLACEHOLDER_PATH,
-    "type": "path",
-}
-ORIGINAL_PLACEHOLDER = {"path": PLACEHOLDER_PATH, "type": "path"}
+# These scripts are also loaded directly by tests, outside the CLI's script
+# directory. Resolve the shared policy from this trusted source directory.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from source_privacy import (
+    INPUT, LOCKED_PLACEHOLDER, ORIGINAL_PLACEHOLDER, PLACEHOLDER_PATH,
+    PLACEHOLDER_URL, PolicyError, validate_lock,
+)
 
 
 class StepError(Exception):
@@ -115,13 +111,9 @@ def require_committed_placeholder():
     if lock is None:
         raise StepError("flake.lock is not committed")
     try:
-        node = json.loads(lock)["nodes"][INPUT]
-    except (ValueError, KeyError):
-        raise StepError("the committed flake.lock has no private source node") from None
-    if node.get("locked") != LOCKED_PLACEHOLDER or node.get("original") != ORIGINAL_PLACEHOLDER:
-        raise StepError(
-            "the committed flake.lock does not carry the private source "
-            "placeholder; the published tree must not name a private source")
+        validate_lock(lock)
+    except PolicyError:
+        raise StepError("the committed flake.lock violates the public source policy") from None
 
 
 def read_tree():

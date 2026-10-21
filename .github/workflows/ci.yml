@@ -23,6 +23,10 @@ jobs:
           extra_nix_config: |
             max-jobs = 2
             cores = 2
+      # These integration tests need the daemon's writable store and the
+      # committed public tree. The Nix build sandbox has neither.
+      - name: Verify public placeholders and private source lifecycle
+        run: nix develop .#ci --no-write-lock-file -c python3 -B -m unittest discover -s tests -p test_private_inputs.py
       - name: Import pinned private sources with read-only deploy keys
         env:
           GITHUB_META_TOKEN: ${{ github.token }}

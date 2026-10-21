@@ -33,6 +33,9 @@ import subprocess
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from source_privacy import PolicyError, load_allowlist as read_allowlist, validate_lock
+
 ALLOWLIST = Path(__file__).resolve().parent / "privacy-allowlist.txt"
 
 # An email address. The local part is what identifies a person; the domain
@@ -87,11 +90,9 @@ SKIP_PATHS = (
     "tests/test_privacy_check.py",
 )
 
-# The lock file carries the same field names for public inputs. It has its own
-# invariant, enforced by the placeholder check in the private source script.
-# The importer test carries a synthetic specimen of a specification by design.
+# Lock files are parsed and every source is validated, rather than exempted.
+# These tests carry synthetic specifications by design.
 SPEC_EXEMPT_PATHS = (
-    "flake.lock",
     "tests/test_private_inputs.py",
     "tests/test_render_config.py",
 )
@@ -111,23 +112,7 @@ BOUNDARIES = (
 
 def load_allowlist():
     """Exact values and suffix patterns that are intentionally public."""
-    allowed = set()
-    allowed_suffixes = set()
-    reasons = {}
-    for raw in ALLOWLIST.read_text().splitlines():
-        line = raw.strip()
-        if not line or line.startswith("#"):
-            continue
-        value, _, reason = line.partition("#")
-        value = value.strip()
-        if not value:
-            continue
-        if value.startswith("suffix:"):
-            allowed_suffixes.add(value[len("suffix:"):].strip())
-        else:
-            allowed.add(value)
-        reasons[value] = reason.strip()
-    return allowed, allowed_suffixes, reasons
+    return read_allowlist(ALLOWLIST)
 
 
 def committed_files():
@@ -263,7 +248,12 @@ def scan(patterns, files=None, source="committed"):
                         continue
                     findings.append(
                         make_finding("category-heuristic", category, name, number))
-        if name not in SPEC_EXEMPT_PATHS:
+        if Path(name).name == "flake.lock":
+            try:
+                validate_lock(text, require_placeholder=(name == "flake.lock"), allowed=allowed)
+            except PolicyError as error:
+                findings.append(make_finding("category-heuristic", str(error), name, 0))
+        elif name not in SPEC_EXEMPT_PATHS:
             spec_fields = {
                 match.group(1)
                 for match in SPEC_FIELD.finditer(text)

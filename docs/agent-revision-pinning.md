@@ -70,7 +70,7 @@ exactly the chain needed to find and fetch a private repository.
 python3 scripts/private-inputs.py apply --spec /etc/ghostship/private-sources.json
 
 # Continuous integration, which additionally imports the source with the
-# read-only deploy key and points the lock at the local checkout.
+# read-only deploy key and points the lock at the Nix store copy.
 python3 scripts/private-inputs.py import
 
 # Put the committed placeholders back, for example before publishing a
@@ -90,11 +90,26 @@ therefore has a durable source, and a failure cannot leave a lock that names
 a path which no longer exists.
 
 The importer refuses to run unless the **committed** tree carries the
-placeholder. Without that invariant a specification could be committed as a
-structured document, because the guard would be inspecting a tree that
-already contained the answer. The committed lock is exempt from the
-structured specification detector for the same reason: it carries the same
-field names for public inputs, and it has this invariant instead.
+placeholder. Both the importer and privacy scanner use
+`scripts/source_privacy.py` to validate every source node in the committed
+lock, including duplicate nodes and each original source. GitHub owner and
+repository pairs must be exact entries in `scripts/privacy-allowlist.txt`;
+suffix allowances do not grant source permission. The managed local
+placeholder is the only path source accepted in the root lock. Public
+dependency nodes and follows references remain supported. New source types
+or fields require policy review. A lock file is never exempt as a whole.
+
+This is a bounded source-format check, not proof that arbitrary tracked text
+cannot encode a private identifier. Other tracked text still receives the
+category and optional private-pattern checks, with their reported coverage
+boundaries. Older scanner copies in other repositories do not enforce this
+policy until their owners propagate and enable it.
+
+CI runs `tests/test_private_inputs.py` in the public Nix environment before
+applying any private specification. Store and flake integration tests need
+the writable daemon store and public source tree; they are skipped when Nix
+is absent from the separate build sandbox. The browser job needs no private
+credentials and continues to use the committed public placeholder.
 
 The importer reports a failure as a step, never as the command that failed.
 The command carries the repository name, the revision, and the content hash,

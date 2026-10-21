@@ -587,13 +587,18 @@ T3 Code environment, use [container-workflow.md](container-workflow.md).
 - A configuration that needs a personal value is rendered at activation time
   from a secret projection. `modules/self-hosted/render-config.py` substitutes
   placeholders in a JSON template and fails closed when a value is missing.
-- A rendered configuration is published safely. The publication directory must
-  not be writable by another account and must not be a symbolic link. The
-  temporary file is created with exclusive creation under a random name, so a
-  path planted in advance cannot capture the write, and the final mode and
-  ownership are applied while the file is still private, before it is renamed
-  into place. A published file is never briefly readable with the wrong mode
-  or the wrong owner.
+- The renderer requires a publication directory owned by its effective user.
+  It walks all ancestors without following symlinks, requiring root or that
+  user as owner and rejecting writable ancestors except root-owned sticky
+  directories. Creation, cleanup, and atomic rename use the validated
+  directory descriptor. Ownership and mode use the open file descriptor
+  before publication, so a changed pathname cannot redirect them.
+- The inference bridge publishes its pool inside the existing container at
+  `/run/ghostship-free-inference-config/pool.json`, owned by root with mode
+  `0440` and group `62020`. The directory is root-owned `0750`. Broker and
+  scheduler receive that path through `GHOSTSHIP_FREE_INFERENCE_CONFIG`;
+  the inference user can read it but cannot edit or replace it. Rendering
+  reads the host projection over stdin and needs no container restart.
 - The privacy check reports a category, a path, and a line. It never reports
   the value it found, so a continuous integration log cannot become a
   disclosure channel. It also reports what it cannot see: the boundaries are

@@ -34,6 +34,14 @@ caelx/honcho                         # deployed service image, service name alre
 caelx/ghostship-openchamber         # deployed service image, service name already public
 
 # --- upstream and public sources -----------------------------------------
+ryantm/agenix                        # public transitive flake dependency
+ipetkov/crane                        # public transitive flake dependency
+lnl7/nix-darwin                      # public transitive flake dependency
+nix-community/flake-compat           # public transitive flake dependency
+edolstra/flake-compat                # public transitive flake dependency
+numtide/flake-utils                  # public transitive flake dependency
+oxalica/rust-overlay                 # public transitive flake dependency
+nix-systems/default                 # public transitive flake dependency
 NixOS/nixpkgs                         # upstream source
 NixOS/nixos-hardware                  # upstream source
 nix-community/home-manager            # upstream source

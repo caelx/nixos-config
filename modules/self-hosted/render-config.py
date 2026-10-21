@@ -8,22 +8,21 @@ JSON value of the variable, so a list or an object can be injected.
 Values come from a dotenv-style projection file. The file may quote a value
 with shell syntax, matching the reader used for the secret units themselves.
 
-The rendered file is published safely. The publication directory must not be
-writable by anyone other than its owner, and it must not be a symbolic link.
-The temporary file is created with exclusive creation under a random name, so
-a pre-created path cannot capture the write, and its final permissions and
-ownership are applied before it is renamed into place, so the published file
-is never briefly readable with the wrong mode or owner.
+The publication directory belongs to the effective user. Its ancestors belong
+to that user or root, contain no symlinks, and cannot be renamed by another
+account. Root-owned sticky ancestors (such as /tmp) are allowed. Directory
+descriptors anchor creation and rename; metadata is applied to the open file
+descriptor before publication. No metadata operation follows a pathname.
 """
 
 import errno
 import json
 import os
 import re
+import secrets
 import shlex
 import stat
 import sys
-import tempfile
 from pathlib import Path
 
 
@@ -79,21 +78,36 @@ def render_node(node, values):
     return substitute(node, values)
 
 
-def require_safe_directory(directory):
-    """The publication directory must not be shared with another account."""
+def open_publication_directory(directory):
+    """Walk without symlinks, validate ownership, and retain the directory fd."""
+    directory = Path(directory).absolute()
+    if ".." in directory.parts:
+        raise ValueError("publication path contains parent traversal")
+    flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+    descriptor = os.open("/", flags)
     try:
-        info = os.lstat(directory)
-    except OSError as error:
-        raise ValueError(
-            "publication directory is not usable: {0}".format(error.strerror)
-        ) from None
-    if stat.S_ISLNK(info.st_mode):
-        raise ValueError("publication directory is a symbolic link")
-    if not stat.S_ISDIR(info.st_mode):
-        raise ValueError("publication directory is not a directory")
-    if info.st_mode & (stat.S_IWGRP | stat.S_IWOTH):
-        raise ValueError("publication directory is writable by another account")
-    return info
+        parts = directory.parts[1:]
+        for index, component in enumerate(parts):
+            try:
+                child = os.open(component, flags, dir_fd=descriptor)
+            except OSError as error:
+                if error.errno in (errno.ELOOP, errno.ENOTDIR):
+                    raise ValueError("publication path contains a symbolic link or non-directory") from None
+                raise
+            os.close(descriptor)
+            descriptor = child
+            info = os.fstat(descriptor)
+            leaf = index == len(parts) - 1
+            if info.st_uid not in (0, os.geteuid()) or (leaf and info.st_uid != os.geteuid()):
+                raise ValueError("publication path is owned by another account")
+            if info.st_mode & (stat.S_IWGRP | stat.S_IWOTH):
+                sticky_ancestor = not leaf and info.st_uid == 0 and info.st_mode & stat.S_ISVTX
+                if not sticky_ancestor:
+                    raise ValueError("publication path is writable by another account")
+        return descriptor
+    except BaseException:
+        os.close(descriptor)
+        raise
 
 
 def publish(target, text, mode, owner):
@@ -104,32 +118,42 @@ def publish(target, text, mode, owner):
     then is it renamed into place.
     """
     target = Path(target)
-    require_safe_directory(target.parent)
-    descriptor, temporary_name = tempfile.mkstemp(
-        dir=str(target.parent), prefix="." + target.name + "."
-    )
-    temporary = Path(temporary_name)
+    directory = open_publication_directory(target.parent)
+    temporary = None
     try:
+        for _ in range(100):
+            candidate = "." + target.name + "." + secrets.token_hex(16)
+            try:
+                descriptor = os.open(
+                    candidate, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC,
+                    0o600, dir_fd=directory,
+                )
+            except FileExistsError:
+                continue
+            temporary = candidate
+            break
+        else:
+            raise ValueError("could not create a private publication file")
         with os.fdopen(descriptor, "w") as handle:
             handle.write(text)
             handle.flush()
+            if owner:
+                user, _, group = owner.partition(":")
+                os.fchown(handle.fileno(), -1 if not user else int(user),
+                          -1 if not group else int(group))
+            os.fchmod(handle.fileno(), mode)
             os.fsync(handle.fileno())
-        os.chmod(temporary, mode)
-        if owner:
-            user, _, group = owner.partition(":")
-            os.chown(
-                temporary,
-                -1 if not user else int(user),
-                -1 if not group else int(group),
+            os.replace(
+                temporary, target.name, src_dir_fd=directory, dst_dir_fd=directory,
             )
-        os.replace(temporary, target)
-    except BaseException:
+            temporary = None
+        os.fsync(directory)
+    finally:
         try:
-            temporary.unlink()
-        except OSError as error:
-            if error.errno != errno.ENOENT:
-                raise
-        raise
+            if temporary is not None:
+                os.unlink(temporary, dir_fd=directory)
+        finally:
+            os.close(directory)
 
 
 def render(template_path, env_path, output_path, mode, owner):

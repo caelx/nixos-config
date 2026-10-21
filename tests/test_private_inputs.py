@@ -1,16 +1,23 @@
 import importlib.util
+import contextlib
+import io
 import json
 import os
 import pathlib
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
+from unittest import mock
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location("private_inputs", ROOT / "scripts/private-inputs.py")
 PRIVATE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(PRIVATE)
+CHECK_SPEC = importlib.util.spec_from_file_location("check_privacy", ROOT / "scripts/check-privacy.py")
+CHECK = importlib.util.module_from_spec(CHECK_SPEC)
+CHECK_SPEC.loader.exec_module(CHECK)
 
 NIX = shutil.which("nix")
 
@@ -98,6 +105,7 @@ class ImporterDurabilityTest(unittest.TestCase):
                 PRIVATE.import_into_store(source, entry)
 
 
+@unittest.skipIf(NIX is None, "Nix integration tests run before source import in CI")
 class PublicEvaluationTest(unittest.TestCase):
     """The public tree must evaluate without the private source.
 
@@ -149,6 +157,7 @@ class PlaceholderInvariantTest(unittest.TestCase):
             "version": 7,
         }, indent=2) + "\n")
         subprocess.run(["git", "init", "-q", str(base)], check=True)
+        subprocess.run(["git", "-C", str(base), "config", "core.hooksPath", "/dev/null"], check=True)
         subprocess.run(["git", "-C", str(base), "add", "-A"], check=True)
         subprocess.run(
             ["git", "-C", str(base), "-c", "user.name=t", "-c", "user.email=t@localhost",
@@ -214,6 +223,119 @@ class PlaceholderInvariantTest(unittest.TestCase):
                     PRIVATE.require_committed_placeholder()
             finally:
                 os.chdir(previous)
+
+
+class CommittedLockPolicyTest(unittest.TestCase):
+    """A second source must not hide behind the managed placeholder node."""
+
+    build_tree = PlaceholderInvariantTest.build_tree
+
+    def test_additional_unapproved_sources_fail_both_command_guards(self):
+        for kind in ("locked", "original", "unsupported", "extra-fields"):
+            with self.subTest(kind=kind), tempfile.TemporaryDirectory() as directory:
+                base = self.build_tree(
+                    directory,
+                    '{ inputs.ghostship-private-agent.url = "path:./private-agent-source"; }',
+                )
+                lock = json.loads((base / "flake.lock").read_text())
+                locked = dict(zip(("owner", "repo", "rev", "narHash", "type"),
+                                  ("NixOS", "nixpkgs", "0" * 40,
+                                   "sha256-" + "A" * 43 + "=", "github")))
+                original = dict(zip(("owner", "repo", "type"),
+                                    ("NixOS", "nixpkgs", "github")))
+                if kind == "locked":
+                    locked["repo"] = "synthetic-unapproved-source"
+                elif kind == "original":
+                    original["repo"] = "synthetic-unapproved-source"
+                elif kind == "unsupported":
+                    locked = dict(zip(("type", "path"), ("path", "./unapproved")))
+                else:
+                    locked["unreviewed"] = "synthetic-unapproved-source"
+                lock["nodes"]["additional"] = dict(locked=locked, original=original)
+                (base / "flake.lock").write_text(json.dumps(lock))
+                subprocess.run(["git", "-C", str(base), "add", "-A"], check=True,
+                               capture_output=True)
+                subprocess.run(
+                    ["git", "-C", str(base), "-c", "core.hooksPath=/dev/null",
+                     "-c", "user.name=t", "-c", "user.email=t@localhost",
+                     "commit", "-qm", "additional source"], check=True, capture_output=True,
+                )
+                # Both commands inspect this real committed tree. Import must
+                # reject it before it asks for any private specification.
+                for script, arguments in (("check-privacy.py", []),
+                                          ("private-inputs.py", ["apply"])):
+                    result = subprocess.run(
+                        [sys.executable, str(ROOT / "scripts" / script), *arguments],
+                        cwd=base, capture_output=True, text=True,
+                        env={"PATH": os.environ["PATH"], "HOME": str(base)},
+                    )
+                    self.assertEqual(result.returncode, 1, script)
+                    self.assertNotIn("synthetic-unapproved-source", result.stdout + result.stderr)
+                    if script == "private-inputs.py":
+                        self.assertIn("public source policy", result.stderr)
+
+    def test_public_sources_and_follows_keep_the_placeholder_usable(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base = self.build_tree(
+                directory, '{ inputs.ghostship-private-agent.url = "path:./private-agent-source"; }')
+            lock = json.loads((ROOT / "flake.lock").read_text())
+            lock["nodes"][PRIVATE.INPUT]["locked"] = dict(PRIVATE.LOCKED_PLACEHOLDER)
+            lock["nodes"][PRIVATE.INPUT]["original"] = dict(PRIVATE.ORIGINAL_PLACEHOLDER)
+            lock["nodes"]["public-alias"] = dict(lock["nodes"]["nixpkgs"])
+            lock["nodes"]["public-alias"]["inputs"] = {"nixpkgs": ["nixpkgs"]}
+            (base / "flake.lock").write_text(json.dumps(lock))
+            subprocess.run(["git", "-C", str(base), "add", "-A"], check=True,
+                           capture_output=True)
+            subprocess.run(
+                ["git", "-C", str(base), "-c", "core.hooksPath=/dev/null",
+                 "-c", "user.name=t", "-c", "user.email=t@localhost",
+                 "commit", "-qm", "public sources"], check=True, capture_output=True,
+            )
+            previous = os.getcwd()
+            os.chdir(base)
+            try:
+                PRIVATE.require_committed_placeholder()
+                findings, _ = CHECK.scan([], files=["flake.lock"])
+            finally:
+                os.chdir(previous)
+            self.assertEqual(findings, [])
+
+
+class ImporterFailureOutputTest(unittest.TestCase):
+    def test_failed_fetch_does_not_report_source_or_subprocess_output(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base = PlaceholderInvariantTest().build_tree(
+                directory, '{ inputs.ghostship-private-agent.url = "path:./private-agent-source"; }')
+            specimen = dict(zip(("owner", "repo", "rev", "narHash"),
+                                ("example", "synthetic-source", "0" * 40,
+                                 "sha256-" + "A" * 43 + "=")))
+            specification = base / "spec.json"
+            specification.write_text(json.dumps({PRIVATE.INPUT: specimen}))
+            real_run = subprocess.run
+
+            def fail_fetch(arguments, *args, **kwargs):
+                if "fetch" in arguments:
+                    if kwargs.get("check"):
+                        raise subprocess.CalledProcessError(1, arguments, stderr=b"synthetic-diagnostic")
+                    return subprocess.CompletedProcess(arguments, 1, b"", b"synthetic-diagnostic")
+                return real_run(arguments, *args, **kwargs)
+
+            previous = os.getcwd()
+            os.chdir(base)
+            output = io.StringIO()
+            try:
+                with mock.patch.object(sys, "argv", ["private-inputs.py", "import", "--spec", str(specification)]), \
+                        mock.patch.dict(os.environ, {"GHOSTSHIP_AGENT_READ_KEY": "synthetic", "GITHUB_META_TOKEN": ""}), \
+                        mock.patch.object(PRIVATE.urllib.request, "urlopen", return_value=io.BytesIO(b'{"ssh_keys":[]}')), \
+                        mock.patch.object(PRIVATE.subprocess, "run", side_effect=fail_fetch), \
+                        contextlib.redirect_stdout(output), contextlib.redirect_stderr(output):
+                    result = PRIVATE.main()
+            finally:
+                os.chdir(previous)
+            self.assertEqual(result, 1)
+            self.assertIn("fetching the pinned private source", output.getvalue())
+            self.assertNotIn(specimen["repo"], output.getvalue())
+            self.assertNotIn("synthetic-diagnostic", output.getvalue())
 
 
 if __name__ == "__main__":
