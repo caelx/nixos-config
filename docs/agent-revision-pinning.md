@@ -38,8 +38,16 @@ repository:
 
 | Consumer | Source of the specification |
 |---|---|
-| Continuous integration | the `GHOSTSHIP_PRIVATE_SOURCES` repository secret |
+| Continuous integration | the `GHOSTSHIP_PRIVATE_SOURCES` secret of the `private-source-ci` environment |
 | A deployment host | a root-only file, for example `/etc/ghostship/private-sources.json` |
+
+**The specification secret is environment scoped, not repository scoped.** It
+lives in the `private-source-ci` environment, beside the read-only deploy key,
+and the jobs that read it declare that environment. A repository level secret
+would be readable by any workflow in the same repository, including one that
+removes the environment gate, so protecting only the deploy key would not
+protect the source coordinates. The environment scope is what keeps them
+behind the review that the environment requires.
 
 The specification is JSON and names one input:
 
@@ -120,7 +128,7 @@ so echoing it into a log would publish the discovery chain.
 1. Merge the change in the private agent repository and note the merged
    commit.
 2. Update the specification with the new revision and its content hash. The
-   specification is private, so this is a change to the repository secret and
+   specification is private, so this is a change to the environment secret and
    to the host's root-only file, not to a commit here.
 3. If the host does not hold a GitHub credential for the private source,
    prime the fetcher cache instead:

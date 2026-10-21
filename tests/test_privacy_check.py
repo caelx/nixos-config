@@ -1,6 +1,7 @@
 import importlib.util
 import json
 import pathlib
+import re
 import tempfile
 import unittest
 
@@ -213,6 +214,85 @@ class PrivacyCheckTest(unittest.TestCase):
             findings, _ = CHECK.scan([], files=[str(path)], source="working-tree")
             categories = {entry["category"] for entry in findings}
             self.assertNotIn("private-source-placeholder", categories)
+
+    # --- the workflow secret boundary ----------------------------------------
+
+    def workflow_jobs(self):
+        """Every job block in every workflow, with the lines that declare it.
+
+        The workflows are read as text on purpose. There is no YAML library in
+        the development shell, and the structure that matters here is the
+        indentation of the job blocks, which is regular and checked by the
+        workflow linter in the full suite.
+        """
+        jobs = []
+        for path in sorted((ROOT / ".github" / "workflows").glob("*.yml")):
+            lines = path.read_text().splitlines()
+            in_jobs = False
+            name = None
+            body = []
+            for line in lines:
+                if line.rstrip() == "jobs:":
+                    in_jobs = True
+                    continue
+                if not in_jobs:
+                    continue
+                if line and not line[0].isspace():
+                    in_jobs = False
+                    continue
+                header = re.match(r"^  ([A-Za-z0-9_-]+):\s*$", line)
+                if header:
+                    if name is not None:
+                        jobs.append((path.name, name, body))
+                    name = header.group(1)
+                    body = []
+                    continue
+                if name is not None:
+                    body.append(line)
+            if name is not None:
+                jobs.append((path.name, name, body))
+        return jobs
+
+    def test_the_workflow_jobs_are_found(self):
+        jobs = self.workflow_jobs()
+        self.assertTrue(jobs)
+        names = {(path, name) for path, name, _ in jobs}
+        self.assertIn(("ci.yml", "check"), names)
+        self.assertIn(("flake-update.yml", "update"), names)
+
+    def test_a_job_that_uses_a_private_secret_declares_the_environment(self):
+        """The private source and the deploy key belong behind the review.
+
+        This proves the declaration in the workflow source. It says nothing
+        about the forge's live secret scope, which a source file cannot show,
+        so it does not claim to verify that.
+        """
+        private = ("GHOSTSHIP_PRIVATE_SOURCES", "GHOSTSHIP_AGENT_READ_KEY")
+        for path, name, body in self.workflow_jobs():
+            uses = [secret for secret in private if "secrets." + secret in "\n".join(body)]
+            if not uses:
+                continue
+            declared = [
+                line.strip() for line in body
+                if line.strip().startswith("environment:")
+            ]
+            self.assertEqual(
+                declared, ["environment: private-source-ci"],
+                "{0} job {1} uses {2} without declaring the environment".format(
+                    path, name, ", ".join(uses)),
+            )
+
+    def test_no_workflow_references_the_private_source_outside_an_environment(self):
+        for path, name, body in self.workflow_jobs():
+            text = "\n".join(body)
+            if "secrets.GHOSTSHIP_PRIVATE_SOURCES" not in text:
+                continue
+            self.assertIn(
+                "environment: private-source-ci",
+                text,
+                "{0} job {1} references the private source outside the environment".format(
+                    path, name),
+            )
 
     # --- coverage -----------------------------------------------------------
 
