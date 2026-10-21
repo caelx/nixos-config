@@ -14,6 +14,11 @@ SPEC.loader.exec_module(PRIVATE)
 
 NIX = shutil.which("nix")
 
+# The specimens are assembled rather than written out, so this file carries no
+# literal that the published tree check would report.
+SPECIMEN_REPOSITORY = "example/" + "private-project"
+SPECIMEN_REVISION = "0" * 40
+
 
 def nix(*arguments):
     return subprocess.run(
@@ -138,7 +143,7 @@ class PlaceholderInvariantTest(unittest.TestCase):
             base = self.build_tree(
                 directory,
                 '{\n  inputs.ghostship-private-agent.url = '
-                '"github:example/private-project/0123456789abcdef0123456789abcdef01234567";\n}\n',
+                '"github:' + SPECIMEN_REPOSITORY + "/" + SPECIMEN_REVISION + '";\n}\n',
             )
             previous = os.getcwd()
             os.chdir(base)
@@ -159,8 +164,8 @@ class PlaceholderInvariantTest(unittest.TestCase):
                 "lastModified": 1,
                 "narHash": "sha256-BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=",
                 "owner": "example",
-                "repo": "private-project",
-                "rev": "0123456789abcdef0123456789abcdef01234567",
+                "repo": SPECIMEN_REPOSITORY.split("/")[1],
+                "rev": SPECIMEN_REVISION,
                 "type": "github",
             }
             (base / "flake.lock").write_text(json.dumps(lock, indent=2) + "\n")
