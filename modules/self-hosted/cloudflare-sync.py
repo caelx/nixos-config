@@ -15,7 +15,7 @@ ZONE = "ghostship.io"
 MARKER = "Managed by nixos-config ghostship.apps"
 # The approved identity provider client id is an integration detail of this
 # account. It arrives from the Cloudflare management projection, which the
-# service wrapper sources before running this script.
+# service wrapper sources before this script starts.
 GOOGLE_IDP = os.environ.get("GOOGLE_IDP", "")
 # Reads retry transient Cloudflare failures; writes never retry, so a POST
 # that timed out after Cloudflare applied it is never sent twice.
