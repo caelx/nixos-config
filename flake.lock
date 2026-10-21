@@ -138,15 +138,14 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 0,
-        "narHash": "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
         "path": "./private-agent-source",
         "type": "path"
       },
       "original": {
         "path": "./private-agent-source",
         "type": "path"
-      }
+      },
+      "parent": []
     },
     "home-manager": {
       "inputs": {
@@ -265,8 +264,8 @@
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-25.11",
         "repo": "nixpkgs",
+        "rev": "25f538306313eae3927264466c70d7001dcea1df",
         "type": "github"
       }
     },
