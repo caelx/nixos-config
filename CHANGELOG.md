@@ -1,8 +1,12 @@
 # Changelog
 
-## [3.17.84] - 2026-10-22
+## [3.17.85] - 2026-10-22
 
 - The SIEM redaction fixture stops tripping the secret scan. The fixture carries a URL with a credential in it on purpose, because that is what proves the redaction strips the password out of a URL, and the credential is a placeholder for a test. The shared pre-commit hook scans the staged files with TruffleHog, whose URI detector reports a URL with an embedded credential whether or not the credential is real, so every commit that staged the fixture was refused by the hook for a value that exists to be redacted, and the commit had to be made with the secret scan skipped - which skips the whole hook, the commit identity check and every other scan with it. The two lines that carry the URL now carry TruffleHog's inline ignore marker, one on the TOML line and one on the VRL line inside the source block, so the detector reads them as the deliberate fixture they are and the hook scans everything else as before. The fixture values and the assertions are unchanged, and the vector test suite passes exactly as it did.
+
+## [3.17.84] - 2026-10-22
+
+- SIEM UI: Grafana stops logging the missing provisioning directories at every start. Grafana reads `/etc/grafana/provisioning/plugins` and `/etc/grafana/provisioning/alerting` on every start and logs an error for each one it cannot find, and the container mounts the whole provisioning tree from one read-only store path, so Grafana could not create them itself. The tree held the datasources, the dashboards and the dashboard JSON, and nothing else, so every start of every container logged two errors about directories that were never there. The tree now holds both directories, empty: they are created in the same store path as the datasources and the dashboards, so they are mounted read-only with the rest of the tree, and no plugin and no alerting configuration is provisioned through them. Grafana's own settings are unchanged. A configuration test reads the store path the way the build runs it and holds the invariant: the tree the container mounts is the whole tree, it is mounted read-only, it has a plugins and an alerting directory, and both are empty.
 
 ## [3.17.83] - 2026-10-22
 
