@@ -1,5 +1,9 @@
 # Changelog
 
+## [3.17.50] - 2026-10-22
+
+- CI no longer waits for owner approval. The `private-source-ci` environment has no required reviewers, so a main push or PR run starts immediately and is never later cancelled waiting for approval (which GitHub recorded as a deployment error). Fleet checks now run the private-source job only for pushes and for PRs from branches in this repository. Only the owner and the owner's agents can push here, so a fork's PR never reaches the key.
+
 ## [3.17.49] - 2026-10-22
 
 - GitHub-launched threads lead with the chief reviewer (Claude Opus 5.5), with Codex GPT-6.1-Sol as the backup, per the owner's role policy.
