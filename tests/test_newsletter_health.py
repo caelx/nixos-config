@@ -109,9 +109,9 @@ class DeliveryTests(unittest.TestCase):
         store = self.coordinator_module.Store(self.root / "coordinator.sqlite")
         self.addCleanup(store.db.close)
         self.coordinator = self.coordinator_module.Coordinator({
-            "allowed_user_ids": [], "repositories": {"caelx/nixos-config": {"project_id": "test-project"}},
+            "allowed_user_ids": [], "repositories": {"ghostship-io/ghostship-config": {"project_id": "test-project"}},
             "model_selection": {"instanceId": "codex", "model": "gpt-6.1-sol"},
-            "incidents": {"repository": "caelx/nixos-config", "daily_limit": 3,
+            "incidents": {"repository": "ghostship-io/ghostship-config", "daily_limit": 3,
                           "recurrence_cooldown": 0},
         }, store, mock.Mock(), bridge=lambda: self.bridge)
 
