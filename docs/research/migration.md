@@ -118,7 +118,7 @@ Even for a reinstall, you must run the Asahi script from macOS to ensure the boo
 2.  **Clone Repo**:
     ```bash
     mkdir -p /mnt/etc/nixos
-    git clone https://github.com/caelx/nixos-config.git /mnt/etc/nixos
+    git clone https://github.com/ghostship-io/ghostship-config.git /mnt/etc/nixos
     cd /mnt/etc/nixos
     ```
 
