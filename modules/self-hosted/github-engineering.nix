@@ -32,17 +32,21 @@ let
   # issue owners, queued deliveries, CI issue mappings and pull request links
   # survive the transfer. The alias targets are the canonical repositories
   # above; the coordinator resolves a legacy name to its canonical one and
-  # keeps the pre-transfer identity for commands it has already sent.
+  # keeps the pre-transfer identity for commands it has already sent. The
+  # previous owner is supplied by the deployment outside this repository.
   repositoryAliases = {
-    "caelx/nixos-config" = "ghostship-io/ghostship-config";
-    "caelx/ghostship-agent" = "ghostship-io/ghostship-agent";
-    "caelx/ghostship-3dprinting" = "ghostship-io/ghostship-3dprinting";
-    "caelx/ghostship-roms" = "ghostship-io/ghostship-roms";
-    "caelx/ghostship-xplus4" = "ghostship-io/ghostship-xplus4";
-    "caelx/ghostship-newsletter" = "ghostship-io/ghostship-newsletter";
-    "caelx/orca-advanced-calibration" = "ghostship-io/ghostship-orca";
+    "@GHOSTSHIP_GITHUB_ACCOUNT@/nixos-config" = "ghostship-io/ghostship-config";
+    "@GHOSTSHIP_GITHUB_ACCOUNT@/ghostship-agent" = "ghostship-io/ghostship-agent";
+    "@GHOSTSHIP_GITHUB_ACCOUNT@/ghostship-3dprinting" = "ghostship-io/ghostship-3dprinting";
+    "@GHOSTSHIP_GITHUB_ACCOUNT@/ghostship-roms" = "ghostship-io/ghostship-roms";
+    "@GHOSTSHIP_GITHUB_ACCOUNT@/ghostship-xplus4" = "ghostship-io/ghostship-xplus4";
+    "@GHOSTSHIP_GITHUB_ACCOUNT@/ghostship-newsletter" = "ghostship-io/ghostship-newsletter";
+    "@GHOSTSHIP_GITHUB_ACCOUNT@/orca-advanced-calibration" = "ghostship-io/ghostship-orca";
   };
-  coordinatorConfig = pkgs.writeText "ghostship-github-coordinator.json" (builtins.toJSON {
+  renderOwnerConfig = pkgs.writeShellScriptBin "ghostship-render-owner-config" ''
+    exec ${pkgs.python3}/bin/python3 ${./render-owner-config.py} "$@"
+  '';
+  coordinatorConfigTemplate = pkgs.writeText "ghostship-github-coordinator.json" (builtins.toJSON {
     allowed_user_ids = [ 1686351 ];
     ntfy_url = "http://ntfy:8080";
     t3_environment_id = "e7f7d451-e488-4da3-b305-9e45b62aad6f";
@@ -120,7 +124,7 @@ in
       ];
       apparmorRequiredProcessProfiles = [ "ghostship-hooks" ];
       cloudflareBypassPaths = [ "/github" "/cloudflare" ];
-      cloudflareBypassApproval = "James 2026-10-19: approved Access bypass for exact POST paths /cloudflare and /github on hooks.ghostship.io only; GitHub HMAC and the Cloudflare webhook secret authenticate them";
+      cloudflareBypassApproval = "the owner 2026-10-19: approved Access bypass for exact POST paths /cloudflare and /github on hooks.ghostship.io only; GitHub HMAC and the Cloudflare webhook secret authenticate them";
       muximux.enable = false;
     };
     ghostship.apps.github-coordinator = {
@@ -205,10 +209,9 @@ in
       pull = "never";
       user = "62030:62032";
       cmd = [ "--port" "8080" "--spool" "/spool" "--secrets" "/run/secrets/hooks.env"
-              # The receiver serves the canonical repositories and, while the
-              # transfer lasts, the names they had before it.
+              # The receiver serves the canonical repositories.
               "--repositories" (lib.concatStringsSep ","
-                (builtins.attrNames repositories ++ builtins.attrNames repositoryAliases)) ];
+                (builtins.attrNames repositories)) ];
       volumes = [
         "${root}/spool:/spool:rw,noexec,nosuid,nodev"
         "${config.ghostship.selfHostedSecrets.projections.ghostship-hooks.path}:/run/secrets/hooks.env:ro"
@@ -273,7 +276,7 @@ in
         "${root}/spool:/spool:rw,noexec,nosuid,nodev"
         "${root}/state:/state:rw,noexec,nosuid,nodev"
         "${root}/incidents:/incidents:rw,noexec,nosuid,nodev"
-        "${coordinatorConfig}:/etc/ghostship-github/config.json:ro"
+        "${root}/config.json:/etc/ghostship-github/config.json:ro"
         # The bridge's default credential paths.
         "/run/ghostship-github:/run/ghostship-integrations:ro"
         "${config.ghostship.selfHostedSecrets.projections.ghostship-github-coordinator.path}:/run/secrets/github.env:ro"
@@ -286,8 +289,10 @@ in
       after = [ "init-ghostship-net.service" "ghostship-github-t3-token.service" ];
       requires = [ "init-ghostship-net.service" ];
       wants = [ "ghostship-github-t3-token.service" ];
+      serviceConfig.EnvironmentFile = [ "/etc/ghostship/owner-identity.env" ];
       preStart = lib.mkBefore ''
         ${config.ghostship.selfHostedSecrets.render}/bin/ghostship-secret-project ghostship-github-coordinator
+        ${renderOwnerConfig}/bin/ghostship-render-owner-config ${coordinatorConfigTemplate} ${root}/config.json 644
       '';
     };
   };
