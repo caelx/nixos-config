@@ -120,7 +120,7 @@ authentication without storing the token in the repository or changing global
 Git configuration:
 
 ```sh
-git remote set-url origin https://github.com/caelx/nixos-config.git
+git remote set-url origin https://github.com/ghostship-io/ghostship-config.git
 git config --local credential.https://github.com.helper '!gh auth git-credential'
 git ls-remote origin HEAD
 ```

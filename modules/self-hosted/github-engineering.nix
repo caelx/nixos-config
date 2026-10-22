@@ -17,16 +17,30 @@ let
   network = "ghostship_github_net";
   # T3 projects per repository (ids from the T3 orchestration shell).
   repositories = {
-    "caelx/nixos-config" = {
+    "ghostship-io/ghostship-config" = {
       project_id = "fc286296-b2d8-4ee4-8d5e-27f3657229b7";
       required_checks = [ "check" "browser" ];
     };
-    "caelx/ghostship-agent".project_id = "e5a24e33-34cf-47aa-b678-61d8bedb3d39";
-    "caelx/ghostship-3dprinting".project_id = "e95f58cb-8f98-4791-904c-273fb798bcb5";
-    "caelx/ghostship-roms".project_id = "44bb13a9-b0f1-494c-9723-ccf64945751b";
-    "caelx/ghostship-xplus4".project_id = "64a942df-7c8e-48bf-a536-e0c16fc8dbb3";
-    "caelx/ghostship-newsletter".project_id = "d20c69dd-5e0e-40ed-8a13-b2c3d4f5613a";
-    "caelx/orca-advanced-calibration".project_id = "c9069bbb-2d01-465a-91c7-cfcff17f6417";
+    "ghostship-io/ghostship-agent".project_id = "e5a24e33-34cf-47aa-b678-61d8bedb3d39";
+    "ghostship-io/ghostship-3dprinting".project_id = "e95f58cb-8f98-4791-904c-273fb798bcb5";
+    "ghostship-io/ghostship-roms".project_id = "44bb13a9-b0f1-494c-9723-ccf64945751b";
+    "ghostship-io/ghostship-xplus4".project_id = "64a942df-7c8e-48bf-a536-e0c16fc8dbb3";
+    "ghostship-io/ghostship-newsletter".project_id = "d20c69dd-5e0e-40ed-8a13-b2c3d4f5613a";
+    "ghostship-io/ghostship-orca".project_id = "c9069bbb-2d01-465a-91c7-cfcff17f6417";
+  };
+  # The previous owner and the two renamed repositories, so that existing
+  # issue owners, queued deliveries, CI issue mappings and pull request links
+  # survive the transfer. The alias targets are the canonical repositories
+  # above; the coordinator resolves a legacy name to its canonical one and
+  # keeps the pre-transfer identity for commands it has already sent.
+  repositoryAliases = {
+    "caelx/nixos-config" = "ghostship-io/ghostship-config";
+    "caelx/ghostship-agent" = "ghostship-io/ghostship-agent";
+    "caelx/ghostship-3dprinting" = "ghostship-io/ghostship-3dprinting";
+    "caelx/ghostship-roms" = "ghostship-io/ghostship-roms";
+    "caelx/ghostship-xplus4" = "ghostship-io/ghostship-xplus4";
+    "caelx/ghostship-newsletter" = "ghostship-io/ghostship-newsletter";
+    "caelx/orca-advanced-calibration" = "ghostship-io/ghostship-orca";
   };
   coordinatorConfig = pkgs.writeText "ghostship-github-coordinator.json" (builtins.toJSON {
     allowed_user_ids = [ 1686351 ];
@@ -64,8 +78,11 @@ let
         timeout_seconds = 1800;
       };
     }) repositories;
+    # The coordinator resolves a legacy repository name to its canonical one
+    # and keeps the pre-transfer identity for the commands it already sent.
+    repository_aliases = repositoryAliases;
     # Host incidents launch bounded repair threads in the fleet's own project.
-    incidents = { repository = "caelx/nixos-config"; daily_limit = 3; };
+    incidents = { repository = "ghostship-io/ghostship-config"; daily_limit = 3; };
   });
   hardening = [ "--read-only" "--cap-drop=ALL" "--security-opt=no-new-privileges"
                 "--tmpfs=/tmp:rw,noexec,nosuid,nodev,size=8m" ];
@@ -73,6 +90,16 @@ in
 {
   options.ghostship.githubEngineering.enable =
     lib.mkEnableOption "hooks.ghostship.io webhook receiver and T3 engineering coordinator";
+
+  # The coordinator can be held off while the receiver keeps spooling events.
+  # A runtime drop-in under /run does not survive an activation, so the hold
+  # lives here. Clear the spool and incidents before turning it back on, or
+  # it replays the backlog.
+  options.ghostship.githubEngineering.coordinatorAutoStart = lib.mkOption {
+    type = lib.types.bool;
+    default = true;
+    description = "Start the GitHub coordinator at boot and on activation.";
+  };
 
   config = lib.mkIf cfg.enable {
     ghostship.notify.incidentSpool = "${root}/incidents";
@@ -178,7 +205,10 @@ in
       pull = "never";
       user = "62030:62032";
       cmd = [ "--port" "8080" "--spool" "/spool" "--secrets" "/run/secrets/hooks.env"
-              "--repositories" (lib.concatStringsSep "," (builtins.attrNames repositories)) ];
+              # The receiver serves the canonical repositories and, while the
+              # transfer lasts, the names they had before it.
+              "--repositories" (lib.concatStringsSep ","
+                (builtins.attrNames repositories ++ builtins.attrNames repositoryAliases)) ];
       volumes = [
         "${root}/spool:/spool:rw,noexec,nosuid,nodev"
         "${config.ghostship.selfHostedSecrets.projections.ghostship-hooks.path}:/run/secrets/hooks.env:ro"
@@ -233,6 +263,7 @@ in
 
     virtualisation.oci-containers.containers.ghostship-github-coordinator = {
       image = "ghostship-github-coordinator:${github.coordinatorImage.imageTag}";
+      autoStart = cfg.coordinatorAutoStart;
       imageFile = github.coordinatorImage;
       pull = "never";
       user = "62031:62032";
