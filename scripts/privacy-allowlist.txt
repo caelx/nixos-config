@@ -106,7 +106,7 @@ suffix:/home/config/                   # the configuration account
 # --- public format and release identifiers --------------------------------
 # A public first-party client identifier. It identifies a published client,
 # not a person, and the forge serves it in the clear.
-AIzaSyDE7NHMUZfMoJVu-YNkK-7AXFSuL1Q9gKE
+AIzaSyDE7NHMUZfMoJVu-YNkK-7AXFSuL1Q9gKE # gitleaks:allow -- published first-party client identifier, matching the existing broker configuration
 
 # Recyclarr custom format identifiers from a published format database.
 c9eafd50846d299b862ca9bb6ea91950
