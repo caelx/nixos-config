@@ -277,8 +277,24 @@ class CommittedLockPolicyTest(unittest.TestCase):
     def test_native_parent_input_paths_remain_valid_and_malformed_paths_are_refused(self):
         # Nix 2.34 serializes relative-input ancestry as an InputAttrPath list.
         from source_privacy import validate_lock, PolicyError
-        lock = json.loads(subprocess.check_output(
-            ["git", "show", "HEAD:flake.lock"], cwd=ROOT, text=True))
+        # The Nix config-tests source intentionally has no .git directory.
+        # A synthetic public lock keeps this policy regression independent of
+        # checkout metadata and private-source substitutions in the caller.
+        lock = {
+            "version": 7, "root": "root",
+            "nodes": {
+                "root": {"inputs": {PRIVATE.INPUT: PRIVATE.INPUT, "nixpkgs": "nixpkgs"}},
+                PRIVATE.INPUT: {
+                    "locked": dict(PRIVATE.LOCKED_PLACEHOLDER),
+                    "original": dict(PRIVATE.ORIGINAL_PLACEHOLDER),
+                },
+                "nixpkgs": {
+                    "locked": {"type": "github", "owner": "NixOS", "repo": "nixpkgs",
+                               "rev": "0" * 40, "narHash": "sha256-" + "A" * 43 + "="},
+                    "original": {"type": "github", "owner": "NixOS", "repo": "nixpkgs"},
+                },
+            },
+        }
         for parent in ([], ["nixpkgs"]):
             candidate = json.loads(json.dumps(lock))
             candidate["nodes"][PRIVATE.INPUT]["parent"] = parent
