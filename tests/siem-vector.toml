@@ -37,7 +37,7 @@ name = "secrets in container output are redacted"
 insert_at = "journal_shape"
 type = "log"
 [tests.inputs.log_fields]
-message = "GET /api/v3/queue?apikey=abc123def&page=1 Authorization: Bearer eyJhbGciOi.payload.sig https://user:hunter2@example.com/x"
+message = "GET /api/v3/queue?apikey=abc123def&page=1 Authorization: Bearer eyJhbGciOi.payload.sig https://user:hunter2@example.com/x" # trufflehog:ignore
 CONTAINER_NAME = "sonarr"
 _SYSTEMD_UNIT = "libpod-conmon-0123.scope"
 _TRANSPORT = "journal"
@@ -46,7 +46,7 @@ extract_from = "redacted"
 [[tests.outputs.conditions]]
 type = "vrl"
 source = '''
-assert_eq!(.message, "GET /api/v3/queue?apikey=[REDACTED]&page=1 Authorization: Bearer [REDACTED] https://user:[REDACTED]@example.com/x")
+assert_eq!(.message, "GET /api/v3/queue?apikey=[REDACTED]&page=1 Authorization: Bearer [REDACTED] https://user:[REDACTED]@example.com/x") # trufflehog:ignore
 assert_eq!(.stream, "container/sonarr")
 '''
 
