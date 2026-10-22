@@ -127,7 +127,7 @@ class CollectorTests(unittest.TestCase):
                             (name, THREAD, 'completed', at, at, json.dumps(payload), 'provider-thread'))
         self.db.execute('INSERT INTO orchestration_v2_projection_provider_threads VALUES(?,?)', ('provider-thread','codex'))
         self.db.execute('INSERT INTO projection_projects VALUES(?,?,NULL)', (ENV,at))
-        self.db.execute('INSERT INTO orchestration_v2_projection_threads VALUES(?,?,?,?,NULL,?)', (THREAD,ENV,'codex',at,json.dumps({'linkedPullRequest':{'url':'https://github.com/caelx/nixos-config/pull/42'},'prompt':SECRET,'pullRequests':[{'url':'https://github.com/caelx/nixos-config/pull/42','snapshot':{'state':'OPEN'}},{'url':'https://github.com/caelx/nixos-config/pull/43','snapshot':{'state':'OPEN'}}]})))
+        self.db.execute('INSERT INTO orchestration_v2_projection_threads VALUES(?,?,?,?,NULL,?)', (THREAD,ENV,'codex',at,json.dumps({'linkedPullRequest':{'url':'https://github.com/ghostship-io/ghostship-config/pull/42'},'prompt':SECRET,'pullRequests':[{'url':'https://github.com/ghostship-io/ghostship-config/pull/42','snapshot':{'state':'OPEN'}},{'url':'https://github.com/ghostship-io/ghostship-config/pull/43','snapshot':{'state':'OPEN'}}]})))
         self.db.execute('INSERT INTO orchestration_v2_projection_runtime_requests VALUES(?,?,?,NULL,?)', ('approval',THREAD,at,'pending'))
         # An active agent with its own branch, model and provider, plus a
         # terminal one for the windowed history.
@@ -148,7 +148,7 @@ class CollectorTests(unittest.TestCase):
                          NOW-30, at, json.dumps({'startedAt': NOW-40,
                                                   'modelSelection': {'instanceId': 'codex',
                                                                      'model': 'synthetic-model'}}), 1))
-        pointer = json.dumps({'repository':'caelx/nixos-config','number':123,'event':'issues','body':SECRET})
+        pointer = json.dumps({'repository':'ghostship-io/ghostship-config','number':123,'event':'issues','body':SECRET})
         self.db.execute('INSERT INTO events VALUES(?,?,?,?,?,?)',
                         ('receipt', pointer, 'done', 'over daily limit', NOW-20, NOW-10))
         for key, event, action in [('ci', 'workflow_run', 'completed'),
@@ -156,10 +156,10 @@ class CollectorTests(unittest.TestCase):
                                    ('review', 'pull_request_review', 'submitted'),
                                    ('closed', 'pull_request', 'closed')]:
             self.db.execute('INSERT INTO events VALUES(?,?,?,?,?,?)',
-                            (key, json.dumps({'repository': 'caelx/nixos-config', 'event': event,
+                            (key, json.dumps({'repository': 'ghostship-io/ghostship-config', 'event': event,
                                               'action': action, 'number': 42}),
                              'done', '', NOW-30, NOW-30))
-        self.db.execute('INSERT INTO owners VALUES(?,?,?,?)', ('caelx/nixos-config',123,THREAD,NOW-10))
+        self.db.execute('INSERT INTO owners VALUES(?,?,?,?)', ('ghostship-io/ghostship-config',123,THREAD,NOW-10))
         # The coordinator CI proof: exact revision, outcome, merge flag and the
         # configured check conclusions.
         for number, outcome, merged, checks in ((42, 'verified_ci', 1, {'build': ['success']}),
@@ -169,7 +169,7 @@ class CollectorTests(unittest.TestCase):
             evidence = json.dumps({'required_checks': sorted(checks), 'merged': bool(merged),
                                    'checks': checks})
             self.db.execute('INSERT INTO pull_progress VALUES(?,?,?,?,?,?,?)',
-                            ('caelx/nixos-config', number, THREAD, 'a'*40, outcome, evidence, NOW-15))
+                            ('ghostship-io/ghostship-config', number, THREAD, 'a'*40, outcome, evidence, NOW-15))
         self.db.execute('INSERT INTO jobs VALUES(?,?,?,?,?,?)', ('job','queued',NOW-10,SECRET,SECRET,SECRET))
         self.db.commit()
 
@@ -193,7 +193,7 @@ class CollectorTests(unittest.TestCase):
         self.assertNotIn('ghostship_work_input_tokens', metrics)
         self.assertEqual(sum(r['kind']=='usage' for r in rows), 0)
         self.assertTrue(any(r.get('thread_url') == f'https://t3code.ghostship.io/{ENV}/{THREAD}' for r in rows))
-        self.assertTrue(any(r.get('github_url') == 'https://github.com/caelx/nixos-config/issues/123' for r in rows))
+        self.assertTrue(any(r.get('github_url') == 'https://github.com/ghostship-io/ghostship-config/issues/123' for r in rows))
         receipt = next(r for r in rows if r['source']=='github_receipts' and r['kind']=='webhook')
         self.assertEqual(receipt['status'], 'held')
         self.assertEqual(receipt['fired_at'], work.iso(NOW-20))
@@ -249,7 +249,7 @@ class CollectorTests(unittest.TestCase):
                         (ENV,THREAD,'codex',work.iso(NOW),'{}'))
         self.db.execute('CREATE TABLE automatic_reviews(request_id,repository,number,thread_id,status,occupied,due_at,updated_at,note,tasks,receipt,head)')
         self.db.execute('INSERT INTO automatic_reviews VALUES(?,?,?,?,?,?,?,?,?,?,?,?)',
-                        ('review','caelx/nixos-config',42,THREAD,'reported',0,NOW,NOW,SECRET,SECRET,SECRET,'a'*40))
+                        ('review','ghostship-io/ghostship-config',42,THREAD,'reported',0,NOW,NOW,SECRET,SECRET,SECRET,'a'*40))
         self.db.commit()
         rows, _ = self.collect()
         self.assertEqual(len([r for r in rows if r['kind']=='project']), 2)
@@ -259,14 +259,14 @@ class CollectorTests(unittest.TestCase):
         self.assertTrue(any(r['kind']=='request' and r['status']=='blocked' for r in rows))
         review = next(r for r in rows if r['kind']=='review')
         self.assertEqual(review['status'], 'reported')
-        self.assertEqual(review['github_url'], 'https://github.com/caelx/nixos-config/pull/42')
+        self.assertEqual(review['github_url'], 'https://github.com/ghostship-io/ghostship-config/pull/42')
         self.assertTrue(any(r['kind']=='thread' and r.get('github_url')==review['github_url'] for r in rows))
         self.assertNotIn(SECRET, json.dumps(rows))
         self.db.execute('UPDATE automatic_reviews SET number=NULL')
         self.db.commit()
         rows,_=self.collect()
         self.assertEqual(next(r['github_url'] for r in rows if r['kind']=='review'),
-                         'https://github.com/caelx/nixos-config/commit/'+'a'*40)
+                         'https://github.com/ghostship-io/ghostship-config/commit/'+'a'*40)
 
     def test_optional_actual_router_provenance_is_allowlisted(self):
         record = {'at':NOW, 'project_id':ENV, 'state':'selected',
@@ -454,7 +454,7 @@ class CollectorTests(unittest.TestCase):
         self.assertEqual(verified['failed_checks'], 0)
         self.assertEqual(verified['revision'], 'a'*40)
         self.assertEqual(verified['evidence'], 'ci_proof')
-        self.assertEqual(verified['github_url'], 'https://github.com/caelx/nixos-config/pull/42')
+        self.assertEqual(verified['github_url'], 'https://github.com/ghostship-io/ghostship-config/pull/42')
         failed = proofs['failed']
         self.assertEqual(failed['failed_checks'], 1)
         self.assertEqual(failed['merged'], 0)
