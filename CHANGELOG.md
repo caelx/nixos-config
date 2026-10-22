@@ -1,8 +1,15 @@
 # Changelog
 
-## [3.17.85] - 2026-10-22
+## [3.17.86] - 2026-10-22
 
 - The SIEM redaction fixture stops tripping the secret scan. The fixture carries a URL with a credential in it on purpose, because that is what proves the redaction strips the password out of a URL, and the credential is a placeholder for a test. The shared pre-commit hook scans the staged files with TruffleHog, whose URI detector reports a URL with an embedded credential whether or not the credential is real, so every commit that staged the fixture was refused by the hook for a value that exists to be redacted, and the commit had to be made with the secret scan skipped - which skips the whole hook, the commit identity check and every other scan with it. The two lines that carry the URL now carry TruffleHog's inline ignore marker, one on the TOML line and one on the VRL line inside the source block, so the detector reads them as the deliberate fixture they are and the hook scans everything else as before. The fixture values and the assertions are unchanged, and the vector test suite passes exactly as it did.
+
+## [3.17.85] - 2026-10-22
+
+- The inferred capacity of a route no longer merges the routes that were never refused into the account of the provider. A route that was never refused has no limit of its own: it is measured on its own, with its whole allowance and no pace, and its use never ends the episode of another route. On live data the free routes of the Go provider were refused by nothing and still came out of the account of their paid models, which are refused and never recover.
+- The refusals of a route that never recovered are now evidence for its scope. The scope of a route is read from the episodes of its account group, the open one included, so another model of the provider that works right after the refusal shows that the limit was the model's own. The paid models of the Go provider were refused, never recovered, and the free route of the same provider worked seconds later: they came out as one account with a minute long window and a budget of a few thousand tokens, and they are now the models that were refused, with no window read out of their failures.
+- A refusal that opens the record of a group is the refusal of the group itself, so the episode of the group starts at that refusal. A record that began with a refusal produced no episode at all, because the scan looked for the first refusal after the first use: a route that was refused before it ever came back had no open episode, its scope came out unknown, and it was measured across the account, so the refusal of one model looked like the refusal of the whole provider.
+- The span of an open episode runs from after its refusal to the reading, so the refusal itself is never evidence of the scope by itself. Two routes of a provider that were refused at the same instant have nothing in that span, and the scope of each is unknown.
 
 ## [3.17.84] - 2026-10-22
 
