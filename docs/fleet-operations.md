@@ -98,7 +98,7 @@ useful later addition.
 
 ntfy denies anonymous access and signup. `publisher` can write only to the
 `security`, `operations` and `informational` topics; `android` can read only
-those topics; `james` administers the instance. Open `secret-edit monitoring` privately to retrieve credentials:
+those topics; the owner administers the instance. Open `secret-edit monitoring` privately to retrieve credentials:
 `KUMA_PASSWORD` is the initial Kuma and ntfy administrator password;
 `NTFY_READER_PASSWORD` is the Android subscriber password. In the Android ntfy
 app, the configured server is `https://ntfy.ghostship.io`, user `android`, and topic
@@ -106,6 +106,23 @@ app, the configured server is `https://ntfy.ghostship.io`, user `android`, and t
 Android delivery may be unavailable until an Access-compatible method is approved;
 do not restore a bypass for compatibility. No iOS relay or WARP dependency is configured. A manual
 `ghostship-notify --topic informational --source test --title 'Ghostship notification test'` checks delivery after rollout; run as root.
+
+The account names and addresses the services log in as are not in this
+repository. The deployment supplies them in a root-owned file outside it,
+`/etc/ghostship/owner-identity.env` (mode 0600), and the units read it through
+their environment:
+
+- `GHOSTSHIP_GITHUB_ACCOUNT` — the GitHub account that owns the retired
+  container images and the repositories before they moved to the organisation.
+- `GHOSTSHIP_KEEP_PERSONAL_EMAIL` — the personal Google account the Keep
+  broker verifies before it reads anything.
+- `GHOSTSHIP_KUMA_USERNAME` — the uptime-kuma administrator account name.
+- `GHOSTSHIP_NTFY_ADMIN_USER` — the ntfy administrator account name.
+
+The file is required: a unit that reads it stops with a clear error when it is
+missing or incomplete, and no value falls back to a default. Keep it out of the
+repository and out of the shell history; write it once on the host and keep it
+with the other root-owned configuration.
 
 `ghostship-newsletter-health.timer` checks the canonical newsletter checkout every
 ten minutes as user 3000 inside `t3code`, through its pinned Nix environment.
@@ -285,7 +302,7 @@ The reconciler validates that coverage and refuses unexpected bypass policies;
 it does not rewrite shared wildcard or identity rules. ntfy's former native-auth
 bypass was revoked on 2026-10-18 and its specific Access application now requires
 the approved Google identity. The reconciler never creates bypass applications.
-The one approved exception is `hooks.ghostship.io` (James 2026-10-19): a
+The one approved exception is `hooks.ghostship.io` (the owner 2026-10-19): a
 path-scoped Access application for exactly `/github` and `/cloudflare` whose only
 policy is bypass-everyone, recorded in the registry as `cloudflareBypassPaths`
 with `cloudflareBypassApproval`. The receiver authenticates those requests itself

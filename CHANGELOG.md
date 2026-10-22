@@ -1,12 +1,23 @@
 # Changelog
 
-## [3.17.80] - 2026-10-22
+## [3.17.82] - 2026-10-22
 
 - The Providers page reads like the page the owner approved. The page is one line of header, then five sections: Bulk, Free, Frontier, 3D and Providers, each with a ranked table of one row per route. The order of a tier is the collector's own winner position, never a ranking made in the dashboard, and the routes that are not winners follow the winners, with the spent and refused ones sunk to the bottom, dimmed, with their reason. The fill of a capacity bar is the share left now and the line in it is the share the window expects to be left now, and the pace reads the difference: ahead of the pace, on it, or behind it. A route whose limits are unknown says so in italics; it never shows a zero and never a red bar. A route the provider publishes as unlimited for a limited time reads as a promotion, a route reserved for 3D work keeps its tag, and a route in the free quality band keeps its own. The four tier gauges, the provider cards and the tall header are gone; the detailed evidence stays, in collapsed rows below. The routing chip of the header reads the routing state of the collector: Routing ON when it publishes the routing as enabled, and Routing OFF · awaiting your approval when it publishes it as off or publishes nothing at all.
 - The Grafana Business Text panel is vendored by hash. The panel (`marcusolsson-dynamictext-panel`, 6.3.0) is fetched by `fetchurl` with a fixed sha256, the same pin nixpkgs carries, and unpacked into the read-only plugin bundle next to the VictoriaLogs datasource, so the UI never downloads a plugin at runtime. The artifact is the signed release, so Grafana's signature check still passes.
 - A route that cannot be used now comes after every route that can run. The order of a tier was the collector's winner position and its rank, and nothing else, so a route whose allowance is spent kept the place the collector gave it: the exhausted route of the free pool held the seventh place, above the route that is not a winner at all, and a reader met a spent route before a route that could have taken the job. The order of a table reads the flag of the route that cannot be used now: the place of the collector is the place of the route, and a route that is spent or refused sinks below every route that can run, whatever its position says. The order of the providers is the same: the spent accounts come after the accounts that can run, and the accounts that publish no window come last.
 - The basis of a route is the basis the collector publishes. The column read the limit of the provider (`ghostship_ai_provider_limit`), so a route whose capacity the collector inferred read "unknown" next to the route that publishes no window at all. It reads the basis of the capacity of the route (`ghostship_ai_model_capacity_basis`) now: "published" for a route the provider publishes as unlimited for a limited time, "inferred" for a route whose capacity the collector inferred, "reported" for a route whose allowance the provider reported, and "unknown" only when the basis is unknown.
 - The narrow screen of the page reads correctly. A column that goes away under 520 pixels takes its cells with it, so the columns of the free table line up again. A tag of a route — the 3D reserve, the quality band, the inferred capacity — keeps its whole text: the name of the model is cut with an ellipsis and the tag goes under it, never an empty grey box. The pace of a route that is on the pace carries its number too, "● 0", so every pace of the page has one.
+
+## [3.17.81] - 2026-10-22
+
+- The owner identity values are supplied by the deployment, not by this repository. The account names and addresses the services log in as (the retired container registry account, the personal Google account the Keep broker verifies, the uptime kuma and ntfy administrator accounts and the account the private inputs were transferred from) are read from a root-owned file outside the repository, `/etc/ghostship/owner-identity.env`, and reach the units through their environment. A missing value fails with a clear message instead of a fallback, and the regression tests pin the same behaviour with synthetic names. The rendered configuration is unchanged once the deployment supplies the values.
+
+## [3.17.80] - 2026-10-22
+
+- CI parses every AppArmor profile the host loads. The check parsed six profiles of the thirty-five in the repository, so a policy the kernel would refuse could pass CI: PR #167 named a thirteenth transition in the agent desktop policy, `apparmor_parser` refused the whole policy, the reload failed, and the kernel kept the previous rules. The check now evaluates `nixosConfigurations.chill-penguin` and parses every policy the host loads, exactly as the host renders it, with the include tree the host resolves `<tunables/global>` and the abstractions against. All thirty-six loaded policies parse.
+- The include tree is read the same way on every machine. The host pins its own platform, so the AppArmor package its parser searches is a store path of that platform: on the x86_64 CI it could not be built, `nix build` ended in nothing without an error, and the check failed on a directory that was never there. The check reads the copy of the machine it runs on instead, the same profile sources, realises it before reading it, and refuses a package version that is not the host's.
+- The named transition budget is held. `apparmor_parser` 5.x keeps at most twelve distinct named exec transition targets in one profile block, and the limit lives in that block's exec table, not in the file. The check counts the transitions of every profile block, fails above twelve, and prints the count of every policy so an author sees the budget before it runs out. The agent desktop policy names twelve of them, which is the whole budget.
+- Every profile file in the repository belongs to a policy or to an allowlist with a reason. A new file that no policy loads fails the check until it is declared, so a profile cannot be added without a policy to load it.
 
 ## [3.17.79] - 2026-10-22
 
@@ -672,7 +683,7 @@
 ## [3.15.132] - 2026-10-19
 
 - Add `hooks.ghostship.io`, the webhook receiver for GitHub-driven T3 engineering and Cloudflare alerts (ghostship-agent 0.25.0, pinned at `d61a5415`):
-  - Cloudflare Access bypasses exactly `POST /github` and `POST /cloudflare` (James 2026-10-19, recorded as `cloudflareBypassApproval`); every other path still requires Google identity. The receiver verifies GitHub's HMAC signature or the Cloudflare webhook secret itself, runs AppArmor-confined in complain mode, and shares an internal network only with cloudflared. It has no egress.
+  - Cloudflare Access bypasses exactly `POST /github` and `POST /cloudflare` (the owner 2026-10-19, recorded as `cloudflareBypassApproval`); every other path still requires Google identity. The receiver verifies GitHub's HMAC signature or the Cloudflare webhook secret itself, runs AppArmor-confined in complain mode, and shares an internal network only with cloudflared. It has no egress.
   - The registry gains `cloudflareBypassPaths`, which requires an approval and an AppArmor profile. `ghostship-cloudflare-sync` accepts a path-scoped Access app only when every domain is an approved exact path and the app's only policy is bypass-everyone.
   - The coordinator re-reads each GitHub event from GitHub and routes your issues, comments, reviews and PRs to one T3 thread per issue. It files regression issues for failing base-branch CI and publishes Cloudflare alerts to ntfy.
   - New encrypted unit `hooks` (`GITHUB_WEBHOOK_SECRET`, `CLOUDFLARE_WEBHOOK_SECRET`; copy in Bitwarden `hooks.ghostship.io`).
@@ -741,7 +752,7 @@
 - Pool accounts:
   - Add Upstage, Inception, Poolside, OVH (anonymous) and Z.ai; enable OrcaRouter; open Mistral to all workloads.
   - Billing attestations for Upstage, Mistral and Inception.
-  - `china_hosting_workloads: ["research"]` on the aggregator and research accounts (James 2026-10-18: free research may include China providers; Singapore is fine).
+  - `china_hosting_workloads: ["research"]` on the aggregator and research accounts (the owner 2026-10-18: free research may include China providers; Singapore is fine).
 - Project Z.ai's key (`ZHIPU_API_KEY`) from a new encrypted provider unit.
 
 ## [3.15.121] - 2026-10-18
@@ -872,7 +883,7 @@
 ## [3.15.101] - 2026-10-12
 
 - Pin ghostship-agent 0.18.1: `health` op `types` and `query` over every Health Connect type, Ultrahuman lab biomarkers, full sleep and metrics, Wyze weigh-ins, and health documents with their text (OCR for scans).
-- The MCP container reads health documents only from the owner's "James Ochmann" and "HealthConnect" Drive folders (`GHOSTSHIP_HEALTH_DOCUMENT_FOLDERS`).
+- The MCP container reads health documents only from the owner's own Drive folders and the shared "HealthConnect" folder (`GHOSTSHIP_HEALTH_DOCUMENT_FOLDERS`).
 
 ## [3.15.100] - 2026-10-12
 
@@ -3842,7 +3853,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   native instruction files, and taught WSL activation to publish the same file
   to the Windows-side Codex Desktop path `%USERPROFILE%\.codex\AGENTS.md`.
 
-- **Hermes current-image runtime refresh**: Removed the stale downstream `CLOAKBROWSER_URL` export so Hermes follows the image-owned native CloakBrowser path, documented `/nix` first-boot seeding plus later default-profile reconciliation, and clarified that the next full Hermes reset must pull the latest published `ghcr.io/caelx/ghostship-hermes:latest` image, wipe persisted auth/XDG/custom-skill/workspace/user-Nix state, rely on bundled upstream default skill seeding, and require fresh Codex auth afterward.
+- **Hermes current-image runtime refresh**: Removed the stale downstream `CLOAKBROWSER_URL` export so Hermes follows the image-owned native CloakBrowser path, documented `/nix` first-boot seeding plus later default-profile reconciliation, and clarified that the next full Hermes reset must pull the latest published `ghcr.io/ghostship-io/ghostship-hermes:latest` image, wipe persisted auth/XDG/custom-skill/workspace/user-Nix state, rely on bundled upstream default skill seeding, and require fresh Codex auth afterward.
 - **Ragenix helper path fix**: Fixed `secrets/rules.nix` to emit rule keys relative to the rules file directory so `secret-edit <logical-id>` and other `ragenix` operations match the tracked `secrets/files/**/*.age` paths again.
 - **Managed Paseo daemon and Node FHS wrappers**: Added `paseo` to the same wrapper-plus-maintenance flow used by the other agent CLIs, added a WSL-only `ghostship-paseo` system service that keeps a local daemon on `127.0.0.1:6768` for the Windows desktop app, documented Paseo's current daemon/app version-lockstep expectation, and replaced the broken raw WSL `/usr/bin/npm` plus `/usr/bin/npx` paths with explicit wrapper-backed WSL entries that exec the real Nix store binaries.
 - **Develop web service removal**: Removed the managed `opencode-web` and
@@ -4176,7 +4187,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **PriceBuddy bearer format**: The persisted agent token now writes a shell-safe `PRICEBUDDY_API_TOKEN="id|token"` bearer line into `/srv/apps/pricebuddy/pricebuddy-agent.env` so non-interactive API calls authenticate correctly.
 - **PriceBuddy process env**: Restored PriceBuddy's app `environmentFiles` so the upstream `start-app.sh` sees the DB host and credentials it waits on before Apache starts.
 - **Nix command reference**: Added a native Nix command reference under the Nix skill with build-first, no-`sudo`, and `chill-penguin` deployment guidance.
-- **Hermes service**: Added a new `ghcr.io/caelx/ghostship-hermes:latest` self-hosted service with Homepage and Muximux entries, internal service URL wiring for the existing stack, RomM/Grimmory secret imports for `*_USER` / `*_PASS`, and a named Podman volume for `/nix` so the image keeps its bundled entrypoint store.
+- **Hermes service**: Added a new `ghcr.io/ghostship-io/ghostship-hermes:latest` self-hosted service with Homepage and Muximux entries, internal service URL wiring for the existing stack, RomM/Grimmory secret imports for `*_USER` / `*_PASS`, and a named Podman volume for `/nix` so the image keeps its bundled entrypoint store.
 - **ghostship-config Utility**: A self-verifying, idempotent configuration manager for surgical updates to XML, YAML, INI, and KV files. Supports secure secret injection via environment/file references.
 - **Pure Surgical Migration**: Migrated all self-hosted services (Sonarr, Radarr, Plex, Homepage, etc.) to a pure surgical configuration model, removing all full-file templates and enforcing the "Ghostship Standard" for identity and privacy.
 - **Unified Agent Tooling**: Added a shared `~/.agents`-based skill/instructions model and a Gemini delegation MCP server for repo research and plan generation across Gemini, OpenCode, and Codex.
