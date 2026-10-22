@@ -23,7 +23,7 @@ in
       system.autoUpgrade = {
         enable = true;
         # The repository is public; HTTPS avoids requiring a root GitHub SSH key.
-        flake = "git+https://github.com/caelx/nixos-config.git?ref=main";
+        flake = "git+https://github.com/ghostship-io/ghostship-config.git?ref=main";
         # Deploy the tested committed lock; CI proposes coordinated input updates.
         flags = [ "--no-write-lock-file" ] ++ cfg.extraFlags;
         dates = "04:00";
