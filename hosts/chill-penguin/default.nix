@@ -26,6 +26,7 @@ in
   ghostship.bootGenerationDrift.enable = true;
   # Every activation needs the deploy slot (modules/self-hosted/deploy-slot.nix).
   ghostship.deploySlot.enable = true;
+  ghostship.configurationDrift.enable = true;
 
   ghostship.host.roles = {
     server = true;
@@ -45,10 +46,12 @@ in
   networking.hostName = "chill-penguin";
   networking.networkmanager.enable = true;
 
-  # T3 Code image changes are applied by t3code-deploy-when-idle, never by the switch.
+  # Unattended upgrading is off: it bypassed change control. The daily
+  # ghostship-configuration-drift check reports a host that is behind main.
   myOptions.autoUpgrade = {
-    enable = true;
-    # Pure evaluation cannot see /boot/asahi and would drop peripheral firmware.
+    enable = false;
+    # Kept for a deliberate, change-controlled upgrade; pure evaluation cannot
+    # see /boot/asahi and would drop peripheral firmware.
     extraFlags = [ "--impure" ];
   };
 

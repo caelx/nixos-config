@@ -17,6 +17,7 @@
     ./monitoring.nix
     ./boot-generation-drift.nix
     ./deploy-slot.nix
+    ./configuration-drift.nix
     ./newsletter-health.nix
     ./notify-coverage.nix
     ./ssh-command-guard.nix

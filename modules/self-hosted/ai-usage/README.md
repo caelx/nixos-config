@@ -59,7 +59,7 @@ that cannot be read reports a status; it never reports a healthy zero.
 | `antigravity` | Both quota views Google exposes: the shared family windows (5-hour, weekly, shared) and the per-model quotas that T3 merges away | Google's `cloudcode-pa` quota endpoints, with the stored account token |
 | `openrouter` | Credits, key usage per window, the spend cap, the free-tier flag, the free-model allowance as a daily window, and the published per-minute limit counted against our own requests | `openrouter.ai` credits and key endpoints, plus the T3 Code state for the count |
 | `ollama` | The request counts of the Ollama Cloud account per window, and the session and the weekly window of the account | `ollama.com/api/usage` and `ollama.com/api/balance` |
-| `free_pool` | The free inference pool: the provider states, the paged model catalog with geography, availability, selection, cooldown and admissions, the local admission limits, the health history, the observed latency, the concurrency, the recent jobs, and the quota amounts seen in provider headers | The broker's read-only status surface over its Unix socket, plus the pool's own reservation ledger |
+| `free_pool` | The free inference pool: the provider states with the pool's own probe of each route and the reason it parks a candidate, the paged model catalog with geography, availability, selection, cooldown and admissions, the local admission limits, the health history, the observed latency, the concurrency, the recent jobs, and the quota amounts seen in provider headers | The broker's read-only status surface over its Unix socket, plus the pool's own reservation ledger |
 | `opencode_events` | The request records of the routes the agents use, and the capacity they imply: the events of every request, and the window, the budget, the scope and the remaining share they add up to | OpenCode's own SQLite database, read only, with the collector's cache of the events in its state directory |
 | `pool_events` | The request records of the free pool's routes, and the capacity they imply | The free pool's own reservation ledger, read only |
 | `model_catalog` | The models that can be used at no cost right now and their per-million-token prices | OpenCode's cached copy of the public models.dev catalog |
@@ -222,7 +222,14 @@ The rules:
   that one. An inference is never published over a reading.
 * The window of an inferred route is keyed by the route when the limit is
   the model's own, and by the provider when the limit belongs to the
-  account. The scope of a limit with no other model in its span is the
+  account. A provider whose published rate limits apply per model has no
+  account pool to share: Google's Gemini API documents its limits per
+  project and per model (<https://ai.google.dev/gemini-api/docs/rate-limits>),
+  and Groq documents its limits per model and per organization
+  (<https://console.groq.com/docs/rate-limits>), so every refused route of
+  either provider is its own model, with the window and the budget of its own
+  events, whatever the evidence of another provider would say. For every
+  other provider the scope of a limit with no other model in its span is the
   account, and it is labelled `unknown`.
 * The window of a route that was never refused reads like the window of a
   route the provider publishes as unlimited: all of the allowance is left,
@@ -597,6 +604,48 @@ never mixed:
 | `unpublished` | the account publishes no window with a number, so its limit is unknown and is never read as a zero |
 | `published` | the account publishes a window of its own |
 
+### The card order of the Providers page
+
+The Providers page draws one card per provider account, and the cards come
+in the order the owner approved. A Grafana variable keeps only the order of
+the query that fills it, so the page cannot sort the cards itself: the
+collector publishes the place of every account, and the page reads it.
+
+| Series | Value |
+| --- | --- |
+| `ghostship_ai_account_card_order{account,scope}` | the place the card of the account takes: 1 is the first card |
+
+The scope is `t3` if any candidate for that account has `native.mapped`
+equal to true in the live T3 Code instance catalog; otherwise it is `free`.
+An account with windows but no candidates is `free`. Dashboard consumers
+can select cards by this label, with no provider exceptions. Removing a
+provider from T3 changes its scope on the next collection.
+
+The place is counted from one and holds no gap: the first card is 1, the
+last card is the number of accounts, and every account holds exactly one
+series.
+
+The approved list is `APPROVED_CARD_ORDER` in
+[`collector/card_order.py`](./collector/card_order.py): Claude, Codex,
+Ollama, OpenCode Go, Antigravity, Grok and OpenRouter, in that order. The
+page and this document point at that one list, so a change of the order is
+one change in one place.
+
+The accounts that are not on the list follow it. The ones that publish at
+least one window with a number come first, by name, and the accounts that
+publish none come after them, by name. A window with a number publishes a
+share that is left or a share that is used, and a spent window holds the
+number zero: a zero is a number. An account that is still learning its
+window publishes no number, and it follows the accounts that do.
+
+An account of the approved list that the snapshot does not hold is skipped,
+and the cards behind it move up. The places are the places of the cards
+that exist, and they never leave a hole.
+
+The account is every key of `quota.accounts` and every provider of the
+candidates, the same set of accounts the availability of an account
+covers.
+
 ### The static worker table
 
 While the routing switch is off, the selection in force is the owner's static
@@ -634,6 +683,12 @@ route, never measured again:
 * `ghostship_ai_static_route_paced_availability{row}` - the candidate's
   `capacity.pace_delta`, the same number the page calls the Paced
   Availability. A promotion with no pace publishes no series.
+* `ghostship_ai_static_route_pace_state{row,state}` - the band of the row
+  against its own line, in `state`: `ahead`, `on_pace`, `behind`,
+  `far_behind`, `spent` or `unknown`. One series per row. The line is the
+  share left minus the row's Paced Availability, and the band is the value
+  policy's: a row with no share, or with no pace to compare it with, is
+  `unknown`, and a row with nothing left is `spent`.
 * `ghostship_ai_static_route_reset_timestamp_seconds{row}` - the
   `capacity.capacity_binding.reset_at` of the candidate, in epoch seconds.
 * `ghostship_ai_static_route_policy_ok` - 1 when the policy was read, 0 when
@@ -678,6 +733,13 @@ the capacity of the winning route, read from the candidate of that route:
 * `ghostship_ai_free_provider_selection_paced_availability{provider}` - the
   candidate's `capacity.pace_delta`, the same number the page calls the Paced
   Availability.
+* `ghostship_ai_free_provider_selection_pace_state{provider,state}` - the
+  band of the selection against its own line, in `state`: `ahead`,
+  `on_pace`, `behind`, `far_behind`, `spent` or `unknown`. One series per
+  free provider. The line is the share left minus the selection's Paced
+  Availability, and the band is the value policy's: a selection with no
+  share, or with no pace to compare it with, is `unknown`, and one with
+  nothing left is `spent`.
 * `ghostship_ai_free_provider_selection_reset_timestamp_seconds{provider}` -
   the `capacity.capacity_binding.reset_at` of the candidate, in epoch
   seconds.
@@ -786,6 +848,13 @@ provider-reported dollar charge.
 * `ghostship_ai_pool_model_available{provider,model}` and
   `ghostship_ai_pool_model_selected{provider,model}` - whether the model is
   available, and whether it is the selected or preferred one.
+* `ghostship_ai_pool_model_unavailable_reason{provider,model,reason}` - 1 for
+  a candidate the pool marks unavailable, with the pool's own reason. `reason`
+  is `suspended`, `account_policy`, `hosting_restricted` or `cooldown`.
+* `ghostship_ai_pool_probe{provider,model,state,category}` - 1 for the pool's
+  own probe of a route, with the state of the answer and its category.
+  `ghostship_ai_pool_probe_timestamp_seconds{provider,model}` is when the pool
+  checked it.
 * `ghostship_ai_pool_model_cooldown_until_seconds{provider,model}` - when the
   model's cooldown ends.
 * `ghostship_ai_pool_model_admission{provider,model,workload}` - whether the
@@ -945,6 +1014,11 @@ The order of a tier is then:
 
 * the trust of the route: a trusted route leads, a backup route follows, and
   an untrusted route comes last with the reason it holds;
+* a route more than twenty points behind the line of its binding window
+  (`far_behind`) follows every route of its trust group that is not, whatever
+  the value of those routes: it goes to the back of the pool. An untrusted
+  route stays last, and a route that is merely behind keeps its place in the
+  value order;
 * a provider reserved for another workload (`provider_reservations`) joins
   the backup group outside that workload's tier and follows every unreserved
   route of it; its winner names the workload in `reserved_for`;
@@ -956,11 +1030,32 @@ The order of a tier is then:
 * the pace of the account window, and a route with no window has no pace: it
   waits behind every route that has one.
 
+The pace state of a route is the band its Paced Availability falls in, the
+share left minus the expected share left of the most constraining window, in
+points, rounded to six decimals so that only the noise of the subtraction is
+removed (`100 * (0.50 - 0.55)` is `-5`). A window with nothing left is
+`spent` whatever its line; more than five points ahead of the line is
+`ahead`; between five points behind and five ahead is `on_pace`; between
+twenty points behind and five behind is `behind`; more than twenty points
+behind is `far_behind`; and a route with no window, or no line to compare it
+with, is `unknown`. The collector publishes the state as `pace_state` in the
+`capacity` of every candidate row, as `pace_state` of every winner, as
+`ghostship_ai_account_window_pace_state{account,kind,quota_id,label,evidence,state}`
+for every window of an account, as
+`ghostship_ai_static_route_pace_state{row,state}` for every static row, and
+as `ghostship_ai_free_provider_selection_pace_state{provider,state}` for
+every free provider, so the Providers page colours amber and red by the
+collector's band instead of drawing its own. The collector half is the one
+that publishes the two new series; the page keeps its own identical band
+until it is switched to them.
+
 The published value of a route is the outcome-weighted value: the measured
 intelligence placed inside the range of the tier it competes in
 (`p0 = 0.5 + 0.4 * (I - I_min) / (I_max - I_min)`), shrunk toward the rounds
 that were actually observed (`p = (k * p0 + s) / (k + n)`, with `k = 10`), and
 combined with the measured efficiency (`value = 0.70 * p + 0.30 * E`). The
+rounds n and s are the model's own outcomes: a round of the environment, or
+one whose cause is the `brief` or the `chief` reviewer, counts in neither. The
 trust scales it: an untrusted route keeps half of it. The Artificial
 Analysis value is published beside the published value, so the two cannot
 disagree about what the order was made of.
@@ -972,6 +1067,20 @@ runtime policy), the runtime policy, the delegation ledger
 that is missing, unreadable or empty is an empty history, and every model is
 trusted.
 
+The display quality score is one number per model, so every page - the
+orchestrators, the workers, the 3D tier and the free tier - reads the same
+comparable value. Its prior is global: the model's intelligence inside the
+range of every ranked candidate, across every tier
+(`p0 = 0.5 + 0.4 * (I - I_min_all) / (I_max_all - I_min_all)`, and `0.5`
+without an index), and its counts are every task type of the model identity,
+summed. The score is `round(100 * (k * p0 + s) / (k + n))` with `k = 10`: an
+integer from 0 to 100. The basis is published with it: `AA + outcomes` when
+the index and the rounds are both there, `AA only` with the index alone,
+`outcomes + default prior` with the rounds alone, and `default prior` with
+neither. The display score never orders a tier: the per-tier outcome above
+does, and the score is published beside it, on every candidate row and every
+winner.
+
 * `ghostship_ai_model_trust_info{provider,model,tier,task_type,level,source,reason}`
   - 1 for the trust of a model in a tier, with the level it holds, where the
   level came from, and the reason it holds it.
@@ -979,6 +1088,13 @@ trusted.
   outcome of a model in a tier, field by field: `p0` the prior, `k` the
   strength of the prior, `n` the observed rounds, `s` the accepted rounds,
   and `p` the quality they produced.
+* `ghostship_ai_model_quality_score{provider,model,basis}` - the display
+  quality score of a model, an integer 0 to 100, with the basis it was built
+  from. It carries no tier: the score is one number per model, across every
+  tier and every page.
+* `ghostship_ai_model_quality_rounds{provider,model,field}` - the global
+  rounds behind the display score: `n` the rounds and `s` the accepted ones,
+  summed over every task type and not read per tier.
 
 * `ghostship_ai_model_rank{tier,provider,model}` - the rank inside a tier, 1 is
   best. Every ranked model keeps it, including the models that cannot be
@@ -1126,6 +1242,7 @@ the reasons, the quota state, the components, and the eligibility:
 | `frontier_required` | true when the model holds the frontier and a delegate may not stand in for it |
 | `tiers`, `rank`, `score`, `reasons` | where the model sits and why |
 | `quota_state` | `available`, `exhausted`, or `unknown` |
+| `probe` | whether the route answered its last live probe: `state` is `works`, `fails` or `unprobed`; `class` names the failure (`success`, `quota`, `auth`, `model_not_found`, `catalog_mismatch`, `policy_parked`, `timeout` or `upstream_error`, and empty when unprobed); `checked_at` is the UTC moment of the newest reading; `source` is `pool_probe` or `t3_probe`; `max_age_seconds` is 172800. The newer of the free pool's own probe and the latest OpenCode request of the route is the reading. A reading older than `max_age_seconds` is kept with its moment and its source, and the state falls back to `unprobed`: a route nothing probed reads `unprobed` with no moment and no source |
 | `quality` | the quality with its source: `prior` or `measured`. There is no numerical quality claim without a source |
 | `capacity` | the remaining share, when it expires, and the pace against the line the window draws by now. `capacity_basis` says where the capacity comes from: `reported`, `inferred`, `published` or `unknown`. `inference` holds the inference behind an inferred capacity: the window it was measured over, the budget, the unit, the scope, the weights, the episode count and the state. It is empty for a route whose capacity was not inferred |
 | `usage` | the token volume of the last seven days, labelled as a volume and not as a task success |
@@ -1136,6 +1253,20 @@ the reasons, the quota state, the components, and the eligibility:
 | `admission` | `settled`, or `pending` with the reason and the end of the evaluation window |
 | `provenance` | where the reading came from and when it was observed |
 | `access` | how the route is reached and how it is paid for: the access kind (`dedicated_free`, `provider_promo`, `provider_paid`, `unknown`), the billing class, the price, and whether the route runs as a provider-native thread or as an inference job |
+
+The probe is one reading, not two: the free pool's own check of a route and
+the latest OpenCode request of it are both candidates for the row, and the
+newer one is published. The pool marks a route `quota_or_cooldown` when it
+sent nothing at all, which is not a probe. An OpenCode success works, a
+limit fails as `quota`, and a retirement fails as `model_not_found`. A probe
+of another model never answers for the row, and a reading older than two
+days no longer counts even though its moment stays visible.
+
+A free-pool route the ranking parked repeats the pool's own reason:
+`hosting_restricted`, `account_policy`, `suspended`, or a `cooldown` that
+names the moment it ends. A candidate the pool published without a reason
+keeps the text the snapshot built before it, so no parked row is ever
+unavailable without a reason.
 
 Three kinds of statement never mix: a `policy` is what the owner decided, a
 `measured` value is what a provider reported, and a `prior` is what the
