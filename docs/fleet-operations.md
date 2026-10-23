@@ -441,8 +441,9 @@ Fleet checks after review when needed.
 2. On a WSL canary, build the merged configuration, inspect changes, switch at
    an idle time, and check shells, agent launchers, SSH agent, and NFS. Then
    repeat for the second WSL host. Do not rebuild both concurrently.
-3. `chill-penguin` applies merged main automatically overnight. To deploy
-   sooner, pull merged main and switch natively with `--impure`.
+3. `chill-penguin` is deployed only through the deploy slot, by the chief of
+   the feature that changed it: `agent deploy run` (see "Gated deploy of
+   chill-penguin" below). Nobody asks a lead for the slot.
 4. Check failed units, container health, NAS mounts, configuration file modes,
    secret-dependent integrations, and active agent sessions.
 5. Verify automatic Cloudflare reconciliation, then validate Google browser login and Android
@@ -464,9 +465,11 @@ profile first, switches, and then verifies that the running system and the
 system profile name the same store path.
 
 ```bash
-# From the built checkout in the server's root shell.
+# From the built checkout in the server's root shell, holding the deploy slot.
 nixos-rebuild build --impure --flake .#chill-penguin
-scripts/activate-host --toplevel ./result
+scripts/activate-host --toplevel ./result --holder "$HOLDER"
+# After the post-activation checks: verify again and release the slot.
+scripts/activate-host --verify-only --holder "$HOLDER"
 ```
 
 `scripts/activate-host` runs `nix-env -p /nix/var/nix/profiles/system --set
@@ -480,6 +483,54 @@ activation that did not record the generation is visible instead of silent.
 than ten minutes reaches operations through `ghostship-notify` with the
 `boot-generation-drift` dedupe key, because a reboot would revert to the
 profile's generation.
+
+### Gated deploy of chill-penguin
+
+One deploy runs at a time, and the host enforces it. `ghostship-deploy-slot`
+(`scripts/deploy-slot`) keeps a root-only record of the holder, its purpose and
+the generation it started from in `/var/lib/ghostship-deploy-slot`.
+`scripts/activate-host` refuses an activation (exit 3) whose `--holder` does not
+hold the slot. The slot stays held after the switch, and `--verify-only
+--holder` verifies once more and releases it with the new generation. Sessions
+take, wait for and give back the slot themselves:
+
+```bash
+agent deploy slot status
+agent deploy slot acquire --purpose "deploy <what>" --wait 30   # holder: the T3 thread
+agent deploy slot release --generation <N>
+```
+
+A slot idle for 60 minutes shows as stale, and only `acquire --force --reason`
+takes it over, which the ledger records. A refused `acquire --wait` queues, and
+the earliest live waiter gets the slot next.
+
+The chief of the feature runs the whole procedure with one command:
+
+```bash
+agent deploy run --repo ghostship-config --sha <merged main sha> \
+  --expect-podman <podman units the change should restart> [--dry-run]
+```
+
+1. Take the slot.
+2. Archive the flake inputs locally, including the private agent input, and
+   `nix copy` them to the host.
+3. Make a fresh root clone at the SHA and build it with `--impure`.
+4. Dry-activate, with gates:
+   - `podman-t3code` only under "would NOT stop";
+   - the GitHub coordinator never started or restarted;
+   - the podman units touched equal `--expect-podman`;
+   - orphan healthcheck units are reported, not fatal.
+5. Snapshot T3 (container id, start time, MainPID).
+6. Run `activate-host --holder`.
+7. Check that T3 is unchanged.
+8. Stop `nixos-upgrade.timer` if anything re-armed it.
+9. Run `--verify-only`, which releases the slot.
+
+A failed gate stops the deploy before activation and releases the slot.
+`--dry-run` stops after the gates. A failure after the activation keeps the
+slot held, so the host's state stays visible. With the deploy slot enabled, the
+unattended `system.autoUpgrade` is refused at evaluation: it would switch the
+host outside the slot.
 
 T3 Code is never restarted unless it is idle, except when the owner has asked
 for work to be activated or deployed; an owner instruction to deploy or
