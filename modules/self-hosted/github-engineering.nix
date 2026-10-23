@@ -18,15 +18,15 @@ let
   # T3 projects per repository (ids from the T3 orchestration shell).
   repositories = {
     "ghostship-io/ghostship-config" = {
-      project_id = "fc286296-b2d8-4ee4-8d5e-27f3657229b7";
+      project_id = "@GHOSTSHIP_T3_PROJECT_CONFIG@";
       required_checks = [ "check" "browser" ];
     };
-    "ghostship-io/ghostship-agent".project_id = "e5a24e33-34cf-47aa-b678-61d8bedb3d39";
-    "ghostship-io/ghostship-3dprinting".project_id = "e95f58cb-8f98-4791-904c-273fb798bcb5";
-    "ghostship-io/ghostship-roms".project_id = "44bb13a9-b0f1-494c-9723-ccf64945751b";
-    "ghostship-io/ghostship-xplus4".project_id = "64a942df-7c8e-48bf-a536-e0c16fc8dbb3";
-    "ghostship-io/ghostship-newsletter".project_id = "d20c69dd-5e0e-40ed-8a13-b2c3d4f5613a";
-    "ghostship-io/ghostship-orca".project_id = "c9069bbb-2d01-465a-91c7-cfcff17f6417";
+    "ghostship-io/ghostship-agent".project_id = "@GHOSTSHIP_T3_PROJECT_AGENT@";
+    "ghostship-io/ghostship-3dprinting".project_id = "@GHOSTSHIP_T3_PROJECT_3DPRINTING@";
+    "ghostship-io/ghostship-roms".project_id = "@GHOSTSHIP_T3_PROJECT_ROMS@";
+    "ghostship-io/ghostship-xplus4".project_id = "@GHOSTSHIP_T3_PROJECT_XPLUS4@";
+    "ghostship-io/ghostship-newsletter".project_id = "@GHOSTSHIP_T3_PROJECT_NEWSLETTER@";
+    "ghostship-io/ghostship-orca".project_id = "@GHOSTSHIP_T3_PROJECT_ORCA@";
   };
   # The previous owner and the two renamed repositories, so that existing
   # issue owners, queued deliveries, CI issue mappings and pull request links
@@ -47,9 +47,9 @@ let
     exec ${pkgs.python3}/bin/python3 ${./render-owner-config.py} "$@"
   '';
   coordinatorConfigTemplate = pkgs.writeText "ghostship-github-coordinator.json" (builtins.toJSON {
-    allowed_user_ids = [ 1686351 ];
+    allowed_user_ids = [ "@GHOSTSHIP_GITHUB_USER_ID@" ];
     ntfy_url = "http://ntfy:8080";
-    t3_environment_id = "e7f7d451-e488-4da3-b305-9e45b62aad6f";
+    t3_environment_id = "@GHOSTSHIP_T3_ENVIRONMENT_ID@";
     # The chief reviewer leads launched threads; the backup reviewer stands in
     # while it is unavailable (routing-policy.md "Roles"). Bulk implementation
     # remains delegated under the canonical engineering/routing policy.
