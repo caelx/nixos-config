@@ -24,6 +24,8 @@ in
   ghostship.githubEngineering.coordinatorAutoStart = false;
   ghostship.newsletterHealth.enable = true;
   ghostship.bootGenerationDrift.enable = true;
+  # Every activation needs the deploy slot (modules/self-hosted/deploy-slot.nix).
+  ghostship.deploySlot.enable = true;
 
   ghostship.host.roles = {
     server = true;

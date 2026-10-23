@@ -28,6 +28,9 @@ nix eval --impure --json --file tests/apparmor-public.nix >/dev/null
 printf 'Checking the kernel audit backlog limit\n'
 nix eval --impure --json --file tests/audit-backlog.nix >/dev/null
 
+printf 'Checking the deploy slot on chill-penguin\n'
+nix eval --impure --json --file tests/deploy-slot.nix >/dev/null
+
 printf 'Checking the kernel module denials\n'
 nix eval --impure --json --file tests/kernel-module-deny.nix >/dev/null
 
