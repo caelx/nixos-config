@@ -413,9 +413,8 @@ def _collect_limits(client: T3Client, context: dict[str, Any] | None = None) -> 
                 "options": _model_options(model),
             }
             if instance == command_code.INSTANCE:
-                verified = command_code.configured(command_instance, slug)
-                native[pair]['commandCodePolicyVerified'] = verified
-                native[pair]['available'] = native[pair]['available'] and verified
+                verified = command_code.configured(command_instance)
+                native[pair]['commandCodeZdrConfigured'] = verified
         state = str(provider.get("status") or "")
         provider_states[name] = state
         limits = provider.get("usageLimits")

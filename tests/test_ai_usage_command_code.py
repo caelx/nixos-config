@@ -113,7 +113,9 @@ class CommandCodeWorkerTests(unittest.TestCase):
         for cfg in variants:
             with self.subTest(configured=cfg):
                 document, row, _ = build(epoch('2026-10-24T12:00:00'), cfg)
-                self.assertFalse(row['native']['available'])
+                self.assertTrue(row['native']['available'])
+                self.assertFalse(row['available'])
+                self.assertIn('ZDR', row['availability']['reason'])
                 self.assertIsNone(document['model_selection']['providers']['commandCode']['selected']['worker'])
 
     def test_no_free_route_or_inherited_ollama_outcome_identity(self):
@@ -128,10 +130,31 @@ class CommandCodeWorkerTests(unittest.TestCase):
         self.assertEqual(command, outcomes.identity_of_round('commandCode/' + MODEL, identities))
         self.assertNotEqual(row['native']['provider_instance_id'], 'opencode')
 
-    def test_unreviewed_native_models_and_unreadable_configuration_fail_closed(self):
+    def test_other_native_models_keep_their_own_access_evidence(self):
+        free = ('commandCode', 'stealth/current:free')
+        unknown = ('commandCode', 'vendor/new-current')
+        context = {}
+        t3source._collect_limits(Client(models=[{'slug': pair[1]} for pair in (PAIR, free, unknown)]), context)
+        native = context['native_models']
+        prices = catalog.Catalog({})
+        ranked = ranking.rank_models(models=[ranking.ModelRecord(*pair) for pair in native],
+            catalog=prices, quota_windows={}, free_models=[free], native_models=native,
+            now=epoch('2026-10-24T12:00:00'))
+        result = snapshot.build_snapshot(now=epoch('2026-10-24T12:00:00'), sources=[],
+            ranked=ranked, native_models=native, catalog=prices, free_models=[free])
+        rows = {row['model']: row for row in result['candidates']}
+        self.assertEqual(set(rows), {pair[1] for pair in (PAIR, free, unknown)})
+        self.assertTrue(all(row['native']['available'] for row in rows.values()))
+        self.assertEqual(rows[free[1]]['access']['kind'], 'dedicated_free')
+        self.assertEqual(rows[unknown[1]]['access']['kind'], 'unknown')
+        for pair in (free, unknown):
+            self.assertNotIn('not verified', rows[pair[1]]['availability']['reason'])
+            self.assertNotIn('command_code', rows[pair[1]])
+
+    def test_full_native_catalog_preserves_readiness_and_unknown_terms(self):
         context = {}
         t3source._collect_limits(Client(models=[{'slug': 'free/unreviewed-model'}]), context)
-        self.assertFalse(context['native_models'][('commandCode', 'free/unreviewed-model')]['available'])
+        self.assertTrue(context['native_models'][('commandCode', 'free/unreviewed-model')]['available'])
 
         class Unavailable(Client):
             def call(self, method, args):
@@ -140,7 +163,7 @@ class CommandCodeWorkerTests(unittest.TestCase):
                 return super().call(method, args)
         reading = t3source._collect_limits(Unavailable(), context)
         self.assertEqual(reading.status, 'partial')
-        self.assertFalse(context['native_models'][PAIR]['available'])
+        self.assertTrue(context['native_models'][PAIR]['available'])
 
 
 if __name__ == '__main__':

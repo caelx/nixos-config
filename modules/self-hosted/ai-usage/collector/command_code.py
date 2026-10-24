@@ -18,8 +18,8 @@ def is_worker_route(provider: str, model: str) -> bool:
     return provider == INSTANCE and model == MODEL
 
 
-def configured(instance: Mapping[str, Any], model: str) -> bool:
-    """Only the reviewed launcher enforces paid selection as well as ZDR."""
+def configured(instance: Mapping[str, Any]) -> bool:
+    """Verify ZDR configuration for picker admission, never model visibility."""
     if not isinstance(instance, Mapping):
         return False
     config = instance.get('config') or {}
@@ -28,7 +28,7 @@ def configured(instance: Mapping[str, Any], model: str) -> bool:
         return False
     zdr = [entry.get('value') for entry in environment
            if isinstance(entry, Mapping) and entry.get('name') == 'CMD_ZDR']
-    return (model == MODEL and instance.get('driver') == 'acpRegistry'
+    return (instance.get('driver') == 'acpRegistry'
             and instance.get('enabled') is True and zdr == ['1']
             and config.get('source') == 'local'
             and config.get('commandPath') == '/home/t3code/.local/bin/cmd'
@@ -45,21 +45,20 @@ def rates(now: float) -> dict[str, float]:
 
 
 def enrich(row: dict[str, Any], now: float, native: Mapping[str, Any] | None) -> None:
-    if row.get('provider') != INSTANCE:
+    # Only this documented GOAT route has published terms here. Other native
+    # models retain their own price/access evidence, including unknown values.
+    if not is_worker_route(row.get('provider'), row.get('model')):
         return
-    valid = bool((native or {}).get('commandCodePolicyVerified')) and row['model'] == MODEL
-    row['native']['available'] = row['native'].get('available', False) and valid
-    row['available'] = row['available'] and row['native']['available']
+    valid = bool((native or {}).get('commandCodeZdrConfigured'))
     if not valid:
-        row['availability'].update(state='unavailable', reason='managed paid-ZDR Command Code route is not verified')
+        row['available'] = False
+        row['availability'].update(state='unavailable', reason='Command Code worker requires verified CMD_ZDR=1 configuration')
     row['tiers'] = [tier for tier in row['tiers'] if tier != 'free']
     row['rank'].pop('free', None)
     row['score'].pop('free', None)
     row['access'].update(kind='provider_paid', billing='subscription',
-                         basis='Command Code GOAT subscription; paid models and CMD_ZDR=1 required',
+                         basis='published GOAT DeepSeek paid subscription terms; picker requires CMD_ZDR=1',
                          paid_only=True, zdr_required=True)
-    if row['model'] != MODEL:
-        return
     row['price'].update(source=MODEL_SOURCE, unit='USD per million tokens',
                         period='peak' if peak(now) else 'off_peak',
                         zdr_pricing_note='published model rates; actual ZDR routing can differ',

@@ -263,14 +263,41 @@ and complete its Google sign-in; T3's ACP login does not authenticate the CLI.
 For scripted tasks, use `agy -p "your task"`. The ARM64 CLI launcher was verified
 on Chill Penguin; authenticated execution requires the separate CLI login.
 
+## Provider catalog visibility
+
+T3 receives native model catalogs. The OpenCode catalog helper in the pinned
+agent source retains `OPENCODE_MODELS_PATH` only as a view that prunes explicit
+provider `status: deprecated` entries. It preserves provider membership and
+native order. Age, missing tool support, price, trust and quality do not prove
+obsolescence. Undated hosted aliases are not assumed stale without provider
+deprecation evidence. The helper reports the exact deprecated IDs it removes.
+Missing or malformed source data removes its override so native discovery can
+proceed, rather than retaining an old restrictive catalog.
+
+The helper also removes provider allow/deny lists, per-provider whitelist and
+blacklist fields, and model `disabled` flags from the OpenCode configuration.
+This clears the generated OpenRouter/Zen exclusions while preserving native
+login, defaults, MCP configuration and tool permissions. Picker constraints
+continue to report why a visible model is or is not eligible for work.
+
+Audit of configured providers:
+
+| Provider | Catalog handling |
+| --- | --- |
+| Command Code | Direct native ACP; no local filtering, sorting, forced defaults or selection gates. Hosted catalog refresh is enabled. |
+| OpenCode / Ollama Cloud / Go | Removed age/tool-support trimming and whole-provider exclusions; only provider-marked deprecation is pruned. |
+| Antigravity | The local proxy repairs the ACP initialization handshake and forwards model data unchanged. [T3 maps native session model options](https://github.com/pingdotgg/t3code/blob/main/apps/server/src/provider/AntigravityProvider.ts) without a quality/cost rule. |
+| Grok | No local model filter found. [T3 uses native ACP/CLI model discovery](https://github.com/pingdotgg/t3code/blob/main/packages/provider-grok/src/server/status.ts); duplicate/base-ID normalization is not a model allowlist. |
+| Codex / Claude | No local catalog filters found in deployment configuration or managed launchers; native T3/provider discovery remains authoritative. |
+| Disabled instances | Explicit provider enable/disable settings remain the owner's controls. |
+
 ## Command Code GOAT ACP provider
 
 The image installs `command-code` **1.88.0** from the committed npm lock under
 `packages/t3code/command-code/`. The installer verifies the exact upstream
 SHA-512 integrity and requires Node >=22 (the managed tools supply Node 24).
-`npm ci --ignore-scripts` pins transitive packages too. Native self-updates and
-remote catalog changes are disabled; changing the pin or paid allowlist needs
-a reviewed configuration change. Installation is atomic and retries reuse the
+`npm ci --ignore-scripts` pins transitive packages too. Native self-updates are disabled; changing the package pin needs
+a reviewed configuration change. Hosted catalog updates remain enabled. Installation is atomic and retries reuse the
 completed release. T3's startup installs the managed `cmd` entry and merges only
 the `commandCode` provider instance before the server reads its settings.
 Each successful setup sets this managed instance to `enabled: true`; disabling
@@ -283,32 +310,22 @@ release, subsequent startup needs no registry access.
 
 The instance uses T3's [local ACP command support](https://github.com/pingdotgg/t3code/blob/main/docs/user/providers-acp.md)
 with `cmd acp`. Command Code's [native ACP server](https://commandcode.ai/docs/acp)
-owns the agent loop, tools and model options. A local stream guard exposes two
-reviewed paid GOAT IDs: `deepseek/deepseek-v4.1-flash` (the default) and
-`minimaxai/minimax-m2.7`. These lowercase IDs were confirmed in the native
-1.88.0 ACP catalog; the vendor's [DeepSeek](https://commandcode.ai/models/deepseek-v4-1-flash)
-and [MiniMax](https://commandcode.ai/models/minimax-m2-7) model-page catalogs
-publish positive prices and `zeroDataRetention: true`. The checked sources and
-values live beside the allowlist in `paid-models.json`. GLM-5.2 and Kimi K2.5
-are excluded because the vendor catalog marks their zero-retention flag false.
-The guard lists DeepSeek V4.1 Flash first and requests it through native
-`session/set_model` before returning a new session to T3. If that selection
-fails, session creation still succeeds with the guard recording it as
-unselected: prompts are refused until an approved model selection is
-acknowledged. Unapproved switches during a session still stop it.
-The guard filters both model catalogs and rejects other model selections,
-unknown configuration changes and slash commands that could bypass the picker.
-Native ACP `loadSession` and list/resume/close capabilities pass through unchanged.
-Loaded and resumed sessions record their reported current model and apply the
-same catalog policy before a prompt can run. A missing or unapproved model
-returns an ACP restoration error so T3 can try a fresh session; it never reuses
-a stale paid selection from an earlier session. Use T3's model and mode controls. Native permission
-requests and tool results still pass through ACP.
+owns the agent loop, tools, model options and complete model catalog. The managed
+launcher does not filter or reorder models, select a default, refuse model
+changes, or gate prompts. It forwards native ACP directly, including slash
+commands, configuration changes and session load/resume. Those restrictions
+previously existed to enforce model choice, rather than an independent safety
+boundary, so none remain. Cost, trust and sensitivity constraints belong in the
+collector/picker with visible reasons, never in a provider catalog allowlist.
 
 Every native process receives `CMD_ZDR=1`. Command Code's [ZDR contract](https://commandcode.ai/docs/resources/zdr)
 requires a ZDR-capable upstream or fails the request; it must never fall back
-to retained processing. An approved model with no ZDR capacity therefore fails.
-Free models are excluded even on a paid account. The
+to retained processing. A model with no ZDR capacity therefore fails according to native policy.
+Native ZDR may itself limit model availability; the launcher adds no model gate.
+A native 1.88.0 ACP `session/new` catalog probe with remote catalog updates on
+returned the same 92 model IDs with ZDR on and off (2026-10-24): no model was
+hidden by ZDR in that probe. No inference was sent with ZDR off. Catalog presence
+does not establish that every model has an available ZDR inference route. The
 [privacy policy](https://commandcode.ai/privacy) (checked 2026-10-23) permits up
 to 30 days of request-content retention by default and sharing free-model
 sessions with training partners. It describes no training of its own foundation
@@ -330,7 +347,7 @@ to complete its browser/device flow. It also supports `cmd --version`.
 After exact-head review, use a candidate container to verify CLI startup and
 ACP initialization without login; these checks do **not** establish account,
 model, or inference availability. After deployment and the owner's native
-login, verify T3 lists the paid models and answers a trivial public prompt with
+login, verify T3 lists the native models and answers a trivial public prompt with
 ZDR enforced. Follow the candidate receipt and guarded deployment workflow.
 A candidate with fresh T3 userdata still needs the matching persisted
 `.t3/runtime` binaries. Omitting that directory can select an older bundled
@@ -378,7 +395,9 @@ DeepSeek route and its outcome history. It publishes the GOAT table above as
 and remaining capacity come only from native Command Code reporting through T3;
 until reported they stay unknown. The effective published input/output price
 follows the UTC schedule above. CLI and MCP picks read the same published worker
-selection. Eligibility requires the configured managed `cmd acp` launcher with
+selection. Other native Command Code models retain their own price/access
+evidence, including unknown values; they are never all relabeled paid or
+unavailable. The DeepSeek worker eligibility requires the configured managed `cmd acp` launcher with
 `CMD_ZDR=1`; this subscription route is always paid and never a free-route choice.
 The existing quality evidence and priors remain in force; a successful public
 transport prompt establishes no harness quality claim before the controlled pilot.

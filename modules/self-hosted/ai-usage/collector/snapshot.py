@@ -671,9 +671,9 @@ def _access_record(
     from the pool runs as an inference job.
     """
     pair = (provider, model)
-    if provider == command_code.INSTANCE:
+    if command_code.is_worker_route(provider, model):
         kind = ACCESS_PROVIDER_PAID
-        basis = 'Command Code GOAT paid-ZDR route'
+        basis = 'published GOAT DeepSeek paid subscription terms'
     elif provider == 'opencode-go':
         kind = ACCESS_PROVIDER_PAID
         basis = "the OpenCode Go subscription"

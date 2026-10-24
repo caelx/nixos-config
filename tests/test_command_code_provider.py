@@ -1,9 +1,7 @@
-"""Catch free-model bypasses, lost native login state, and mutable CLI installations."""
+"""Catch catalog interference, lost native login state, and mutable CLI installs."""
 
 import importlib.util
 import json
-import os
-import select
 import subprocess
 import sys
 import tempfile
@@ -24,200 +22,23 @@ def load(name):
 
 acp = load("acp")
 setup = load("setup")
-PAID = "minimaxai/minimax-m2.7"
-FREE = "unreviewed/free-model"
-DEFAULT = "deepseek/deepseek-v4.1-flash"
 
 
-def request(method, params=None, number=1):
-    return {"jsonrpc": "2.0", "id": number, "method": method, "params": params or {}}
-
-
-class PolicyTest(unittest.TestCase):
-    def test_free_native_default_leaves_new_session_unselected_until_paid_pick(self):
-        policy = acp.Policy()
-        policy.request(request("session/new"))
-        response = {"id": 1, "result": {"sessionId": "unit-session", "models": {
-            "currentModelId": FREE, "availableModels": [{"modelId": PAID}, {"modelId": FREE},
-                                                        {"modelId": DEFAULT}]}, "configOptions": [{
-                "id": "model", "category": "model", "currentValue": FREE,
-                "options": [{"value": PAID}, {"value": FREE}, {"value": DEFAULT}]}]}}
-        policy.response(response)
-        self.assertIsNone(policy.sessions["unit-session"])
-        self.assertEqual(response["result"]["models"]["availableModels"][0]["modelId"], DEFAULT)
-        self.assertEqual(response["result"]["configOptions"][0]["options"][0]["value"], DEFAULT)
-        with self.assertRaises(ValueError):
-            policy.request(request("session/prompt", {"sessionId": "unit-session"}, 2))
-        policy.request(request("session/set_model", {"sessionId": "unit-session", "modelId": DEFAULT}, 3))
-        policy.response({"id": 3, "result": {}})
-        policy.request(request("session/prompt", {"sessionId": "unit-session"}, 4))
-
-    def test_stdio_process_filters_catalog_rejects_free_and_forwards_paid_prompt(self):
-        self.stdio_exchange(fail_default=False)
-
-    def test_stdio_failed_default_still_opens_session_and_waits_for_paid_selection(self):
-        self.stdio_exchange(fail_default=True)
-
-    def stdio_exchange(self, *, fail_default):
-        with tempfile.TemporaryDirectory() as directory:
-            home = Path(directory)
-            node = home / "node"
-            node.write_text(f'''#!{sys.executable}
-import json, os, sys
-assert os.environ['CMD_ZDR'] == '1'
-selected = {FREE!r}
-for line in sys.stdin:
-    message = json.loads(line)
-    method = message['method']
-    if method == 'session/new':
-        result = {{'sessionId': 'unit-session', 'models': {{'currentModelId': selected,
-            'availableModels': [{{'modelId': {PAID!r}}}, {{'modelId': {FREE!r}}}, {{'modelId': {DEFAULT!r}}}]}}}}
-    elif method == 'session/set_model':
-        assert message['params']['modelId'] != {FREE!r}, 'free request crossed boundary'
-        if message['params']['modelId'] == {DEFAULT!r} and {fail_default!r}:
-            print(json.dumps({{'jsonrpc':'2.0', 'id':message['id'], 'error':{{'code':-32000,'message':'synthetic default failure'}}}}), flush=True)
-            continue
-        selected = message['params']['modelId']
-        print(json.dumps({{'jsonrpc':'2.0', 'method':'session/update', 'params':{{'sessionId':'unit-session',
-            'update':{{'sessionUpdate':'current_model_update', 'currentModelId':selected}}}}}}), flush=True)
-        result = {{}}
-    else:
-        assert selected in ({DEFAULT!r}, {PAID!r}), 'prompt crossed before paid selection'
-        result = {{'stopReason': 'end_turn'}}
-    print(json.dumps({{'jsonrpc':'2.0', 'id':message['id'], 'result':result}}), flush=True)
-''')
-            node.chmod(0o755)
-            env = dict(os.environ, HOME=str(home), PATH=str(home) + os.pathsep + os.environ["PATH"], CMD_ZDR="0")
-            process = subprocess.Popen([sys.executable, str(SOURCE / "acp.py"), "acp"], env=env,
-                                       stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            def call(message):
-                process.stdin.write(json.dumps(message) + "\n")
-                process.stdin.flush()
-                while True:
-                    line = b""
-                    while not line.endswith(b"\n"):
-                        self.assertTrue(select.select([process.stdout], [], [], 2)[0], "ACP response timed out")
-                        byte = os.read(process.stdout.fileno(), 1)
-                        self.assertTrue(byte, "ACP stream closed before replying")
-                        line += byte
-                    reply = json.loads(line)
-                    if message["method"] == "session/new":
-                        self.assertEqual(reply.get("id"), message["id"], "native updates preceded session creation")
-                    if reply.get("id") == message["id"]:
-                        return reply
-            try:
-                result = call(request("session/new"))["result"]
-                self.assertEqual(result["models"]["availableModels"], [{"modelId": DEFAULT}, {"modelId": PAID}])
-                self.assertEqual(result["models"]["currentModelId"], FREE if fail_default else DEFAULT)
-                if fail_default:
-                    unselected = call(request("session/prompt", {"sessionId": "unit-session"}, 4))
-                    self.assertIn("error", unselected)
-                denied = call(request("session/set_model", {"sessionId": "unit-session", "modelId": FREE}, 2))
-                self.assertIn("error", denied)
-                selected = call(request("session/set_model", {"sessionId": "unit-session",
-                                                               "modelId": PAID if fail_default else DEFAULT}, 5))
-                self.assertIn("result", selected)
-                reply = call(request("session/prompt", {"sessionId": "unit-session", "prompt": [
-                    {"type": "text", "text": "Reply with OK"}]}, 3))
-                self.assertEqual(reply["result"]["stopReason"], "end_turn")
-            finally:
-                process.stdin.close()
-                process.wait(timeout=2)
-                process.stdout.close()
-                process.stderr.close()
-
-    def test_catalog_and_both_model_selection_paths_exclude_free(self):
-        policy = acp.Policy()
-        policy.request(request("session/new"))
-        response = {"id": 1, "result": {"sessionId": "unit-session", "models": {
-            "currentModelId": PAID,
-            "availableModels": [{"modelId": PAID}, {"modelId": FREE}]}, "configOptions": [{
-                "id": "model", "category": "model", "currentValue": PAID,
-                "options": [{"value": PAID}, {"value": FREE}]}]}}
-        policy.response(response)
-        self.assertEqual(response["result"]["models"]["availableModels"], [{"modelId": PAID}])
-        self.assertEqual(response["result"]["configOptions"][0]["options"], [{"value": PAID}])
-        for method, params in [("session/set_model", {"modelId": FREE}),
-                               ("session/set_config_option", {"configId": "model", "value": FREE})]:
-            with self.assertRaises(ValueError):
-                policy.request(request(method, params))
-        policy.request(request("session/set_config_option", {"configId": "model", "value": PAID}))
-
-    def test_unconfirmed_sessions_unknown_options_and_slashes_fail_closed(self):
-        policy = acp.Policy()
-        for method, params in [("session/set_config_option", {"configId": "provider", "value": "other"}),
-                               ("session/prompt", {"sessionId": "unknown"})]:
-            with self.assertRaises(ValueError):
-                policy.request(request(method, params))
-        policy.sessions["unit-session"] = PAID
-        with self.assertRaises(ValueError):
-            policy.request(request("session/prompt", {"sessionId": "unit-session", "prompt": [
-                {"type": "text", "text": " /model " + FREE}]}))
-        policy.request(request("session/prompt", {"sessionId": "unit-session", "prompt": [
-            {"type": "text", "text": "Reply with OK"}]}))
-
-    def test_loaded_and_resumed_sessions_record_paid_model_and_reject_unapproved_models(self):
-        for method in ("session/load", "session/resume"):
-            for model in (PAID, FREE, None):
-                for shape in ("models", "configOptions"):
-                    with self.subTest(method=method, model=model, shape=shape):
-                        policy = acp.Policy()
-                        policy.sessions["unit-restored"] = PAID  # A stale prior selection cannot authorize a failed load.
-                        policy.request(request(method, {"sessionId": "unit-restored"}))
-                        result = {}
-                        if model is not None:
-                            if shape == "models":
-                                result = {"models": {"currentModelId": model,
-                                          "availableModels": [{"modelId": PAID}, {"modelId": FREE}]}}
-                            else:
-                                result = {"configOptions": [{"id": "model", "category": "model",
-                                          "currentValue": model, "options": [{"value": PAID}, {"value": FREE}]}]}
-                        response = {"id": 1, "result": result}
-                        if model == PAID:
-                            policy.response(response)
-                            self.assertEqual(policy.sessions["unit-restored"], PAID)
-                            policy.request(request("session/prompt", {"sessionId": "unit-restored"}, 2))
-                        else:
-                            with self.assertRaises(ValueError):
-                                policy.response(response)
-                            self.assertIsNone(policy.sessions["unit-restored"])
-                            with self.assertRaises(ValueError):
-                                policy.request(request("session/prompt", {"sessionId": "unit-restored"}, 2))
-        acp.Policy().request(request("session/list"))
-
-    def test_rejected_restoration_returns_rpc_error_so_fresh_session_fallback_can_run(self):
-        for method in ("session/load", "session/resume"):
-            with self.subTest(method=method):
-                policy = acp.Policy()
-                policy.request(request(method, {"sessionId": "unit-restored"}))
-                response = {"id": 1, "result": {"models": {"currentModelId": FREE,
-                            "availableModels": [{"modelId": FREE}]}}}
-                self.assertIsNone(policy.agent_response(response))
-                self.assertNotIn("result", response)
-                self.assertIn("error", response)
-                policy.request(request("session/new", number=2))
-                self.assertEqual(policy.agent_response({"id": 2, "result": {
-                    "sessionId": "unit-new", "models": {"currentModelId": PAID,
-                    "availableModels": [{"modelId": PAID}]}}}), "unit-new")
-
-    def test_native_unapproved_switch_terminates_boundary(self):
-        policy = acp.Policy()
-        with self.assertRaises(ValueError):
-            policy.response({"method": "session/update", "params": {"sessionId": "unit-session", "update": {
-                "sessionUpdate": "current_model_update", "currentModelId": FREE}}})
-
-    def test_import_and_slash_capabilities_are_honest(self):
-        policy = acp.Policy()
-        policy.request(request("initialize"))
-        response = {"id": 1, "result": {"agentCapabilities": {"loadSession": True,
-                    "sessionCapabilities": {"list": {}, "resume": {}, "close": {}}}}}
-        policy.response(response)
-        self.assertTrue(response["result"]["agentCapabilities"]["loadSession"])
-        self.assertEqual(response["result"]["agentCapabilities"]["sessionCapabilities"], {"list": {}, "resume": {}, "close": {}})
-        message = {"method": "session/update", "params": {"update": {
-            "sessionUpdate": "available_commands_update", "availableCommands": [{"name": "model"}]}}}
-        policy.response(message)
-        self.assertEqual(message["params"]["update"]["availableCommands"], [])
+class NativeLauncherTest(unittest.TestCase):
+    def test_native_acp_executes_without_protocol_interposition(self):
+        # Native ACP owns model catalogs, order/defaults, configuration, slash
+        # commands and session load. Exec preserves its stdio directly.
+        class ExecCalled(Exception):
+            pass
+        with patch.object(acp.sys, "argv", ["cmd", "acp"]), \
+             patch.object(acp.os, "execvpe", side_effect=ExecCalled) as execute:
+            with self.assertRaises(ExecCalled):
+                acp.main()
+        command, args, environment = execute.call_args.args
+        self.assertEqual(command, "node")
+        self.assertEqual(args, ["node", str(SOURCE / "node_modules/command-code/dist/index.mjs"), "acp"])
+        self.assertEqual(environment["CMD_ZDR"], "1")
+        self.assertNotIn("CMD_DISABLE_REMOTE_MODEL_CATALOG", environment)
 
     def test_zdr_cannot_be_overridden_and_native_home_is_preserved(self):
         env = acp.provider_environment({"CMD_ZDR": "0", "PATH": "unit-path", "HOME": "unit-home",
@@ -225,7 +46,7 @@ for line in sys.stdin:
         self.assertEqual(env["CMD_ZDR"], "1")
         self.assertEqual(env["HOME"], "unit-home")
         self.assertEqual(env["COMMANDCODE_SKIP_UPDATES"], "1")
-        self.assertEqual(env["CMD_DISABLE_REMOTE_MODEL_CATALOG"], "1")
+        self.assertNotIn("CMD_DISABLE_REMOTE_MODEL_CATALOG", env)
         self.assertNotIn("COMMAND_CODE_UNUSED_OVERRIDE", env)
 
     def test_login_executes_native_cli_without_reading_auth_state(self):
@@ -266,18 +87,6 @@ class InstallTest(unittest.TestCase):
             self.assertEqual(cmd.resolve(), previous)
             settings = json.loads((home / ".t3/userdata/settings.json").read_text())
             self.assertFalse(settings["providerInstances"]["commandCode"]["enabled"])
-
-    def test_only_confirmed_paid_zdr_catalog_entries_are_allowlisted(self):
-        policy = json.loads((SOURCE / "paid-models.json").read_text())
-        self.assertEqual(policy["default"], DEFAULT)
-        self.assertIn(DEFAULT, policy["models"])
-        self.assertEqual(set(policy["models"]), set(policy["evidence"]))
-        for model in policy["models"]:
-            evidence = policy["evidence"][model]
-            self.assertTrue(evidence["source"].startswith("https://commandcode.ai/models/"))
-            self.assertGreater(evidence["input_per_million"], 0)
-            self.assertGreater(evidence["output_per_million"], 0)
-            self.assertIs(evidence["zeroDataRetention"], True)
 
     def test_failed_optional_install_disables_provider_without_losing_ready_cli(self):
         with tempfile.TemporaryDirectory() as directory:

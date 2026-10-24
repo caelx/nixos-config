@@ -12,7 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 VERSION = "1.88.0"
 INTEGRITY = "sha512-8es7pmDlw1YYbUYUW3RHDGyI3zBQAhvkZaBh2ZxSnuuzZY1mavrN4e5+SICi8nBqah6GYThMLtvfqmFnL95i3A=="
-FILES = ("package.json", "package-lock.json", "acp.py", "paid-models.json", "provider.json")
+FILES = ("package.json", "package-lock.json", "acp.py", "provider.json")
 
 
 def validate_lock(root):
