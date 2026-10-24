@@ -267,17 +267,17 @@ on Chill Penguin; authenticated execution requires the separate CLI login.
 
 T3 receives native model catalogs. The OpenCode catalog helper in the pinned
 agent source retains `OPENCODE_MODELS_PATH` only as a view that prunes explicit
-provider `status: deprecated` entries. It preserves provider membership and
-native order. Age, missing tool support, price, trust and quality do not prove
+provider `status: deprecated` entries. It preserves the existing T3 provider scope and native model order.
+Which providers T3 exposes is a separate owner decision from model visibility. Age, missing tool support, price, trust and quality do not prove
 obsolescence. Undated hosted aliases are not assumed stale without provider
 deprecation evidence. The helper reports the exact deprecated IDs it removes.
-Missing or malformed source data removes its override so native discovery can
-proceed, rather than retaining an old restrictive catalog.
+Missing or malformed source data preserves the last provider-scoped override
+until the native cache is available again.
 
-The helper also removes provider allow/deny lists, per-provider whitelist and
-blacklist fields, and model `disabled` flags from the OpenCode configuration.
-This clears the generated OpenRouter/Zen exclusions while preserving native
-login, defaults, MCP configuration and tool permissions. Picker constraints
+The helper removes model whitelist/blacklist fields and model `disabled` flags
+within T3's enabled OpenCode providers. Provider enable/disable lists and the
+OpenRouter/Zen exclusions remain: those providers belong to the free worker pool.
+Native login, defaults, MCP configuration and tool permissions are preserved. Picker constraints
 continue to report why a visible model is or is not eligible for work.
 
 Audit of configured providers:
@@ -285,7 +285,7 @@ Audit of configured providers:
 | Provider | Catalog handling |
 | --- | --- |
 | Command Code | Direct native ACP; no local filtering, sorting, forced defaults or selection gates. Hosted catalog refresh is enabled. |
-| OpenCode / Ollama Cloud / Go | Removed age/tool-support trimming and whole-provider exclusions; only provider-marked deprecation is pruned. |
+| OpenCode / Ollama Cloud / Go | Removed age/tool-support model trimming; provider-marked deprecation is pruned within the existing provider scope. |
 | Antigravity | The local proxy repairs the ACP initialization handshake and forwards model data unchanged. [T3 maps native session model options](https://github.com/pingdotgg/t3code/blob/main/apps/server/src/provider/AntigravityProvider.ts) without a quality/cost rule. |
 | Grok | No local model filter found. [T3 uses native ACP/CLI model discovery](https://github.com/pingdotgg/t3code/blob/main/packages/provider-grok/src/server/status.ts); duplicate/base-ID normalization is not a model allowlist. |
 | Codex / Claude | No local catalog filters found in deployment configuration or managed launchers; native T3/provider discovery remains authoritative. |
