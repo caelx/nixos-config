@@ -2,6 +2,7 @@
 
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -25,6 +26,49 @@ setup = load("setup")
 
 
 class NativeLauncherTest(unittest.TestCase):
+    def test_native_catalog_and_session_operations_cross_stdio_unchanged(self):
+        # Catch the old catalog/default/prompt gates and capability rewriting
+        # against an actual child process, without a vendor service or login.
+        catalog = {"currentModelId": "native/free", "availableModels": [
+            {"modelId": "native/free"}, {"modelId": "native/paid"}]}
+        results = {
+            "initialize": {"agentCapabilities": {"loadSession": True,
+                "sessionCapabilities": {"list": {}, "resume": {}, "close": {}}}},
+            "session/new": {"sessionId": "unit-session", "models": catalog},
+            "session/load": {"models": catalog},
+            "session/resume": {"models": catalog},
+            "session/set_model": {},
+            "session/set_config_option": {},
+            "session/prompt": {"stopReason": "end_turn"},
+        }
+        requests = [{"jsonrpc": "2.0", "id": index, "method": method,
+                     "params": {"sessionId": "unit-session", "modelId": "native/free",
+                                "configId": "model", "value": "native/free",
+                                "prompt": [{"type": "text", "text": "/model native/free"}]}}
+                    for index, method in enumerate(results)]
+        with tempfile.TemporaryDirectory() as directory:
+            node = Path(directory) / "node"
+            node.write_text(f'''#!{sys.executable}
+import json, os, sys
+assert os.environ['CMD_ZDR'] == '1'
+assert sys.argv[-1] == 'acp'
+results = {results!r}
+for line in sys.stdin:
+    request = json.loads(line)
+    print(json.dumps({{'jsonrpc': '2.0', 'id': request['id'],
+                      'result': results[request['method']]}}), flush=True)
+''')
+            node.chmod(0o755)
+            run = subprocess.run([sys.executable, str(SOURCE / "acp.py"), "acp"],
+                input="".join(json.dumps(request) + "\n" for request in requests),
+                env=dict(os.environ, HOME=directory,
+                         PATH=directory + os.pathsep + os.environ["PATH"], CMD_ZDR="0"),
+                capture_output=True, text=True, check=True, timeout=3)
+        replies = [json.loads(line) for line in run.stdout.splitlines()]
+        self.assertEqual(replies, [{"jsonrpc": "2.0", "id": request["id"],
+                                   "result": results[request["method"]]}
+                                  for request in requests])
+
     def test_native_acp_executes_without_protocol_interposition(self):
         # Native ACP owns model catalogs, order/defaults, configuration, slash
         # commands and session load. Exec preserves its stdio directly.
