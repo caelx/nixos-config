@@ -118,6 +118,7 @@ POST_MERGE_CLASSES = {
     "test_t3code_boot_environment.BootEnvironment",
 }
 POST_MERGE_TESTS = {
+    "test_command_code_provider.NativeLauncherTest.test_native_catalog_and_session_operations_cross_stdio_unchanged",  # exec replaces the guarded interpreter
     "test_secret_projection_identity.ProjectionIdentity.test_projection_renderer_depends_only_on_its_own_specification",
     "test_mcp_runtime_entrypoint.McpEntrypoint.test_deployed_base_exports_client_through_current_runtime",
     "test_mcp_runtime_entrypoint.McpEntrypoint.test_published_runtime_includes_the_client_and_server",
